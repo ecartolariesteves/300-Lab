@@ -1,0 +1,14 @@
+Exercício Prático Fase 3 (dados001.csv)
+Leia dados001.csv como antes.
+
+Faça:
+
+groupBy com e sem filtragem antes → compare no Spark UI.
+
+Join com um DataFrame pequeno usando broadcast.
+
+Reparticione para 4 partições e grave em Parquet.
+
+Compare tempo de escrita com repartition(4) vs coalesce(1).
+
+Cache um DataFrame e use-o em pelo menos 3 operações diferentes → compare tempo com e sem cache..

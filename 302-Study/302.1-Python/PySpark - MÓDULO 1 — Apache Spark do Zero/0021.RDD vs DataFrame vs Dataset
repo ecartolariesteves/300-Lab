@@ -1,0 +1,21 @@
+RDD (Resilient Distributed Dataset):
+
+Estrutura mais básica.
+
+Baixo nível, imutável, distribuído.
+
+Total flexibilidade, mas menos otimização automática.
+
+DataFrame:
+
+API de alto nível (estilo pandas/SQL).
+
+Otimizado pelo Catalyst Optimizer.
+
+Melhor escolha na maioria dos casos.
+
+Dataset:
+
+Versão tipada (mais usado em Scala/Java, quase irrelevante em PySpark).
+
+📌 Resumo: Em PySpark, use DataFrame sempre que possível. Use RDD só para transformações muito específicas.

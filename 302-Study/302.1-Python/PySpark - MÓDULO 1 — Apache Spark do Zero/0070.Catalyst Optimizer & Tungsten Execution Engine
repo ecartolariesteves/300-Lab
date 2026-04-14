@@ -1,0 +1,89 @@
+Catalyst Optimizer:
+
+É o motor de otimização de consultas do Spark.
+Pega seu código DataFrame/SQL e cria um plano lógico otimizado, depois transforma num plano físico eficiente.
+Faz coisas como:
+
+Reordenação de filtros (predicate pushdown).
+Combinar operações.
+Remover colunas não usadas (column pruning).
+
+Tungsten Engine:
+Otimiza uso de memória e código gerado.
+Usa off-heap memory e geração de bytecode.
+
+📌 Moral da história: Se possível, sempre use DataFrame API ou SQL, não RDD puro, porque só assim você ganha o poder do Catalyst.
+
+
+# Ver número de partições
+print("Partições atuais:", df.rdd.getNumPartitions())
+
+# Reparticionar (aumenta o paralelismo)
+df_repart = df.repartition(4)
+
+# Coalesce (reduz partições sem shuffle)
+df_coalesce = df.coalesce(1)
+
+ Regra geral:
+
+Dados grandes → aumentar partições (repartition).
+Resultados pequenos para salvar → reduzir (coalesce(1)).
+
+Minimizar Shuffles
+Shuffle = redistribuir dados entre partições (ex.: join, groupBy).
+É caro porque envolve rede e disco.
+
+# Exemplo ruim (gera shuffle desnecessário)
+df.groupBy("categoria").count().filter(col("count") > 2).show()
+
+# Melhor: filtrar antes do groupBy
+df.filter(col("valor") > 100).groupBy("categoria").count().show()
+
+Broadcast Join
+Quando uma das tabelas é pequena, podemos mandar ela inteira pra todos os executors e evitar shuffle.
+
+from pyspark.sql.functions import broadcast
+
+df_info = spark.createDataFrame(
+    [("A", "Tipo 1"), ("B", "Tipo 2"), ("C", "Tipo 3")],
+    ["categoria", "descricao"]
+)
+
+# Join otimizado
+df.join(broadcast(df_info), "categoria").show()
+
+Cache & Persistência
+Se você for reusar o mesmo DataFrame em múltiplas operações, vale a pena cachear.
+
+# Cache em memória
+df.cache()
+
+# Cache em memória + disco
+from pyspark import StorageLevel
+df.persist(StorageLevel.MEMORY_AND_DISK)
+
+# Limpar cache
+df.unpersist()
+
+# Não cache tudo — só se for realmente reutilizar várias vezes.
+
+Monitoramento no Spark UI
+Ao rodar Spark local, acesse:
+http://localhost:4040
+
+Você verá:
+    Jobs, Stages, Tasks
+    Tempo gasto em cada etapa
+    Uso de memória
+    Tamanho de shuffle
+
+spark = SparkSession.builder \
+    .appName("TuningExample") \
+    .config("spark.sql.shuffle.partitions", "8") \  # padrão é 200!
+    .config("spark.executor.memory", "2g") \
+    .getOrCreate()
+
+# Dica: spark.sql.shuffle.partitions é um dos ajustes mais importantes.
+  Para datasets pequenos/médios, 200 partições é exagero.
+
+  

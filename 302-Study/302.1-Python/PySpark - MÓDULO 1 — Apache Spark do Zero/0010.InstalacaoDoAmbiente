@@ -1,0 +1,9 @@
+# Download minimo Java 11 (https://adoptium.net/en-GB/temurin/releases) # Windows
+# sudo apt install openjdk-11-jdk  # Linux
+# brew install openjdk@11          # Mac
+
+#Instalar Python libs necessárias:
+pip install pyspark findspark jupyterlab
+
+#Testar instalação:
+python -m pyspark --version

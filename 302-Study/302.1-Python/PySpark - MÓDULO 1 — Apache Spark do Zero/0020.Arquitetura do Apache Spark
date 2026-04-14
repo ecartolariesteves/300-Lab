@@ -1,0 +1,34 @@
+1. O que é o Apache Spark e onde se encaixa no ecossistema Big Data
+Apache Spark é um motor de processamento distribuído para grandes volumes de dados.
+
+É rápido porque:
+
+Processa em memória (diferente do MapReduce, que gravava tudo em disco a cada passo).
+
+Usa paralelismo massivo.
+
+Onde se encaixa:
+
+Ingestão → Spark pode ler de Kafka, S3, HDFS, bancos...
+
+Processamento → Batch ou Streaming.
+
+Output → Data Lake, Data Warehouse, APIs, dashboards.
+
+Não substitui um banco de dados, mas complementa como motor de processamento.
+
+
+[TU CÓDIGO PYSPARK]
+        ↓
+   Driver Program  ← Controla execução, gera DAG
+        ↓
+Cluster Manager   ← Distribui tarefas (Standalone, YARN, K8s, Mesos)
+        ↓
+    Executors     ← Rodam tarefas em paralelo
+
+
+Driver → Contém o SparkContext/SparkSession, envia tarefas pro cluster.
+
+Executors → Processam dados, armazenam em cache quando necessário.
+
+Cluster Manager → Decide onde e como rodar cada executor.

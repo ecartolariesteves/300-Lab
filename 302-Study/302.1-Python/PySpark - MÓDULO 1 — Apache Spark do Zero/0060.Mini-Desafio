@@ -1,0 +1,20 @@
+Mini Desafio Fase 2 (adaptado ao CSV)
+Usar o mesmo dados001.csv.
+
+Filtrar apenas linhas com valor > 80.
+
+Calcular:
+
+Média de valor por categoria.
+
+Top 2 valores por categoria usando window functions.
+
+Criar coluna nivel:
+
+"Alto" se valor >= 150.
+
+"Médio" se entre 100 e 149.
+
+"Baixo" se menor que 100.
+
+Salvar resultados em Parquet e CSV.

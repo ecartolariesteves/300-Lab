@@ -1,0 +1,5 @@
+Alterar o script para calcular a média de valor por categoria.
+
+Salvar em Parquet e CSV ao mesmo tempo.
+
+Usar .filter() para trazer apenas categorias com média > 100.
