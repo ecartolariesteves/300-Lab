@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Message</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    {% include 'header.html' %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="message-container">
+            <div class="alert {{ alert_class }}" role="alert">
+                {{ message }}
+            </div>
+            <button class="button go-back-btn" onclick="redirect()">OK</button>
+        </div>
+    </main>
+
+    {% include 'footer.html' %}
+
+    <script>
+        function redirect() {
+            const nextPage = "{{ next_page|default('') }}";
+            if (nextPage) {
+                // Redirige a la nueva página si se proporciona
+                window.location.href = nextPage;
+            } else {
+                // Vuelve a la página anterior si no se especifica next_page
+                window.history.back();
+            }
+        }
+    </script>
+</body>
+</html>
