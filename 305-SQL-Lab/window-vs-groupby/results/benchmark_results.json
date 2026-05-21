@@ -1,0 +1,14 @@
+{
+  "metadata": {
+    "dataset": "500K orders, 10K customers",
+    "engine": "SQLite in-memory — logic applies to BigQuery/PostgreSQL",
+    "runs": 7,
+    "metric": "mean execution time (ms)"
+  },
+  "results": {
+    "case1_pct_of_total":     { "groupby_ms": 374.8, "window_ms": 378.6, "winner": "TIE" },
+    "case2_rank_by_region":   { "groupby_ms": 839.6, "window_ms": 797.9, "winner": "Window Function" },
+    "case3_running_total":    { "groupby_ms": 8.5,   "window_ms": 1.0,   "winner": "Window Function (8x faster)", "note": "Correlated subquery = O(n²). Window fn = O(n)." },
+    "case4_deviation_from_avg":{ "groupby_ms": 5.1,  "window_ms": 5.2,   "winner": "TIE" }
+  }
+}
