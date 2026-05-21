@@ -1,0 +1,42 @@
+{
+  "metadata": {
+    "dataset": "500K orders, 10K customers, 1K VIP customers",
+    "engine": "SQLite (in-memory) — same query logic applies to BigQuery/PostgreSQL",
+    "runs": 7,
+    "metric": "mean execution time (ms)"
+  },
+  "results": {
+    "case1_filter_vip": {
+      "description": "Filter orders from VIP customers",
+      "join_ms":   157.0,
+      "exists_ms": 183.3,
+      "in_ms":      86.7,
+      "winner": "IN",
+      "note": "IN converted to semi-join by optimizer"
+    },
+    "case2_count_per_vip": {
+      "description": "COUNT orders per VIP customer",
+      "join_ms":   50.6,
+      "exists_ms": 84.2,
+      "in_ms":      5.3,
+      "winner": "IN",
+      "note": "10x faster — optimizer materializes IN list before scan"
+    },
+    "case3_antijoin": {
+      "description": "Customers with NO orders (anti-join)",
+      "left_join_null_ms": 22.1,
+      "not_exists_ms":      3.8,
+      "not_in_ms":         15.8,
+      "winner": "NOT EXISTS",
+      "note": "NOT IN bug: returns 0 rows if subquery has ANY NULL"
+    },
+    "case4_multi_condition": {
+      "description": "Multi-condition filter (segment + region)",
+      "join_ms":   53.6,
+      "exists_ms": 393.2,
+      "in_ms":      54.4,
+      "winner": "JOIN ≈ IN",
+      "note": "EXISTS re-evaluates correlated subquery per outer row"
+    }
+  }
+}
