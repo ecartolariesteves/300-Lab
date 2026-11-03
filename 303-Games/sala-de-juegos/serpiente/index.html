@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Serpiente · Sala de Juegos</title>
+<meta name="description" content="Juega a Serpiente gratis: come, crece y evita chocar. Tres dificultades, controles táctiles y récord local.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="style.css">
+<script src="game.js" defer></script>
+<link rel="manifest" href="../manifest.webmanifest">
+<meta name="theme-color" content="#1F5C45">
+<link rel="icon" href="../assets/icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sala de Juegos">
+<script src="../assets/pwa.js" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="inner">
+    <a class="logo" href="../">Sala de Juegos</a>
+    <nav class="site-nav" aria-label="Principal"><a href="../">Juegos</a><a href="../aprende/index.html">Aprende</a></nav>
+  </div>
+</header>
+<main class="page">
+  <header class="game-head">
+    <p class="crumbs"><a href="../">Juegos</a> › Arcade › Serpiente</p>
+    <h1>Serpiente</h1>
+    <p class="brief" id="brief">Nivel normal · Come y crece sin chocar</p>
+  </header>
+  <div class="seg" role="group" aria-label="Dificultad">
+    <button type="button" data-level="facil" aria-pressed="false">Fácil</button>
+    <button type="button" data-level="normal" aria-pressed="true">Normal</button>
+    <button type="button" data-level="dificil" aria-pressed="false">Difícil</button>
+  </div>
+  <section class="panel" aria-label="Estado de la partida">
+    <div class="readout"><label for="score">Puntuación</label><output id="score">0</output></div>
+    <button type="button" class="reset" id="start">Nueva partida</button>
+    <div class="readout"><label for="best">Récord</label><output id="best">0</output></div>
+  </section>
+  <section class="game-area" aria-label="Partida de Serpiente">
+    <div class="board-wrap">
+      <canvas id="board" width="600" height="600" role="img" aria-label="Tablero de Serpiente. Usa las flechas o WASD para moverte."></canvas>
+      <div class="overlay" id="overlay">
+        <p class="overlay-title" id="overlay-title">¿Listo para jugar?</p>
+        <p class="overlay-text" id="overlay-text">Pulsa «Nueva partida» o una flecha para empezar.</p>
+        <button type="button" class="reset primary" id="overlay-action">Empezar</button>
+      </div>
+    </div>
+    <div class="game-actions">
+      <p class="status" id="status" aria-live="polite">Preparado</p>
+      <button type="button" class="reset" id="pause" disabled>Pausar</button>
+    </div>
+    <div class="dpad" role="group" aria-label="Controles de dirección">
+      <button type="button" class="direction up" data-dir="up" aria-label="Arriba">▲</button>
+      <button type="button" class="direction left" data-dir="left" aria-label="Izquierda">◀</button>
+      <button type="button" class="direction down" data-dir="down" aria-label="Abajo">▼</button>
+      <button type="button" class="direction right" data-dir="right" aria-label="Derecha">▶</button>
+    </div>
+  </section>
+  <section class="notes-sec notes">
+    <div>
+      <h2>Cómo se juega</h2>
+      <ul>
+        <li>Guía la serpiente para comer los puntos y crecer. Cada comida suma 10 puntos.</li>
+        <li>No choques contra los bordes ni contra tu propio cuerpo. La partida termina al tocarte.</li>
+        <li>La velocidad aumenta cada cinco comidas. Elige Fácil, Normal o Difícil antes de empezar.</li>
+        <li>En ordenador usa las flechas o WASD; pulsa Espacio para pausar. En móvil, usa la cruceta táctil.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Récords</h2>
+      <dl class="best-list" id="best-list"></dl>
+      <p class="record-note">El récord se guarda en este dispositivo.</p>
+    </div>
+  </section>
+</main>
+<footer class="site-footer"><div class="inner"><a class="logo" href="../">Sala de Juegos</a><span>Juegos clásicos hechos a mano con HTML, CSS y JavaScript.</span></div></footer>
+</body>
+</html>
