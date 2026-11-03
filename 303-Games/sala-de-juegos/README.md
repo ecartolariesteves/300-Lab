@@ -17,6 +17,8 @@ solitario/
   index.html, style.css, game.js
 sudoku/
   index.html, style.css, game.js   (generador con solución única)
+ultima-parada/
+  index.html, style.css, levels.js, game.js, test-levels.mjs
 aprende/
   index.html          Portada de los tutoriales
   aprende.css         Estilos de los tutoriales
