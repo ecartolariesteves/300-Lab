@@ -3,7 +3,7 @@
    Guarda las páginas y recursos propios para poder jugar sin conexión.
    ========================================================= */
 
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const APP_CACHE = `sala-juegos-${CACHE_VERSION}`;
 const FONT_CACHE = `sala-juegos-fonts-${CACHE_VERSION}`;
 const SITE_ROOT = new URL('./', self.location.href);
@@ -31,7 +31,7 @@ const PRECACHE_FILES = [
   'solitario/game.js',
   'sudoku/index.html',
   'sudoku/style.css',
-  'sudoku/game.js',
+  'sudoku/game.js',\n  'ultima-parada/index.html',\n  'ultima-parada/style.css',\n  'ultima-parada/levels.js',\n  'ultima-parada/game.js',\n  'ultima-parada/test-levels.mjs',
   'aprende/index.html',
   'aprende/aprende.css',
   'aprende/buscaminas/index.html',
