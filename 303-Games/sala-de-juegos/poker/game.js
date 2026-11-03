@@ -21,6 +21,7 @@ let game = null;
 let training = null;
 let feedbackMode = 'immediate';
 let sessionDecisions = 0;
+const fullRangeChart = (() => { const chart={}; for(let i=0;i<13;i++)for(let j=0;j<13;j++){const hand=i===j?RANKS[i]+RANKS[j]:i<j?RANKS[i]+RANKS[j]+'s':RANKS[j]+RANKS[i]+'o';chart[hand]={call:1};} return chart; })();
 
 function safeGet(key){try{return localStorage.getItem(key);}catch(_){return null;}}
 function safeSet(key,value){try{localStorage.setItem(key,value);}catch(_){/* El juego sigue aunque el navegador bloquee el almacenamiento. */}}
@@ -228,6 +229,7 @@ function applyAction(p,action,target){
   }
   if(p.id===0)game.heroActions.push({street:game.street,action,hand:handKey(p.cards)});
 }
+function actionRange(chart,action){const out={};for(const [hand,actions] of Object.entries(chart||{})){if(actions[action]>0)out[hand]={[action]:actions[action]};}return out;}
 function pickAction(chart,hand,spot){
   const freq=frequencies(chart,hand,spot);let n=Math.random(),acc=0;
   for(const [a,v] of Object.entries(freq)){acc+=v;if(n<=acc)return a;}
@@ -237,14 +239,14 @@ function botPreflop(p){
   const pos=p.pos,hand=handKey(p.cards);let chart=null,spot='';
   if(game.calls>0){
     const premium=['AA','KK','QQ','AKs'].includes(hand);
-    if(premium){p.rangeChart=ranges.charts['VS_OPEN_'+pos+'_vs_'+game.lastRaiserPos]||null;return 'raise';}
+    if(premium){const chart=ranges.charts['VS_OPEN_'+pos+'_vs_'+game.lastRaiserPos]||null;p.rangeChart=actionRange(chart,'3bet');return 'raise';}
     return 'fold';
   }
   if(game.raiseCount===0){chart=ranges.charts['RFI_'+pos]||null;spot='Apertura';}
   else if(game.raiseCount===1){chart=ranges.charts['VS_OPEN_'+pos+'_vs_'+game.lastRaiserPos]||null;spot='Contra apertura';}
   else if(game.raiseCount===2&&game.firstRaiserPos===pos){chart=ranges.charts['VS_3BET_'+game.firstRaiserPos+'_vs_'+game.lastRaiserPos]||null;spot='Contra 3-bet';}
   if(!chart){if(game.raiseCount===0&&pos==='BB'&&p.bet===game.currentBet)return 'check';return 'fold';}
-  const action=pickAction(chart,hand,spot);if(action!=='fold')p.rangeChart=chart;
+  const action=pickAction(chart,hand,spot);if(action!=='fold')p.rangeChart=actionRange(chart,action);
   if(action==='raise')return 'raise';
   if(action==='3bet'||action==='4bet')return 'raise';
   if(action==='call')return p.bet<game.currentBet?'call':'check';
@@ -299,7 +301,7 @@ function equityAsync(hero,range,board,iterations,seed){
 async function evaluatePostflop(action){
   const hero=game.players[0],opponents=game.players.filter(p=>p.id!==0&&!p.folded);
   const rangePlayer=opponents.find(p=>p.rangeChart)||opponents[0];
-  const chart=rangePlayer&&rangePlayer.rangeChart||ranges.charts.RFI_CO;
+  const chart=rangePlayer&&rangePlayer.rangeChart||fullRangeChart;
   const dead=[...hero.cards,...game.board];
   const villainRange=PokerEngine.expandChart(chart,dead);
   const equity=await equityAsync(hero.cards,villainRange,game.board,4000,game.handNo*101+game.board.length);
@@ -326,7 +328,7 @@ function showPostFeedback(result,action){
 }
 async function heroAction(action,target){
   if(!game||game.finished||game.busy)return;
-  game.busy=true;
+  game.busy=true;$('new-hand').disabled=true;
   const hero=game.players[0];
   if(game.street==='preflop'){
     const ctx=heroChartContext();
@@ -352,7 +354,7 @@ async function heroAction(action,target){
     else $('feedback').hidden=true;
     if(result.scored){const d={type:'postflop',pos:hero.pos,spot:game.street,hand:handKey(hero.cards),category:categoryOf(handKey(hero.cards)),action,score:result.score,verdict:result.verdict};game.decisions.push(d);if(feedbackMode==='immediate')saveDecision(d);}
   }
-  game.busy=false;
+  game.busy=false;$('new-hand').disabled=false;
   $('actions').replaceChildren();$('action-prompt').textContent='Decisión registrada · los rivales continúan…';
   applyAction(hero,action,target);
   renderTable();advance();
@@ -364,7 +366,7 @@ function startHand(){
   game.runout=deal.board;
   pay(seatForPosition('SB'),.5);pay(seatForPosition('BB'),1);
   game.currentBet=1;
-  $('feedback').hidden=true;$('range-panel').hidden=true;$('hand-summary').hidden=true;
+  $('new-hand').disabled=false;$('feedback').hidden=true;$('range-panel').hidden=true;$('hand-summary').hidden=true;
   $('table-status').textContent='Preflop · botón en '+game.players[0].pos+' · ciegas 0,5/1 bb';
   renderTable();advance();
 }
@@ -427,15 +429,15 @@ function startTraining(){
   let pos=requested==='random'?null:requested,opener=null,threeBettor=null,chart=null,label='';
   const random=(a)=>a[Math.floor(Math.random()*a.length)];
   if(spot==='rfi'){
-    if(!pos)pos=random(POS.slice(0,5));if(pos==='BB')pos='BTN';
+    if(!pos)pos=random(POS.slice(0,5));if(pos==='BB'){pos='BTN';$('training-position').value=pos;}
     chart=ranges.charts['RFI_'+pos];label='Apertura · '+pos+' · nadie ha entrado';
   }else if(spot==='open'){
     if(!pos)pos=random(POS.slice(1));
-    const idx=POS.indexOf(pos);if(idx===0)pos='CO';
+    const idx=POS.indexOf(pos);if(idx===0){pos='HJ';$('training-position').value=pos;}
     const candidates=POS.slice(0,POS.indexOf(pos));opener=random(candidates);
     chart=ranges.charts['VS_OPEN_'+pos+'_vs_'+opener];label='Contra apertura · '+pos+' vs '+opener;
   }else{
-    if(!pos)pos=random(POS.slice(0,5));if(pos==='BB')pos='BTN';
+    if(!pos)pos=random(POS.slice(0,5));if(pos==='BB'){pos='BTN';$('training-position').value=pos;}
     const idx=POS.indexOf(pos);threeBettor=random(POS.slice(idx+1));
     chart=ranges.charts['VS_3BET_'+pos+'_vs_'+threeBettor];label='Contra 3-bet · '+pos+' vs '+threeBettor;
   }
@@ -446,7 +448,10 @@ function startTraining(){
   $('training-cards').replaceChildren(...cards.map(makeCard));
   $('training-actions').replaceChildren();
   const options=spot==='rfi'?['fold','raise']:['fold','call',spot==='open'?'3bet':'4bet'];
-  for(const a of options){const b=document.createElement('button');b.type='button';b.className='action-btn'+(a!=='fold'?' primary':'');b.textContent=({fold:'Fold',call:'Call',raise:'Raise 2,5 bb', '3bet':'3-bet','4bet':'4-bet'})[a];b.addEventListener('click',()=>answerTraining(a));$('training-actions').append(b);}
+  const openSize=training.opener==='SB'||training.pos==='SB'?3:2.5;
+  const threeBetSize=spot==='open'?openSize*(['SB','BB'].includes(training.pos)?4:3):openSize*(['SB','BB'].includes(training.threeBettor)?4:3);
+  const fourBetSize=threeBetSize*2.2;
+  for(const a of options){const b=document.createElement('button');b.type='button';b.className='action-btn'+(a!=='fold'?' primary':'');b.textContent=({fold:'Fold',call:'Call',raise:training.pos==='SB'?'Raise 3 bb':'Raise 2,5 bb','3bet':'3-bet '+threeBetSize.toFixed(1)+' bb','4bet':'4-bet '+fourBetSize.toFixed(1)+' bb'})[a];b.addEventListener('click',()=>answerTraining(a));$('training-actions').append(b);}
   $('training-feedback').hidden=true;$('training-range-panel').hidden=true;$('next-training').hidden=true;
 }
 function answerTraining(action){
@@ -479,7 +484,7 @@ function renderStats(){
   for(const d of pre){const k=d.pos+' · '+d.spot+' · '+d.category;const g=groups.get(k)||[];g.push(d);groups.set(k,g);}
   const leaks=[...groups.entries()].filter(([,g])=>g.length>=5).map(([k,g])=>[k,avg(g),g.length]).sort((a,b)=>a[1]-b[1]).slice(0,5);
   $('stats-leaks').innerHTML=leaks.length?'<table class="stats-table"><tbody>'+leaks.map(([k,v,n])=>'<tr><td>'+k+' ('+n+')</td><td>'+v.toFixed(1)+'/100</td></tr>').join('')+'</tbody></table>':'<p class="muted">Necesitas al menos cinco decisiones del mismo tipo para detectar una fuga.</p>';
-  $('stats-history').innerHTML=stats.hands.length?stats.hands.map(h=>'<li>Mano '+h.number+' · '+h.position+' · '+h.hand+' · '+h.message+' ('+(h.result>=0?'+':'')+h.result.toFixed(1)+' bb)'+(h.decisions.length?'<br><span class="muted">'+h.decisions.join(' · ')+'</span>':'')+'</li>').join(''):'<li>Aún no has terminado ninguna mano.</li>';
+  $('stats-history').innerHTML=stats.hands.length?stats.hands.map(h=>'<li>Mano '+h.number+' · '+h.position+' · '+h.hand+' · '+h.message+' ('+(h.result>=0?'+':'')+h.result.toFixed(1)+' bb)'+(h.decisions&&h.decisions.length?'<br><span class="muted">'+h.decisions.join(' · ')+'</span>':'')+'</li>').join(''):'<li>Aún no has terminado ninguna mano.</li>';
 }
 function setTab(name){
   document.querySelectorAll('.tab').forEach(b=>{const on=b.dataset.tab===name;b.classList.toggle('active',on);b.setAttribute('aria-selected',String(on));});
