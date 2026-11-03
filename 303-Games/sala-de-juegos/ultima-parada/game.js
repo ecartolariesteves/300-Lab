@@ -232,9 +232,9 @@ async function boardPassengers() {
   }
 }
 
-/* Búsqueda desde el estado real: conserva autobuses retirados, cola y plazas ocupadas.
-   Usa las mismas transiciones puras del anexo para encontrar un primer movimiento ganador. */
-function findWinningBus() {
+/* solve() iniciado en el estado real: conserva autobuses retirados, cola y plazas ocupadas.
+   Reutiliza las transiciones del anexo para encontrar un primer movimiento ganador. */
+function solveFromCurrentState() {
   const seen = new Set();
   function search(current) {
     if (current.qi === levelData.queue.length) return [];
@@ -269,7 +269,7 @@ function findWinningBus() {
 
 function showHint() {
   if (isAnimating || state.finished) return;
-  const id = findWinningBus();
+  const id = solveFromCurrentState();
   if (id < 0) {
     announce('No encuentro una salida ganadora desde esta posición.', true);
     return;
