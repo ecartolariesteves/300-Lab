@@ -213,7 +213,7 @@ document.querySelectorAll('[data-level]').forEach((button) => {
     newGame();
   });
 });
-$('start').addEventListener('click', newGame);
+$('start').addEventListener('click', () => { newGame(); begin(); });
 $('pause').addEventListener('click', togglePause);
 $('overlay-action').addEventListener('click', () => {
   if (state === 'paused') togglePause();
