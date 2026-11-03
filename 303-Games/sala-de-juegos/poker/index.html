@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mesa de Estudio · Sala de Juegos</title>
+<meta name="description" content="Entrenador de póker Texas Hold'em 6-max sin dinero real. Estudia decisiones preflop y postflop.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="style.css">
+<script src="engine.js" defer></script>
+<script src="game.js" defer></script>
+<link rel="manifest" href="../manifest.webmanifest">
+<meta name="theme-color" content="#1F5C45">
+<link rel="icon" href="../assets/icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sala de Juegos">
+<script src="../assets/pwa.js" defer></script>
+</head>
+<body>
+<header class="site-header"><div class="inner">
+  <a class="logo" href="../">Sala de Juegos</a>
+  <nav class="site-nav" aria-label="Principal"><a href="../">Juegos</a><a href="../aprende/index.html">Aprende</a></nav>
+</div></header>
+<main class="page poker-page">
+  <header class="game-head">
+    <p class="crumbs"><a href="../">Juegos</a> › Cartas › Mesa de Estudio</p>
+    <h1>Mesa de Estudio</h1>
+    <p class="brief">Entrenador de póker 6-max · Texas Hold’em No Limit · 0,5/1 bb · sin dinero real</p>
+  </header>
+  <nav class="tabs" role="tablist" aria-label="Secciones">
+    <button type="button" class="tab active" data-tab="mesa" role="tab" aria-selected="true">Mesa</button>
+    <button type="button" class="tab" data-tab="entrenamiento" role="tab" aria-selected="false">Entrenamiento</button>
+    <button type="button" class="tab" data-tab="estadisticas" role="tab" aria-selected="false">Estadísticas</button>
+    <button type="button" class="tab" data-tab="ajustes" role="tab" aria-selected="false">Ajustes</button>
+  </nav>
+
+  <section id="view-mesa" class="view active" role="tabpanel">
+    <div class="panel poker-panel">
+      <div class="readout"><label>Mano</label><output id="hand-number">1</output></div>
+      <div class="readout"><label>Ciegas</label><output>0,5 / 1 bb</output></div>
+      <button type="button" class="reset" id="new-hand">Nueva mano</button>
+      <div class="readout"><label>Tu resultado</label><output id="hand-result">0,0 bb</output></div>
+    </div>
+    <div class="table-wrap">
+      <div class="poker-table" id="poker-table">
+        <div class="seat seat-0" id="seat-0"></div><div class="seat seat-1" id="seat-1"></div>
+        <div class="seat seat-2" id="seat-2"></div><div class="seat seat-3" id="seat-3"></div>
+        <div class="seat seat-4" id="seat-4"></div><div class="seat seat-5" id="seat-5"></div>
+        <div class="center-table">
+          <div class="board" id="board"><span class="board-empty">Mesa</span></div>
+          <div class="pot">Bote <strong id="pot">0 bb</strong></div>
+        </div>
+        <div class="hero-cards" id="hero-cards" aria-label="Tus cartas"></div>
+      </div>
+    </div>
+    <div class="table-status" id="table-status" aria-live="polite">Preparando la mesa…</div>
+    <div class="action-area" id="action-area">
+      <p id="action-prompt">Tu turno aparecerá aquí.</p>
+      <div class="actions" id="actions"></div>
+    </div>
+    <div class="feedback" id="feedback" aria-live="polite" hidden></div>
+    <div class="range-panel" id="range-panel" hidden>
+      <div class="range-heading"><h2>Tabla de referencia · 13×13</h2><span id="range-label"></span></div>
+      <div class="range-grid" id="range-grid"></div>
+      <p class="range-legend"><span class="legend-call">Call</span><span class="legend-raise">Subida</span><span class="legend-fold">Fold</span><span class="legend-hero">Tu mano</span></p>
+    </div>
+    <div class="hand-summary" id="hand-summary" hidden></div>
+  </section>
+
+  <section id="view-entrenamiento" class="view" role="tabpanel" hidden>
+    <div class="training-controls">
+      <label>Tipo de spot
+        <select id="training-spot">
+          <option value="rfi">Apertura por posición</option>
+          <option value="open">Contra apertura</option>
+          <option value="3bet">Contra 3-bet</option>
+        </select>
+      </label>
+      <label>Posición
+        <select id="training-position">
+          <option value="random">Aleatoria</option><option>UTG</option><option>HJ</option><option>CO</option><option>BTN</option><option>SB</option><option>BB</option>
+        </select>
+      </label>
+      <button type="button" class="reset primary" id="deal-training">Repartir spot</button>
+    </div>
+    <div class="training-spot" id="training-spot-label">Elige un spot y reparte para empezar.</div>
+    <div class="training-cards" id="training-cards"></div>
+    <div class="actions training-actions" id="training-actions"></div>
+    <div class="feedback" id="training-feedback" aria-live="polite" hidden></div>
+    <div class="range-panel" id="training-range-panel" hidden>
+      <div class="range-heading"><h2>Tabla de referencia · 13×13</h2><span id="training-range-label"></span></div>
+      <div class="range-grid" id="training-range-grid"></div>
+      <p class="range-legend"><span class="legend-call">Call</span><span class="legend-raise">Subida</span><span class="legend-fold">Fold</span><span class="legend-hero">Tu mano</span></p>
+    </div>
+    <button type="button" class="reset primary" id="next-training" hidden>Siguiente spot</button>
+  </section>
+
+  <section id="view-estadisticas" class="view" role="tabpanel" hidden>
+    <div class="stats-grid">
+      <article class="stat-card"><span>Decisiones</span><strong id="stat-decisions">0</strong></article>
+      <article class="stat-card"><span>Media preflop</span><strong id="stat-pre">—</strong></article>
+      <article class="stat-card"><span>Media postflop</span><strong id="stat-post">—</strong></article>
+      <article class="stat-card"><span>Resultado</span><strong id="stat-result">0 bb</strong></article>
+    </div>
+    <div class="stats-columns">
+      <section><h2>Por posición</h2><div id="stats-position"></div></section>
+      <section><h2>Por tipo de spot</h2><div id="stats-spot"></div></section>
+    </div>
+    <section class="leaks"><h2>Tus fugas</h2><p class="muted">Los cinco spots con peor puntuación media (mínimo 5 decisiones).</p><div id="stats-leaks"></div></section>
+    <section class="history"><h2>Últimas manos</h2><ol id="stats-history"></ol></section>
+    <button type="button" class="reset" id="clear-stats">Borrar estadísticas</button>
+  </section>
+
+  <section id="view-ajustes" class="view" role="tabpanel" hidden>
+    <div class="settings-card">
+      <h2>Rangos activos</h2>
+      <p id="range-source">Referencia aproximada 6-max · 100 bb</p>
+      <p class="muted">Preflop: rangos de referencia aproximados (6-max, 100 bb). No son la salida exacta de un solver.</p>
+      <label for="range-json">Importar rangos propios (JSON)</label>
+      <textarea id="range-json" rows="7" placeholder='{"version":1,"name":"Mis rangos","charts":{...}}'></textarea>
+      <div class="settings-actions">
+        <label class="file-button">Subir JSON <input type="file" id="range-file" accept=".json,application/json"></label>
+        <button type="button" class="reset primary" id="import-ranges">Validar e importar</button>
+        <button type="button" class="reset" id="restore-ranges">Volver a la referencia</button>
+      </div>
+      <p id="range-message" class="settings-message" aria-live="polite"></p>
+    </div>
+    <div class="settings-card">
+      <h2>Feedback</h2>
+      <label for="feedback-mode">Cuándo mostrar la evaluación</label>
+      <select id="feedback-mode"><option value="immediate">Inmediato</option><option value="end">Al final de la mano</option></select>
+      <p class="muted">El veredicto postflop se basa en equity frente a pot odds; no es GTO.</p>
+    </div>
+  </section>
+  <section class="notes">
+    <div><h2>Cómo estudiar</h2><ul>
+      <li>En Mesa juegas manos completas y el botón avanza una posición después de cada mano.</li>
+      <li>En Entrenamiento recibes decisiones del spot elegido, sin jugar toda la mano.</li>
+      <li>La puntuación preflop compara tu acción con frecuencias de referencia aproximadas, no con un solver exacto.</li>
+      <li>Postflop se estima equity por Monte Carlo y se compara con las pot odds; este cálculo no es GTO.</li>
+      <li>Los bots usan las mismas tablas preflop y una estrategia postflop sencilla.</li>
+    </ul></div>
+    <div><h2>Privacidad y dinero</h2><ul>
+      <li>Es una herramienta de estudio sin apuestas ni dinero real.</li>
+      <li>Estadísticas y rangos importados se guardan localmente en este dispositivo.</li>
+      <li>Los stacks se reponen a 100 bb al comenzar cada mano; no hay rake.</li>
+    </ul></div>
+  </section>
+</main>
+<footer class="site-footer"><div class="inner"><a class="logo" href="../">Sala de Juegos</a><span>Herramienta de estudio. No se juega con dinero real.</span></div></footer>
+</body></html>

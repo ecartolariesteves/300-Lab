@@ -3,7 +3,7 @@
    Guarda las páginas y recursos propios para poder jugar sin conexión.
    ========================================================= */
 
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v4';
 const APP_CACHE = `sala-juegos-${CACHE_VERSION}`;
 const FONT_CACHE = `sala-juegos-fonts-${CACHE_VERSION}`;
 const SITE_ROOT = new URL('./', self.location.href);
@@ -38,7 +38,7 @@ const PRECACHE_FILES = [
   'ultima-parada/index.html',
   'ultima-parada/style.css',
   'ultima-parada/levels.js',
-  'ultima-parada/game.js',
+  'ultima-parada/game.js',\n  'poker/index.html',\n  'poker/style.css',\n  'poker/engine.js',\n  'poker/game.js',\n  'poker/ranges.json',
   'aprende/index.html',
   'aprende/aprende.css',
   'aprende/buscaminas/index.html',
