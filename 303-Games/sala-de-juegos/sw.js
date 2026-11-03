@@ -36,7 +36,6 @@ const PRECACHE_FILES = [
   'ultima-parada/style.css',
   'ultima-parada/levels.js',
   'ultima-parada/game.js',
-  'ultima-parada/test-levels.mjs',
   'aprende/index.html',
   'aprende/aprende.css',
   'aprende/buscaminas/index.html',
