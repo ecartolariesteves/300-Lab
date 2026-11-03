@@ -19,6 +19,8 @@ sudoku/
   index.html, style.css, game.js   (generador con solución única)
 serpiente/
   index.html, style.css, game.js   (juego clásico con teclado y controles táctiles)
+ultima-parada/
+  index.html, style.css, levels.js, game.js, test-levels.mjs
 aprende/
   index.html          Portada de los tutoriales
   aprende.css         Estilos de los tutoriales

@@ -3,7 +3,7 @@
    Guarda las páginas y recursos propios para poder jugar sin conexión.
    ========================================================= */
 
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v3';
 const APP_CACHE = `sala-juegos-${CACHE_VERSION}`;
 const FONT_CACHE = `sala-juegos-fonts-${CACHE_VERSION}`;
 const SITE_ROOT = new URL('./', self.location.href);
@@ -35,6 +35,10 @@ const PRECACHE_FILES = [
   'serpiente/index.html',
   'serpiente/style.css',
   'serpiente/game.js',
+  'ultima-parada/index.html',
+  'ultima-parada/style.css',
+  'ultima-parada/levels.js',
+  'ultima-parada/game.js',
   'aprende/index.html',
   'aprende/aprende.css',
   'aprende/buscaminas/index.html',
