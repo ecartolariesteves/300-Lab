@@ -21,6 +21,9 @@ serpiente/
   index.html, style.css, game.js   (juego clásico con teclado y controles táctiles)
 ultima-parada/
   index.html, style.css, levels.js, game.js, test-levels.mjs
+poker/
+  index.html, style.css, engine.js, game.js, ranges.json
+  tests/validate-ranges.mjs, tests/test-engine.mjs
 aprende/
   index.html          Portada de los tutoriales
   aprende.css         Estilos de los tutoriales
@@ -30,6 +33,17 @@ aprende/
 Para añadir un juego nuevo: crea una carpeta (`2048/`, `solitario/`…) con sus tres archivos,
 enlaza `../assets/base.css` en su `index.html` y cambia su tarjeta en la página inicial de
 "Próximamente" a un enlace.
+
+## Probar Mesa de Estudio
+
+Desde la carpeta del juego:
+
+```
+node tests/validate-ranges.mjs ranges.json
+node tests/test-engine.mjs
+```
+
+Los rangos son una referencia aproximada 6-max a 100 bb; no representan la salida exacta de un solver.
 
 ## Probar en local
 

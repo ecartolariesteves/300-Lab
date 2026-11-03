@@ -167,7 +167,7 @@ self.addEventListener('fetch', (event) => {
   // CSS, JavaScript e imágenes propias: respondemos al instante desde la caché y la
   // actualizamos en segundo plano (stale-while-revalidate). Así, tras subir cambios,
   // la página y sus scripts no se quedan desincronizados aunque no cambie CACHE_VERSION.
-  if (/\.(?:css|js|svg|png|webmanifest)$/i.test(url.pathname)) {
+  if (/\.(?:css|js|svg|png|webmanifest|json)$/i.test(url.pathname)) {
     event.respondWith((async () => {
       const cache = await caches.open(APP_CACHE);
       const cached = await cache.match(request, { ignoreSearch: true });

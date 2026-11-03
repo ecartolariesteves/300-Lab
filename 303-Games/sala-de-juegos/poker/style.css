@@ -9,7 +9,7 @@
 .poker-panel .readout output{font-size:1.15rem}
 .table-wrap{overflow:hidden;border-radius:18px}
 .poker-table{position:relative;min-height:480px;padding:18px;display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr 1fr;gap:12px;background:var(--felt);border:10px solid var(--felt-deep);border-radius:48% / 42%;box-shadow:inset 0 0 0 2px var(--felt-soft),0 8px 18px #0002}
-.seat{position:relative;z-index:1;min-width:0;min-height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:7px;border:1px solid #ffffff42;border-radius:12px;background:#0B2219A8;color:#F3EFE2;text-align:center;font-size:.78rem}
+.seat{position:relative;z-index:1;min-width:0;min-height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:7px;border:1px solid color-mix(in srgb,var(--paper) 28%,transparent);border-radius:12px;background:color-mix(in srgb,var(--felt-deep) 88%,transparent);color:var(--paper);text-align:center;font-size:.78rem}
 .seat-0{grid-column:2;grid-row:3;border-color:var(--signal)}
 .seat-1{grid-column:1;grid-row:3}.seat-2{grid-column:1;grid-row:2}.seat-3{grid-column:2;grid-row:1}.seat-4{grid-column:3;grid-row:1}.seat-5{grid-column:3;grid-row:2}
 .seat.active{outline:3px solid var(--signal);outline-offset:2px}
@@ -21,8 +21,8 @@
 .center-table{grid-column:2;grid-row:2;align-self:center;justify-self:center;z-index:1;display:grid;justify-items:center;gap:8px;min-width:0}
 .board{display:flex;justify-content:center;gap:4px;min-height:60px}
 .board-empty{align-self:center;color:var(--felt-soft);font:600 .75rem var(--f-mono)}
-.playing-card{width:42px;height:58px;display:grid;align-content:center;justify-items:center;gap:0;border-radius:6px;background:#FBF9F2;color:#1C2A22;box-shadow:0 2px 4px #0003;font:700 .95rem var(--f-mono);line-height:1.1}
-.playing-card.red{color:#B3261E}
+.playing-card{width:42px;height:58px;display:grid;align-content:center;justify-items:center;gap:0;border-radius:6px;background:var(--paper);color:var(--ink);box-shadow:0 2px 4px #0003;font:700 .95rem var(--f-mono);line-height:1.1}
+.playing-card.red{color:var(--flag)}
 .playing-card .suit{font-size:1.1rem}
 .pot{color:var(--felt-soft);font:600 .76rem var(--f-mono)}
 .pot strong{color:var(--signal)}
