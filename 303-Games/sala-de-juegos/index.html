@@ -188,7 +188,7 @@ a.game:hover { transform: translateY(-3px); border-color: var(--muted); }
         <button type="button" data-filter="puzle" aria-pressed="false">Puzles</button>
         <button type="button" data-filter="logica" aria-pressed="false">Lógica</button>
       </div>
-      <span class="count">4 disponibles · 2 en camino</span>
+      <span class="count">5 disponibles · 2 en camino</span>
     </div>
 
     <ul class="games" id="games">
@@ -294,6 +294,19 @@ a.game:hover { transform: translateY(-3px); border-color: var(--muted); }
       <text x="32" y="25" fill="#1C2A22" transform="rotate(7 42 32)">K♠&#xFE0E;</text>
     </g>
   </symbol>
+  <symbol id="ico-ultima-parada" viewBox="0 0 64 64">
+    <rect width="64" height="64" fill="#163F31"/>
+    <g stroke="#1C2A22" stroke-width="1.5">
+      <rect x="5" y="12" width="25" height="34" rx="6" fill="#D64545"/>
+      <rect x="34" y="18" width="25" height="34" rx="6" fill="#2F6FD1"/>
+    </g>
+    <g fill="#F3EFE2">
+      <rect x="10" y="18" width="7" height="8" rx="1"/><rect x="19" y="18" width="7" height="8" rx="1"/>
+      <rect x="39" y="24" width="7" height="8" rx="1"/><rect x="48" y="24" width="7" height="8" rx="1"/>
+    </g>
+    <path d="M13 37h9M42 43h9" stroke="#F3EFE2" stroke-width="2" stroke-linecap="round"/>
+    <path d="M23 7h18m-5-5 5 5-5 5" fill="none" stroke="#F2A33A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
   <symbol id="ico-sudoku" viewBox="0 0 64 64">
     <rect width="64" height="64" fill="#FBF9F2"/>
     <g stroke="#B9C9BE" stroke-width="0.8">
@@ -331,7 +344,7 @@ const DAILY = [
   { name: 'Buscaminas', href: 'buscaminas/index.html', icon: 'ico-buscaminas' },
   { name: '2048',       href: '2048/index.html',       icon: 'ico-2048' },
   { name: 'Solitario',  href: 'solitario/index.html',  icon: 'ico-solitario' },
-  { name: 'Sudoku',     href: 'sudoku/index.html',     icon: 'ico-sudoku' },
+  { name: 'Sudoku',     href: 'sudoku/index.html',     icon: 'ico-sudoku' },\n  { name: 'Última Parada', href: 'ultima-parada/index.html', icon: 'ico-ultima-parada' },
 ];
 const dayNumber = Math.floor(Date.now() / 86400000);
 const today = DAILY[dayNumber % DAILY.length];
