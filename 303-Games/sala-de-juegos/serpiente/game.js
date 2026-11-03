@@ -23,7 +23,9 @@ let level = 'normal';
 let snake = [];
 let food = null;
 let direction = 'right';
-let queuedDirection = 'right';
+// Giros pendientes (máx. 2): así dos pulsaciones rápidas en el mismo paso se aplican
+// una tras otra y nunca hacen que la serpiente dé media vuelta sobre sí misma.
+let inputQueue = [];
 let score = 0;
 let foodsEaten = 0;
 let timerId = null;
@@ -54,10 +56,11 @@ function cssColor(name, fallback) {
 }
 
 function draw() {
-  const bg = cssColor('--paper', '#FBF9F2');
-  const grid = cssColor('--line', '#DDD6C3');
-  const snakeColor = cssColor('--felt', '#1F5C45');
-  const headColor = cssColor('--felt-deep', '#163F31');
+  // Colores propios del tablero (definidos en style.css, con versión para modo oscuro)
+  const bg = cssColor('--snake-bg', '#FBF9F2');
+  const grid = cssColor('--snake-grid', '#E7E1D0');
+  const snakeColor = cssColor('--snake-body', '#4E9A73');
+  const headColor = cssColor('--snake-head', '#1F5C45');
   const foodColor = cssColor('--signal', '#F2A33A');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -77,9 +80,10 @@ function draw() {
   snake.forEach((part, index) => {
     const inset = index === 0 ? 2 : 3;
     ctx.fillStyle = index === 0 ? headColor : snakeColor;
+    const x = part.x * CELL + inset, y = part.y * CELL + inset, w = CELL - inset * 2;
     ctx.beginPath();
-    ctx.roundRect(part.x * CELL + inset, part.y * CELL + inset,
-      CELL - inset * 2, CELL - inset * 2, 5);
+    // roundRect no existe en navegadores antiguos (Safari < 16): usamos un cuadrado normal
+    if (ctx.roundRect) ctx.roundRect(x, y, w, w, 5); else ctx.rect(x, y, w, w);
     ctx.fill();
   });
 }
@@ -140,7 +144,7 @@ function newGame() {
   stopLoop();
   snake = [{ x: 9, y: 10 }, { x: 8, y: 10 }, { x: 7, y: 10 }];
   direction = 'right';
-  queuedDirection = 'right';
+  inputQueue = [];
   score = 0;
   foodsEaten = 0;
   placeFood();
@@ -167,7 +171,7 @@ function endGame() {
 }
 
 function step() {
-  direction = queuedDirection;
+  if (inputQueue.length) direction = inputQueue.shift();
   const vector = DIRECTIONS[direction];
   const head = { x: snake[0].x + vector.x, y: snake[0].y + vector.y };
   const eating = food && head.x === food.x && head.y === food.y;
@@ -193,8 +197,10 @@ function changeDirection(next) {
   if (!DIRECTIONS[next]) return;
   if (state === 'ready') begin();
   if (state !== 'running') return;
-  if (next === OPPOSITE[queuedDirection]) return;
-  queuedDirection = next;
+  // Comparamos con el último giro pendiente (o con la dirección actual si no hay ninguno)
+  const last = inputQueue.length ? inputQueue[inputQueue.length - 1] : direction;
+  if (next === last || next === OPPOSITE[last] || inputQueue.length >= 2) return;
+  inputQueue.push(next);
 }
 
 function togglePause() {
@@ -255,5 +261,8 @@ canvas.addEventListener('pointerup', (event) => {
   changeDirection(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
 });
 canvas.addEventListener('pointercancel', () => { touchStart = null; });
+
+// Si cambia el tema claro/oscuro con la partida parada, repintamos con los nuevos colores
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
 
 newGame();
