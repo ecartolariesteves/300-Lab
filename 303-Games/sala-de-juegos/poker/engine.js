@@ -51,7 +51,9 @@
     else if(flush){category=5;kickers=flush.sort((a,b)=>b-a).slice(0,5);}
     else {const sh=straightHigh(vals);if(sh){category=4;kickers=[sh];}
       else if(groups[0].n===3){category=3;kickers=[groups[0].r,...groups.filter(x=>x.n===1).map(x=>x.r).sort((a,b)=>b-a).slice(0,2)];}
-      else if(groups[0].n===2&&groups[1].n===2){category=2;kickers=[groups[0].r,groups[1].r,groups.find(x=>x.n===1).r];}
+      else if(groups[0].n===2&&groups[1].n===2){category=2;
+        // Con tres parejas, la tercera puede ser el mejor kicker: buscamos la carta más alta que no forme parte de las dos parejas
+        const kick=Math.max(...vals.filter(v=>v!==groups[0].r&&v!==groups[1].r));kickers=[groups[0].r,groups[1].r,kick];}
       else if(groups[0].n===2){category=1;kickers=[groups[0].r,...groups.filter(x=>x.n===1).map(x=>x.r).sort((a,b)=>b-a).slice(0,3)];}
       else {category=0;kickers=vals.sort((a,b)=>b-a).slice(0,5);}
     }

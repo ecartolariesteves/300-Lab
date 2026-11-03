@@ -24,6 +24,7 @@ ultima-parada/
 poker/
   index.html, style.css, engine.js, game.js, ranges.json
   tests/validate-ranges.mjs, tests/test-engine.mjs
+  tools/build-ranges.mjs   (genera ranges.json a partir de rangos en notación de póker)
 aprende/
   index.html          Portada de los tutoriales
   aprende.css         Estilos de los tutoriales
@@ -62,3 +63,13 @@ y entra en http://localhost:8000
 3. Origen: GitHub, repositorio `300-Lab`, rama `main`.
 4. Detalles de compilación: preset **Custom**, App location `/303-Games/sala-de-juegos`, Api location vacío, Output location vacío.
 5. Azure crea un workflow de GitHub Actions; cada `git push` publica la nueva versión.
+
+### Cambiar los rangos de referencia
+
+Los rangos se escriben en `poker/tools/build-ranges.mjs`, en notación de póker (`22+`, `A2s+`, `KTs:0.5`…).
+Después se regenera el JSON y se valida:
+
+```
+node tools/build-ranges.mjs ranges.json
+node tests/validate-ranges.mjs ranges.json
+```

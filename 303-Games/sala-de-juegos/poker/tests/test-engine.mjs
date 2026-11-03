@@ -26,4 +26,9 @@ assert(scoreAction(1,1)===100&&scoreAction(.3,.7)===43&&scoreAction(0,.7)===0,'P
 const seededA=E.deal(42),seededB=E.deal(42);
 assert(JSON.stringify(seededA)===JSON.stringify(seededB),'El reparto con semilla debe ser determinista');
 assert(new Set(seededA.deck).size===52,'La baraja debe contener 52 cartas únicas');
+// Tres parejas: KK QQ JJ + 2 → dobles parejas K-Q con kicker J (no el 2)
+const threePairs=E.evaluate7(['Kh','Kd','Qs','Qc','Jh','Jd','2c']);
+assert(threePairs.category===2&&threePairs.kickers.join()==='13,12,11','Con tres parejas el kicker debe ser la tercera pareja');
+const beatsKicker=E.compare(E.evaluate7(['Kh','Kd','Qs','Qc','Jh','Jd','2c']),E.evaluate7(['Kh','Kd','Qs','Qc','Th','3d','2c']));
+assert(beatsKicker>0,'K-Q con kicker J debe ganar a K-Q con kicker T');
 console.log('✔ Motor validado: categorías, wheel, kickers, empates y equity Monte Carlo');

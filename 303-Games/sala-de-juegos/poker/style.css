@@ -8,10 +8,12 @@
 .poker-panel{grid-template-columns:1fr 1fr auto 1fr}
 .poker-panel .readout output{font-size:1.15rem}
 .table-wrap{overflow:hidden;border-radius:18px}
-.poker-table{position:relative;min-height:480px;padding:18px;display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr 1fr;gap:12px;background:var(--felt);border:10px solid var(--felt-deep);border-radius:48% / 42%;box-shadow:inset 0 0 0 2px var(--felt-soft),0 8px 18px #0002}
-.seat{position:relative;z-index:1;min-width:0;min-height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:7px;border:1px solid color-mix(in srgb,var(--paper) 28%,transparent);border-radius:12px;background:color-mix(in srgb,var(--felt-deep) 88%,transparent);color:var(--paper);text-align:center;font-size:.78rem}
+.poker-table{position:relative;min-height:440px;padding:22px 28px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:auto 1fr auto;gap:12px 18px;background:var(--felt);border:10px solid var(--felt-deep);border-radius:140px / 120px;box-shadow:inset 0 0 0 2px var(--felt-soft),0 8px 18px #0002}
+.seat{position:relative;z-index:1;min-width:0;min-height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:7px;border:1px solid color-mix(in srgb,var(--paper) 28%,transparent);border-radius:12px;background:color-mix(in srgb,var(--felt-deep) 88%,transparent);color:#F3EFE2;text-align:center;font-size:.78rem;width:100%;max-width:190px;justify-self:center}
+/* El texto de los asientos es siempre claro: el tapete es verde en los dos temas */
 .seat-0{grid-column:2;grid-row:3;border-color:var(--signal)}
-.seat-1{grid-column:1;grid-row:3}.seat-2{grid-column:1;grid-row:2}.seat-3{grid-column:2;grid-row:1}.seat-4{grid-column:3;grid-row:1}.seat-5{grid-column:3;grid-row:2}
+/* Orden horario desde ti (abajo en el centro): abajo-izquierda, arriba-izquierda, arriba, arriba-derecha, abajo-derecha */
+.seat-1{grid-column:1;grid-row:3}.seat-2{grid-column:1;grid-row:1}.seat-3{grid-column:2;grid-row:1}.seat-4{grid-column:3;grid-row:1}.seat-5{grid-column:3;grid-row:3}
 .seat.active{outline:3px solid var(--signal);outline-offset:2px}
 .seat-0{min-height:96px}
 .seat-0 .seat-cards .playing-card{width:36px;height:50px;font-size:.9rem}
@@ -20,11 +22,11 @@
 .seat .seat-cards{display:flex;gap:3px}
 .seat .seat-cards .playing-card{width:26px;height:36px;font-size:.68rem}
 .dealer{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--signal);color:var(--accent-ink);font:700 .7rem var(--f-mono)}
-.center-table{grid-column:2;grid-row:2;align-self:center;justify-self:center;z-index:1;display:grid;justify-items:center;gap:8px;min-width:0}
+.center-table{grid-column:1/-1;grid-row:2;align-self:center;justify-self:center;z-index:1;display:grid;justify-items:center;gap:8px;min-width:0}
 .board{display:flex;justify-content:center;gap:4px;min-height:60px}
 .board-empty{align-self:center;color:var(--felt-soft);font:600 .75rem var(--f-mono)}
-.playing-card{width:42px;height:58px;display:grid;align-content:center;justify-items:center;gap:0;border-radius:6px;background:var(--paper);color:var(--ink);box-shadow:0 2px 4px #0003;font:700 .95rem var(--f-mono);line-height:1.1}
-.playing-card.red{color:var(--flag)}
+.playing-card{width:42px;height:58px;display:grid;align-content:center;justify-items:center;gap:0;border-radius:6px;background:#FBF9F2;color:#1C2A22;box-shadow:0 2px 4px #0003;font:700 .95rem var(--f-mono);line-height:1.1}
+.playing-card.red{color:#C92A2A}
 .playing-card .suit{font-size:1.1rem}
 .pot{color:var(--felt-soft);font:600 .76rem var(--f-mono)}
 .pot strong{color:var(--signal)}
@@ -82,7 +84,7 @@ select,textarea{font:500 .92rem var(--f-body);color:var(--ink);background:var(--
 .settings-message.error{color:var(--n3)}
 @media(max-width:700px){
  .poker-panel{grid-template-columns:1fr 1fr;gap:9px}.poker-panel .reset{grid-column:1/-1;grid-row:2}
-  .poker-table{min-height:440px;padding:9px;gap:5px;border-width:7px;border-radius:26px;grid-template-columns:.8fr 2fr .8fr;grid-template-rows:1fr 1.1fr 1fr}
+  .poker-table{min-height:400px;padding:12px 8px;gap:8px 6px;border-width:7px;border-radius:40px;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:auto 1fr auto}
  .seat{min-height:70px;padding:4px;font-size:.68rem}.seat-0{min-height:84px}.seat-0 .seat-cards .playing-card{width:30px;height:42px;font-size:.78rem}.seat-0{grid-row:3}
  .playing-card{width:34px;height:48px;font-size:.82rem}.playing-card .suit{font-size:.95rem}
  .hero-cards .playing-card{width:40px;height:56px}.center-table{max-width:100%}.board{gap:2px;min-height:52px}

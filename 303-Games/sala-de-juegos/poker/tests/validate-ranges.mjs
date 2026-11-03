@@ -1,4 +1,4 @@
-// Validador de rangos preflop para 6-max cash 100 bb.
+// Validador de rangos preflop para 6-max cash 100 bb (v2: incluye comprobaciones por posición).
 // Uso: node validate-ranges.mjs ruta/ranges.json
 // Comprueba formato, coherencia y porcentajes razonables. No demuestra que sea GTO exacto:
 // detecta tablas imposibles o claramente equivocadas.
@@ -108,6 +108,64 @@ for (const [name, c] of Object.entries(charts)) {
   const pairs = HANDS.filter((x) => x.pair);
   for (let i = 0; i < pairs.length - 1; i++)
     if (cont(c, pairs[i].h) + 0.15 < cont(c, pairs[i + 1].h)) err(`${name}: ${pairs[i + 1].h} juega más que ${pairs[i].h}`);
+}
+
+// ---------- 4. Estrategia distinta según la posición (v2) ----------
+// Una tabla real cambia según quién abre, quién resube y quién tiene posición.
+const callPct = (c) => pct(c, (cc, h) => freq(cc, h, 'call'));
+const contPct = (c) => pct(c, cont);
+let entries = 0, mixed = 0;
+for (const [name, c] of Object.entries(charts)) {
+  for (const [h, acts] of Object.entries(c)) {
+    let sum = 0;
+    for (const v of Object.values(acts)) {
+      sum += v;
+      if (Math.abs(v * 20 - Math.round(v * 20)) > 1e-6) err(`${name} ${h}: frecuencia ${v} no es múltiplo de 0,05 (usa valores redondeados)`);
+    }
+    const pos = Object.values(acts).filter((v) => v > 0.001).length;
+    if (sum > 0.001) { entries++; if (pos > 1 || sum < 0.999) mixed++; }
+  }
+}
+report.push(`Manos con estrategia mixta: ${(mixed / entries * 100).toFixed(0)} % (máximo 50 %)`);
+if (mixed / entries > 0.5) err(`Demasiadas manos mixtas (${(mixed / entries * 100).toFixed(0)} %): las estrategias reales tienen muchas acciones puras`);
+
+for (let a = 0; a < 5; a++) {
+  const heroes = POS.slice(a + 1);
+  // Contra la misma apertura, cada posición necesita su propia tabla
+  for (let i = 0; i < heroes.length; i++) for (let j = i + 1; j < heroes.length; j++) {
+    const x = charts[`VS_OPEN_${heroes[i]}_vs_${POS[a]}`], y = charts[`VS_OPEN_${heroes[j]}_vs_${POS[a]}`];
+    if (JSON.stringify(x) === JSON.stringify(y)) err(`VS_OPEN_${heroes[i]}_vs_${POS[a]} y VS_OPEN_${heroes[j]}_vs_${POS[a]} son idénticas`);
+  }
+  for (let i = 0; i < heroes.length; i++) for (let j = i + 1; j < heroes.length; j++) {
+    const x = charts[`VS_3BET_${POS[a]}_vs_${heroes[i]}`], y = charts[`VS_3BET_${POS[a]}_vs_${heroes[j]}`];
+    if (JSON.stringify(x) === JSON.stringify(y)) err(`VS_3BET_${POS[a]}_vs_${heroes[i]} y VS_3BET_${POS[a]}_vs_${heroes[j]} son idénticas`);
+  }
+  // La SB juega casi siempre 3-bet o fold; la BB defiende sobre todo pagando
+  const sb = charts[`VS_OPEN_SB_vs_${POS[a]}`];
+  if (sb && contPct(sb) > 0 && callPct(sb) / contPct(sb) > 0.35)
+    err(`VS_OPEN_SB_vs_${POS[a]}: paga el ${(callPct(sb) / contPct(sb) * 100).toFixed(0)} % de lo que continúa (máximo 35 %: la SB juega 3-bet o fold)`);
+  const bb = charts[`VS_OPEN_BB_vs_${POS[a]}`];
+  if (callPct(bb) / contPct(bb) < 0.55)
+    err(`VS_OPEN_BB_vs_${POS[a]}: solo paga el ${(callPct(bb) / contPct(bb) * 100).toFixed(0)} % de lo que defiende (mínimo 55 %)`);
+}
+// Cuanto más tarde la posición, más se continúa contra la misma apertura (UTG y HJ)
+for (const opener of ['UTG', 'HJ']) {
+  const order = ['HJ', 'CO', 'BTN'].filter((p) => POS.indexOf(p) > POS.indexOf(opener));
+  for (let i = 0; i < order.length - 1; i++) {
+    const e = contPct(charts[`VS_OPEN_${order[i]}_vs_${opener}`]), l = contPct(charts[`VS_OPEN_${order[i + 1]}_vs_${opener}`]);
+    if (l + 1 < e) err(`VS_OPEN_${order[i + 1]}_vs_${opener} continúa menos (${l.toFixed(1)} %) que ${order[i]} (${e.toFixed(1)} %)`);
+  }
+}
+// La BB defiende más cuanto más tarde (y más amplio) abre el rival
+for (let i = 0; i < 4; i++) {
+  const e = contPct(charts[`VS_OPEN_BB_vs_${POS[i]}`]), l = contPct(charts[`VS_OPEN_BB_vs_${POS[i + 1]}`]);
+  if (l + 1 < e) err(`VS_OPEN_BB_vs_${POS[i + 1]} defiende menos (${l.toFixed(1)} %) que contra ${POS[i]} (${e.toFixed(1)} %)`);
+}
+// Contra un 3-bet de las ciegas el abridor tiene posición: defiende al menos lo mismo y paga más
+for (const opener of ['UTG', 'HJ', 'CO']) {
+  const ip = charts[`VS_3BET_${opener}_vs_BB`], oop = charts[`VS_3BET_${opener}_vs_BTN`];
+  if (contPct(ip) + 1 < contPct(oop)) err(`VS_3BET_${opener}: defiende menos contra la BB (en posición) que contra el BTN (sin posición)`);
+  if (callPct(ip) + 0.5 < callPct(oop)) err(`VS_3BET_${opener}: paga menos contra la BB (en posición) que contra el BTN (sin posición)`);
 }
 
 finish();
