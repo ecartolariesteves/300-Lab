@@ -27,12 +27,18 @@
 .bus {
   position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: 4px;
   min-width: 40px; min-height: 40px; padding: 3px; border: 2px solid var(--line); border-radius: 9px;
-  color: var(--paper); font: 700 clamp(.72rem, 2.5vw, 1rem)/1 var(--f-mono); cursor: pointer;
+  color: #FFFFFF; font: 700 clamp(.72rem, 2.5vw, 1rem)/1 var(--f-mono); cursor: pointer;
   
   transition: transform 220ms ease, opacity 180ms ease, filter 150ms ease;
   touch-action: manipulation;
 }
-.bus[data-color="2"] { color: var(--ink); }
+.bus[data-color="2"], .bus[data-color="4"] { color: #1C2A22; }
+/* Morro del autobús: una franja clara en el lado hacia el que sale */
+.bus::after { content: ""; position: absolute; border-radius: 4px; background: rgb(255 255 255 / 0.55); }
+.bus.dir-E::after { right: 4px; top: 22%; bottom: 22%; width: 7px; }
+.bus.dir-W::after { left: 4px; top: 22%; bottom: 22%; width: 7px; }
+.bus.dir-N::after { top: 4px; left: 22%; right: 22%; height: 7px; }
+.bus.dir-S::after { bottom: 4px; left: 22%; right: 22%; height: 7px; }
 .bus:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; z-index: 3; }
 .bus:hover { filter: brightness(1.08); }
 .bus.horizontal { flex-direction: row; }
@@ -43,7 +49,7 @@
 .bus.violet { background: var(--bus-violet); }
 .bus.turquoise { background: var(--bus-turquoise); }
 .bus-symbol { font-size: clamp(.75rem, 2.8vw, 1.2rem); }
-.bus-arrow { font-size: clamp(.8rem, 3vw, 1.25rem); }
+.bus-arrow { font-size: clamp(1rem, 4vw, 1.5rem); }
 .bus.leaving { transform: translate(var(--exit-x), var(--exit-y)); opacity: .2; pointer-events: none; }
 .bus.shake { animation: shake 220ms ease-in-out; }
 @keyframes shake { 0%,100% { translate: 0; } 25% { translate: -4px 0; } 75% { translate: 4px 0; } }
@@ -71,13 +77,13 @@
 .queue { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; min-height: 44px; }
 .passenger {
   width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%;
-  color: var(--paper); font: 700 .85rem/1 var(--f-body);
+  color: #FFFFFF; font: 700 .85rem/1 var(--f-body);
 }
 .passenger.red { background: var(--bus-red); }
 .passenger.blue { background: var(--bus-blue); }
 .passenger.yellow { background: var(--bus-yellow); color: #1C2A22; }
 .passenger.violet { background: var(--bus-violet); }
-.passenger.turquoise { background: var(--bus-turquoise); }
+.passenger.turquoise { background: var(--bus-turquoise); color: #1C2A22; }
 .passenger.first { outline: 3px solid var(--signal); outline-offset: 2px; transform: scale(1.08); }
 .queue-more { color: var(--muted); font: 700 .78rem/1 var(--f-mono); }
 .game-tools { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
@@ -111,6 +117,9 @@
   .seat { width: 8px; height: 8px; }
   .passenger { width: 30px; height: 30px; }
   .game-tools { align-items: flex-start; }
+  /* En pantallas estrechas, "Reintentar" baja a su propia fila para no tapar el número de nivel */
+  .panel { grid-template-columns: 1fr auto; }
+  #retry { grid-column: 1 / -1; grid-row: 2; }
 }
 @media (prefers-reduced-motion: reduce) {
   .bus, .bay.departing { transition: none; animation: none; }

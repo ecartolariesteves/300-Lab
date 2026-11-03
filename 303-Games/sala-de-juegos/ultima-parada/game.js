@@ -83,7 +83,7 @@ function renderBoard() {
     if (state.gone & (1 << id)) return;
     const button = document.createElement('button');
     button.type = 'button';
-    button.className = `bus ${bus.horiz ? 'horizontal' : 'vertical'} ${COLORS[bus.color]}`;
+    button.className = `bus ${bus.horiz ? 'horizontal' : 'vertical'} ${COLORS[bus.color]} dir-${bus.dir}`;
     if (id === hintedBus) button.classList.add('hinted');
     button.dataset.busId = id;
     button.dataset.color = bus.color;
@@ -320,4 +320,5 @@ $('result-action').addEventListener('click', () => {
   else loadLevel(currentLevel);
 });
 
-loadLevel(1);
+// Al abrir la página seguimos donde lo dejaste: el nivel más alto desbloqueado
+loadLevel(unlocked);
