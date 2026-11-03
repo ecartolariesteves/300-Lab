@@ -1,0 +1,18 @@
+{
+  "name": "Sala de Juegos",
+  "short_name": "Sala Juegos",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "theme_color": "#1F5C45",
+  "background_color": "#F3EFE2",
+  "icons": [
+    {
+      "src": "assets/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
