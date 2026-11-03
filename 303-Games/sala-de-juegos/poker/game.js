@@ -20,6 +20,7 @@ let stats = loadStats();
 let game = null;
 let training = null;
 let feedbackMode = 'immediate';
+let sessionDecisions = 0;
 
 function safeGet(key){try{return localStorage.getItem(key);}catch(_){return null;}}
 function safeSet(key,value){try{localStorage.setItem(key,value);}catch(_){/* El juego sigue aunque el navegador bloquee el almacenamiento. */}}
@@ -30,17 +31,19 @@ function loadStats(){
 function saveStats(){safeSet(STORAGE_STATS,JSON.stringify(stats));}
 function validateRanges(data){
   if(!data||data.version!==1||!data.charts||typeof data.charts!=='object')throw new Error('El JSON debe incluir version: 1 y charts.');
+  if(Object.keys(data.charts).length!==35)throw new Error('Se necesitan exactamente 35 tablas.');
   const missing=REQUIRED.filter(k=>!data.charts[k]);
   if(missing.length)throw new Error('Faltan tablas: '+missing.slice(0,4).join(', ')+(missing.length>4?'…':''));
   for(const name of REQUIRED){
     const chart=data.charts[name];
     if(!chart||typeof chart!=='object'||Array.isArray(chart))throw new Error(name+': tabla no válida.');
+    const allowed=name.startsWith('RFI_')?['raise']:name.startsWith('VS_OPEN_')?['call','3bet']:['call','4bet'];
     for(const [hand,acts] of Object.entries(chart)){
       if(!/^(AA|KK|QQ|JJ|TT|99|88|77|66|55|44|33|22|[AKQJT98765432]{2}[so])$/.test(hand))throw new Error(name+': mano no válida '+hand);
       if(!acts||typeof acts!=='object'||Array.isArray(acts))throw new Error(name+' '+hand+': acciones no válidas.');
       let sum=0;
       for(const [action,value] of Object.entries(acts)){
-        if(!['raise','call','3bet','4bet'].includes(action)||typeof value!=='number'||!Number.isFinite(value)||value<0||value>1)throw new Error(name+' '+hand+': frecuencia/acción incorrecta.');
+        if(!allowed.includes(action)||typeof value!=='number'||!Number.isFinite(value)||value<0||value>1)throw new Error(name+' '+hand+': frecuencia/acción incorrecta.');
         sum+=value;
       }
       if(sum>1.0001)throw new Error(name+' '+hand+': las frecuencias superan 1.');
@@ -150,6 +153,7 @@ function showPreflopFeedback(target,chart,hand,pos,spot,action){
   return result;
 }
 function saveDecision(d){
+  sessionDecisions++;
   stats.decisions.push(d);if(stats.decisions.length>5000)stats.decisions.splice(0,stats.decisions.length-5000);saveStats();renderStats();
 }
 function cardSummary(cards){return cards.map(c=>c[0]+({s:'♠',h:'♥',d:'♦',c:'♣'}[c[1]])).join(' ');}
@@ -276,13 +280,29 @@ function heroChartContext(){
   const hero=game.players[0],pos=hero.pos,spot=getSpotName(pos),chart=getSpotChart(pos);
   return {pos,spot,chart,hand:handKey(hero.cards)};
 }
-function evaluatePostflop(action){
+function equityAsync(hero,range,board,iterations,seed){
+  return new Promise((resolve)=>{
+    if(typeof Worker==='undefined'||typeof Blob==='undefined'){resolve(PokerEngine.equity(hero,range,board,iterations,seed));return;}
+    let worker,url;
+    const fallback=()=>{if(worker)worker.terminate();if(url)URL.revokeObjectURL(url);resolve(PokerEngine.equity(hero,range,board,iterations,seed));};
+    try{
+      const engineUrl=new URL('engine.js',location.href).href;
+      const source='importScripts('+JSON.stringify(engineUrl)+');self.onmessage=(event)=>{const d=event.data;self.postMessage(PokerEngine.equity(d.hero,d.range,d.board,d.iterations,d.seed));};';
+      url=URL.createObjectURL(new Blob([source],{type:'text/javascript'}));
+      worker=new Worker(url);
+      worker.onmessage=(event)=>{worker.terminate();URL.revokeObjectURL(url);resolve(event.data);};
+      worker.onerror=fallback;
+      worker.postMessage({hero,range,board,iterations,seed});
+    }catch(_){fallback();}
+  });
+}
+async function evaluatePostflop(action){
   const hero=game.players[0],opponents=game.players.filter(p=>p.id!==0&&!p.folded);
   const rangePlayer=opponents.find(p=>p.rangeChart)||opponents[0];
   const chart=rangePlayer&&rangePlayer.rangeChart||ranges.charts.RFI_CO;
   const dead=[...hero.cards,...game.board];
   const villainRange=PokerEngine.expandChart(chart,dead);
-  const equity=PokerEngine.equity(hero.cards,villainRange,game.board,4000,game.handNo*101+game.board.length);
+  const equity=await equityAsync(hero.cards,villainRange,game.board,4000,game.handNo*101+game.board.length);
   const due=Math.max(0,game.currentBet-hero.bet);
   if(due<=0)return {equity,scored:false};
   const potOdds=due/(game.pot+due);
@@ -304,23 +324,35 @@ function showPostFeedback(result,action){
   box.className='feedback '+(result.score===100?'':result.score===0?'error':'warn');
   box.innerHTML='<p><strong>'+result.verdict+' · '+result.score+'/100</strong></p><p>Equity: '+(result.equity*100).toFixed(1)+'% · Pot odds: '+(result.potOdds*100).toFixed(1)+'% · Necesitas pagar '+result.due.toFixed(1)+' bb.</p><p>Referencia simplificada: '+result.expected+'.</p><p class="source">Cálculo de equity frente a pot odds (no es GTO).</p>';
 }
-function heroAction(action,target){
-  if(!game||game.finished)return;
+async function heroAction(action,target){
+  if(!game||game.finished||game.busy)return;
+  game.busy=true;
   const hero=game.players[0];
   if(game.street==='preflop'){
     const ctx=heroChartContext();
     if(ctx.chart){
-      const result=showPreflopFeedback($('feedback'),ctx.chart,ctx.hand,ctx.pos,ctx.spot,action);
+      const result=evaluatePreflop(action,ctx.chart,ctx.hand,ctx.spot);
+      if(feedbackMode==='immediate')showPreflopFeedback($('feedback'),ctx.chart,ctx.hand,ctx.pos,ctx.spot,action);
+      else $('feedback').hidden=true;
       const d={type:'preflop',pos:ctx.pos,spot:ctx.spot,hand:ctx.hand,category:categoryOf(ctx.hand),action,score:result.score,verdict:result.verdict};
       game.decisions.push(d);if(feedbackMode==='immediate')saveDecision(d);
-      $('range-panel').hidden=false;$('range-label').textContent=ctx.spot+' · '+ctx.pos;renderRangeGrid($('range-grid'),ctx.chart,hero.cards);
+      game.lastPreflop={chart:ctx.chart,hand:ctx.hand,pos:ctx.pos,spot:ctx.spot,cards:hero.cards};
+      $('range-panel').hidden=feedbackMode!=='immediate';$('range-label').textContent=ctx.spot+' · '+ctx.pos;renderRangeGrid($('range-grid'),ctx.chart,hero.cards);
     }else{
-      $('feedback').hidden=false;$('feedback').className='feedback warn';$('feedback').textContent='Sin evaluar · spot fuera de las tablas.';
+      const d={type:'preflop',pos:ctx.pos,spot:ctx.spot,hand:ctx.hand,category:categoryOf(ctx.hand),action,score:null,verdict:'Sin evaluar · spot fuera de las tablas'};
+      game.decisions.push(d);
+      if(feedbackMode==='immediate'){$('feedback').hidden=false;$('feedback').className='feedback warn';$('feedback').textContent=d.verdict;}
+      else $('feedback').hidden=true;
     }
   }else{
-    const result=evaluatePostflop(action);showPostFeedback(result,action);
+    $('actions').querySelectorAll('button').forEach(b=>b.disabled=true);
+    $('action-prompt').textContent='Calculando equity…';
+    const result=await evaluatePostflop(action);
+    if(feedbackMode==='immediate')showPostFeedback(result,action);
+    else $('feedback').hidden=true;
     if(result.scored){const d={type:'postflop',pos:hero.pos,spot:game.street,hand:handKey(hero.cards),category:categoryOf(handKey(hero.cards)),action,score:result.score,verdict:result.verdict};game.decisions.push(d);if(feedbackMode==='immediate')saveDecision(d);}
   }
+  game.busy=false;
   $('actions').replaceChildren();$('action-prompt').textContent='Decisión registrada · los rivales continúan…';
   applyAction(hero,action,target);
   renderTable();advance();
@@ -351,16 +383,17 @@ function showdown(){
 }
 function finishHand(message,net){
   game.finished=true;game.lastResult=net;stats.result+=net;
-  const summary={number:game.handNo,result:net,position:game.players[0].pos,hand:cardSummary(game.players[0].cards),board:cardSummary(game.board),message,decisions:game.decisions.map(d=>d.verdict)};
+  const summary={number:game.handNo,result:net,position:game.players[0].pos,hand:cardSummary(game.players[0].cards),board:cardSummary(game.board),message,decisions:game.decisions.map(d=>d.pos+' '+d.hand+' '+d.action+' → '+(d.score==null?d.verdict:d.verdict+' '+d.score+'/100'))};
   stats.hands.unshift(summary);stats.hands=stats.hands.slice(0,200);saveStats();renderStats();
   $('table-status').textContent=message;
   $('hand-summary').hidden=false;
   $('hand-summary').textContent=message+' Resultado: '+(net>=0?'+':'')+net.toFixed(1)+' bb · Próxima mano: pulsa «Nueva mano».';
   $('actions').replaceChildren();$('action-prompt').textContent='Mano terminada.';
   if(feedbackMode==='end'&&game.decisions.length){
-    const lines=game.decisions.map(d=>d.pos+' · '+d.hand+' · '+d.action+' → '+(d.score==null?'Sin evaluar':d.verdict+' '+d.score+'/100'));
+    const lines=game.decisions.map(d=>d.pos+' · '+d.hand+' · '+d.action+' → '+(d.score==null?d.verdict:d.verdict+' '+d.score+'/100'));
     $('feedback').hidden=false;$('feedback').className='feedback';$('feedback').innerHTML='<strong>Resumen de decisiones</strong><p>'+lines.join('</p><p>')+'</p>';
     game.decisions.forEach(saveDecision);
+    if(game.lastPreflop){$('range-panel').hidden=false;$('range-label').textContent=game.lastPreflop.spot+' · '+game.lastPreflop.pos;renderRangeGrid($('range-grid'),game.lastPreflop.chart,game.lastPreflop.cards);}
   }
   renderTable();$('hand-number').textContent=game.handNo;
 }
@@ -435,7 +468,7 @@ function tableRows(el,rows){
 }
 function renderStats(){
   const pre=stats.decisions.filter(d=>d.type==='preflop'&&d.score!=null),post=stats.decisions.filter(d=>d.type==='postflop'&&d.score!=null);
-  $('stat-decisions').textContent=stats.decisions.length;
+  $('stat-decisions').textContent=stats.decisions.length;$('stat-session').textContent=sessionDecisions;
   $('stat-pre').textContent=avg(pre)==null?'—':avg(pre).toFixed(1)+'/100';
   $('stat-post').textContent=avg(post)==null?'—':avg(post).toFixed(1)+'/100';
   $('stat-result').textContent=(stats.result>=0?'+':'')+stats.result.toFixed(1)+' bb';
@@ -446,7 +479,7 @@ function renderStats(){
   for(const d of pre){const k=d.pos+' · '+d.spot+' · '+d.category;const g=groups.get(k)||[];g.push(d);groups.set(k,g);}
   const leaks=[...groups.entries()].filter(([,g])=>g.length>=5).map(([k,g])=>[k,avg(g),g.length]).sort((a,b)=>a[1]-b[1]).slice(0,5);
   $('stats-leaks').innerHTML=leaks.length?'<table class="stats-table"><tbody>'+leaks.map(([k,v,n])=>'<tr><td>'+k+' ('+n+')</td><td>'+v.toFixed(1)+'/100</td></tr>').join('')+'</tbody></table>':'<p class="muted">Necesitas al menos cinco decisiones del mismo tipo para detectar una fuga.</p>';
-  $('stats-history').innerHTML=stats.hands.length?stats.hands.map(h=>'<li>Mano '+h.number+' · '+h.position+' · '+h.hand+' · '+h.message+' ('+(h.result>=0?'+':'')+h.result.toFixed(1)+' bb)</li>').join(''):'<li>Aún no has terminado ninguna mano.</li>';
+  $('stats-history').innerHTML=stats.hands.length?stats.hands.map(h=>'<li>Mano '+h.number+' · '+h.position+' · '+h.hand+' · '+h.message+' ('+(h.result>=0?'+':'')+h.result.toFixed(1)+' bb)'+(h.decisions.length?'<br><span class="muted">'+h.decisions.join(' · ')+'</span>':'')+'</li>').join(''):'<li>Aún no has terminado ninguna mano.</li>';
 }
 function setTab(name){
   document.querySelectorAll('.tab').forEach(b=>{const on=b.dataset.tab===name;b.classList.toggle('active',on);b.setAttribute('aria-selected',String(on));});

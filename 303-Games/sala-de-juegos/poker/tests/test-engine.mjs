@@ -21,5 +21,9 @@ console.log('Equity AA vs KK:',(aa*100).toFixed(2)+'%','AKs vs QQ:',(aks*100).to
 assert(aa>=.80&&aa<=.84,'AA vs KK fuera de 80–84%');
 assert(aks>=.44&&aks<=.49,'AKs vs QQ fuera de 44–49%');
 assert(weak>=.10&&weak<=.14,'72o vs AA fuera de 10–14%');
-assert(Math.round(100*100/100)===100&&Math.round(100*30/70)===43&&0===0,'Puntuación preflop');
+const scoreAction=(frequency,max)=>max?Math.round(100*frequency/max):0;
+assert(scoreAction(1,1)===100&&scoreAction(.3,.7)===43&&scoreAction(0,.7)===0,'Puntuación preflop');
+const seededA=E.deal(42),seededB=E.deal(42);
+assert(JSON.stringify(seededA)===JSON.stringify(seededB),'El reparto con semilla debe ser determinista');
+assert(new Set(seededA.deck).size===52,'La baraja debe contener 52 cartas únicas');
 console.log('✔ Motor validado: categorías, wheel, kickers, empates y equity Monte Carlo');
