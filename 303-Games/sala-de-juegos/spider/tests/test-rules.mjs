@@ -15,6 +15,7 @@ assert.equal(R.canMove(same,0,0,1), true);
 const run = Array.from({length:13},(_,i)=>({rank:13-i,suit:'♠',faceUp:true}));
 const complete = {columns:[run,...Array.from({length:9},()=>[])],stock:[],completed:0,moves:0};
 assert.equal(R.completeRuns(complete),1); assert.equal(complete.completed,1);
+
 const empty = {columns:[[],...Array.from({length:9},()=>[])],stock:Array.from({length:50},()=>({rank:1,suit:'♠'})),completed:0,moves:0};
 assert.equal(R.deal(empty),false);
 console.log('✔ Spider: reparto 54/50, secuencias por palo, escalera K→A y bloqueo del mazo');

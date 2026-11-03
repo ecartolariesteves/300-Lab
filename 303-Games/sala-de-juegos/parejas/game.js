@@ -22,7 +22,7 @@ pez:'<path d="M8 50Q45 5 83 50 45 95 8 50Zm75 0 15-18v36Z"/><circle cx="38" cy="
 hongo:'<path d="M9 48a41 41 0 0 1 82 0Z"/><path d="M42 48v33a9 9 0 0 0 18 0V48Z"/>',
 sol:'<circle cx="50" cy="50" r="24"/><path d="M50 3v13m0 68v13M3 50h13m68 0h13M17 17l10 10m46 46 10 10m0-66L73 27M27 73 17 83" fill="none" stroke-width="8" stroke-linecap="round"/>'
 };
-let level='facil',cards=[],first=null,locked=false,attempts=0,seconds=0,timer=null,selected=0,started=false;
+let level='facil',cards=[],first=null,locked=false,attempts=0,seconds=0,timer=null,mismatchTimer=null,selected=0,started=false;
 const fmt=n=>Math.floor(n/60)+':'+String(n%60).padStart(2,'0');
 function bestRead(){try{return JSON.parse(localStorage.getItem('parejas-best')||'{}')}catch(_){return{}}}
 function bestWrite(v){try{localStorage.setItem('parejas-best',JSON.stringify(v))}catch(_){}}
@@ -33,7 +33,7 @@ function render(){
  cards.forEach((c,i)=>{
   const b=document.createElement('button');b.type='button';b.className='memory-card'+(c.matched?' matched':'');
   b.dataset.index=i;b.setAttribute('aria-pressed',String(c.revealed||c.matched));b.setAttribute('aria-label',(c.revealed||c.matched)?c.id:'Carta '+(i+1)+', boca abajo');
-  b.disabled=c.matched;b.tabIndex=i===selected?0:-1;
+  b.setAttribute('aria-disabled',String(c.matched));b.tabIndex=i===selected?0:-1;
   b.innerHTML='<span class="card-inner"><span class="card-face card-back" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M50 12 88 50 50 88 12 50Z" fill="none" stroke="#f3efe2" stroke-width="5"/><circle cx="50" cy="50" r="18" fill="none" stroke="#f2a33a" stroke-width="5"/></svg></span><span class="card-face card-front">'+icon(c)+'</span></span>';
   board.append(b);
  });
@@ -42,7 +42,7 @@ function render(){
 }
 function renderBest(){const best=bestRead();$('best').innerHTML=['facil','medio','dificil'].map((l)=>'<div><dt>'+({facil:'Fácil',medio:'Medio',dificil:'Difícil'}[l])+'</dt><dd>'+(best[l]??'—')+'</dd></div>').join('')}
 function newGame(){
- if(timer)clearInterval(timer);timer=null;cards=R.makeDeck(level);cards=cards.map(c=>({...c,revealed:false,matched:false}));
+ if(timer)clearInterval(timer);if(mismatchTimer)clearTimeout(mismatchTimer);mismatchTimer=null;timer=null;cards=R.makeDeck(level);cards=cards.map(c=>({...c,revealed:false,matched:false}));
  first=null;locked=false;attempts=0;seconds=0;selected=0;started=false;$('overlay').hidden=true;$('message').textContent='Descubre dos cartas para encontrar una pareja.';render();
 }
 function finish(){
@@ -63,7 +63,7 @@ function flip(index){
   else{locked=true;$('message').textContent='No coinciden. ¡Recuerda sus dibujos!';}
  }
  render();
- if(locked){const mismatched=cards.map((c,i)=>c.revealed&&!c.matched?i:-1).filter(i=>i>=0);setTimeout(()=>{mismatched.forEach(i=>cards[i].revealed=false);locked=false;render();},800);}
+ if(locked){const mismatched=cards.map((c,i)=>c.revealed&&!c.matched?i:-1).filter(i=>i>=0);mismatchTimer=setTimeout(()=>{mismatched.forEach(i=>cards[i].revealed=false);locked=false;mismatchTimer=null;render();},800);}
  else finish();
 }
 $('board').addEventListener('click',e=>{const b=e.target.closest('.memory-card');if(b)flip(+b.dataset.index)});

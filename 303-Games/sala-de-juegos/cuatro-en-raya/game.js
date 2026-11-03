@@ -6,18 +6,19 @@ let board,player=1,starter=1,mode='cpu',difficulty='medio',finished=false,busy=f
 function bestRead(){try{return JSON.parse(localStorage.getItem('cuatro-en-raya-best')||'{}')}catch(_){return{}}}
 function bestWrite(v){try{localStorage.setItem('cuatro-en-raya-best',JSON.stringify(v))}catch(_){}}
 function render(){
- const root=$('board');root.replaceChildren();
+ const root=$('board');root.replaceChildren();const animate=lastMove;
  for(let c=0;c<7;c++){
   const b=document.createElement('button');b.type='button';b.className='column';b.dataset.col=c;b.setAttribute('aria-label','Columna '+(c+1));b.disabled=finished||busy||board[0][c]!==0;
-  for(let r=0;r<6;r++){const cell=document.createElement('span');cell.className='cell'+(board[r][c]===1?' red':board[r][c]===2?' yellow':'');if(winning?.some(([rr,cc])=>rr===r&&cc===c))cell.classList.add('winning');b.append(cell);}
+  for(let r=0;r<6;r++){const cell=document.createElement('span');cell.className='cell'+(board[r][c]===1?' red':board[r][c]===2?' yellow':'');if(winning?.some(([rr,cc])=>rr===r&&cc===c))cell.classList.add('winning');if(animate&&animate.row===r&&animate.col===c)cell.classList.add('drop');b.append(cell);}
   root.append(b);
  }
+ lastMove=null;
  $('turn').textContent=player===1?'Rojo':'Amarillo';$('wins').textContent=stats.wins;$('losses').textContent=stats.losses;$('draws').textContent=stats.draws;
 }
-let winning=null;
+let winning=null,lastMove=null;
 function updateBest(){const best=bestRead();$('best').innerHTML=['facil','medio','dificil'].map(k=>'<div><dt>'+({facil:'Fácil',medio:'Medio',dificil:'Difícil'}[k])+'</dt><dd>'+(best[k]||0)+'</dd></div>').join('')}
 function newGame(){
- board=R.createBoard();player=starter;starter=starter===1?2:1;finished=false;busy=false;winning=null;$('overlay').hidden=true;
+ board=R.createBoard();lastMove=null;player=starter;starter=starter===1?2:1;finished=false;busy=false;winning=null;$('overlay').hidden=true;
  $('message').textContent=mode==='cpu'&&player===2?'El ordenador empieza.':'Turno de '+(player===1?'Rojo':'Amarillo')+'.';render();
  if(mode==='cpu'&&player===2)computerTurn();
 }
@@ -31,9 +32,8 @@ function endGame(winner){
  $('result').textContent=winner?(winner===1?'Gana Rojo':'Gana Amarillo'):'El tablero está lleno.'; $('overlay').hidden=false;render();
 }
 function play(col){
- if(finished||busy||R.drop(board,col,player)<0)return;
- const row=R.ROWS-1-board.map(r=>r[col]).findIndex(Boolean);
- const cell=$('board').children[col]?.children[row];if(cell)cell.classList.add('drop');
+ if(finished||busy)return;
+ const row=R.drop(board,col,player);if(row<0)return;lastMove={row,col};
  const winner=R.hasWon(board,player);if(winner){endGame(player);return;}if(R.full(board)){endGame(0);return;}
  player=player===1?2:1;render();
  $('message').textContent=mode==='cpu'&&player===2?'El ordenador está pensando…':'Turno de '+(player===1?'Rojo':'Amarillo')+'.';

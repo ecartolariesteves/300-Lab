@@ -40,13 +40,14 @@
   function completeRuns(state) {
     let removed = 0;
     for (const col of state.columns) {
-      if (col.length < 13) continue;
-      const run = col.slice(-13);
-      if (run[0].rank !== 13 || run[12].rank !== 1 || !validRun(run)) continue;
-      col.splice(-13);
-      if (col.length) col[col.length - 1].faceUp = true;
-      state.completed++;
-      removed++;
+      while (col.length >= 13) {
+        const run = col.slice(-13);
+        if (run[0].rank !== 13 || run[12].rank !== 1 || !validRun(run)) break;
+        col.splice(-13);
+        if (col.length) col[col.length - 1].faceUp = true;
+        state.completed++;
+        removed++;
+      }
     }
     return removed;
   }

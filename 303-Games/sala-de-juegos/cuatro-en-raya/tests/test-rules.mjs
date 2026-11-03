@@ -2,13 +2,14 @@ import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);const R=require('../rules.js');
 function boardWith(moves){const b=R.createBoard();for(const [c,p] of moves)R.drop(b,c,p);return b;}
-for(const moves of [
- [[0,1],[1,1],[2,1],[3,1]],
- [[0,2],[0,2],[0,2],[0,2]],
- [[0,1],[1,2],[2,1],[1,2],[2,1],[2,2],[3,1],[3,2],[3,1],[3,2],[3,1]],
- [[3,1],[2,2],[2,1],[1,2],[1,1],[0,2],[1,1],[0,2],[0,1],[0,2],[0,1],[0,2]]
+function boardWithCells(cells){const b=R.createBoard();for(const [r,c,p] of cells)b[r][c]=p;return b;}
+for(const cells of [
+ [[5,0,1],[5,1,1],[5,2,1],[5,3,1]],
+ [[2,4,2],[3,4,2],[4,4,2],[5,4,2]],
+ [[2,0,1],[3,1,1],[4,2,1],[5,3,1]],
+ [[2,6,2],[3,5,2],[4,4,2],[5,3,2]]
 ]){
- const b=boardWith(moves);assert.ok(R.winningLine(b,1)||R.winningLine(b,2));
+ const b=boardWithCells(cells);assert.ok(R.winningLine(b,1)||R.winningLine(b,2));
 }
 let win=boardWith([[0,2],[6,1],[1,2],[6,1],[2,2],[5,1]]);
 assert.equal(R.chooseMove(win,2,'medio'),3);assert.equal(R.chooseMove(win,2,'dificil'),3);

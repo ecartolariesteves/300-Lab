@@ -58,10 +58,11 @@ function selectCard(col,index) {
   const card = state.columns[col][index]; if (!card || !card.faceUp || won) return;
   hint = null;
   if (selected) {
-    if (selected.col === col && selected.index === index) selected = null;
-    else if (attemptMove(selected.col,selected.index,col)) return;
-    else selected = {col,index};
+    if (selected.col === col && selected.index === index) { autoMove(); return; }
+    if (attemptMove(selected.col,selected.index,col)) return;
+    selected = {col,index};
   } else selected = {col,index};
+  autoMove();
   render();
 }
 function autoMove() {
