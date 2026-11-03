@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Versión "maskable": fondo a sangre y dibujo dentro de la zona segura (80 % central) -->
+  <rect width="64" height="64" fill="#1F5C45"/>
+  <g fill="#F3EFE2">
+    <rect x="16" y="16" width="9" height="9" rx="1.5"/>
+    <rect x="27.5" y="16" width="9" height="9" rx="1.5"/>
+    <rect x="39" y="16" width="9" height="9" rx="1.5"/>
+    <rect x="16" y="27.5" width="9" height="9" rx="1.5"/>
+    <rect x="39" y="27.5" width="9" height="9" rx="1.5"/>
+    <rect x="16" y="39" width="9" height="9" rx="1.5"/>
+    <rect x="27.5" y="39" width="9" height="9" rx="1.5"/>
+    <rect x="39" y="39" width="9" height="9" rx="1.5"/>
+  </g>
+  <rect x="27.5" y="27.5" width="9" height="9" rx="1.5" fill="#F2A33A"/>
+</svg>
