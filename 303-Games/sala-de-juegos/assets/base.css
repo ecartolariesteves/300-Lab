@@ -174,3 +174,9 @@ h1 {
   .readout output { font-size: 1.4rem; }
   .reset { padding: 10px 12px; font-size: 0.85rem; }
 }
+
+/* Lista de récords (dt = nivel, dd = valor), común a todos los juegos */
+.best { margin: 0; display: grid; gap: 4px; font-size: 0.92rem; }
+.best div { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px dashed var(--line); padding-bottom: 4px; }
+.best dt { color: var(--muted); }
+.best dd { margin: 0; font-family: var(--f-mono); font-variant-numeric: tabular-nums; }

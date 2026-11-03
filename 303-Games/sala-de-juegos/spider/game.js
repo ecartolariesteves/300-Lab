@@ -65,20 +65,41 @@ function selectCard(col,index) {
   autoMove();
   render();
 }
+// Valora un movimiento: mejor si cae sobre el mismo palo o destapa una carta; inútil si solo cambia de sitio
+function moveScore(from,index,to) {
+  const src = state.columns[from], dst = state.columns[to], card = src[index], top = dst.at(-1), below = src[index - 1];
+  if (!top && index === 0) return -1;                                   // columna entera a otra vacía: no aporta nada
+  if (below && below.faceUp && below.rank === card.rank + 1 && (below.suit === card.suit || !top || top.suit !== card.suit)) return -1;  // ya estaba bien colocada
+  let score = 0;
+  if (top && top.suit === card.suit) score += 3;                        // forma una secuencia del mismo palo
+  if (below && !below.faceUp) score += 2;                               // destapa una carta
+  if (index === 0) score += 1;                                          // deja una columna libre
+  if (!top) score -= 1;                                                 // gastar una columna vacía es caro
+  return score;
+}
 function autoMove() {
   if (!selected) return;
   const {col,index} = selected;
+  // Preferimos el destino del mismo palo, luego cualquier carta y por último una columna vacía
   const candidates = state.columns.map((pile,to) => ({to,top:pile.at(-1)}))
     .filter(x => R.canMove(state,col,index,x.to))
-    .sort((a,b) => (a.top ? 0 : 1) - (b.top ? 0 : 1));
+    .sort((a,b) => {
+      const rank = x => !x.top ? 2 : x.top.suit === state.columns[col][index].suit ? 0 : 1;
+      return rank(a) - rank(b);
+    });
   if (candidates.length) attemptMove(col,index,candidates[0].to);
 }
 function showHint() {
   hint = null;
-  outer: for (let from=0;from<10;from++) {
+  // Recorremos todos los movimientos legales y nos quedamos con el más útil
+  let bestScore = -1;
+  for (let from=0;from<10;from++) {
     const col=state.columns[from];
     for(let i=0;i<col.length;i++) if(col[i].faceUp && R.validRun(col.slice(i))) {
-      for(let to=0;to<10;to++) if(R.canMove(state,from,i,to)) { hint={from,index:i,to}; break outer; }
+      for(let to=0;to<10;to++) if(R.canMove(state,from,i,to)) {
+        const score = moveScore(from,i,to);
+        if (score > bestScore) { bestScore = score; hint={from,index:i,to}; }
+      }
     }
   }
   if (hint) { selected={col:hint.from,index:hint.index}; $('message').textContent='Prueba a mover la secuencia resaltada.'; }

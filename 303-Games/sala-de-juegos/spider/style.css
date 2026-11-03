@@ -13,5 +13,6 @@
 .stock{white-space:nowrap}.message{min-height:1.4em;margin:0;color:var(--muted);font-weight:600}
 .overlay{position:absolute;inset:0;z-index:5;display:grid;place-content:center;justify-items:center;gap:10px;background:rgb(15 26 21 / .88);color:#f3efe2;border-radius:10px;text-align:center}
 .overlay-title{margin:0;font:800 3rem/1 var(--f-display);color:#f2a33a}
-@media(max-width:600px){.columns{min-width:690px;gap:4px}.playing-card{min-height:42px;font-size:.68rem}.playing-card+.playing-card{margin-top:-20px}.board-wrap{margin-inline:-8px;padding-inline:8px}}
+/* En el móvil caben las 10 columnas: cartas estrechas que solo enseñan el valor y el palo arriba */
+@media(max-width:700px){.columns{min-width:0;gap:3px}.spider-col{min-height:120px;border-radius:5px}.playing-card{min-height:46px;padding:2px 0;border-radius:4px;font-size:.6rem;letter-spacing:-.04em}.playing-card+.playing-card{margin-top:-31px}.playing-card.back{border-width:1px}}
 @media(prefers-reduced-motion:reduce){.playing-card{transition:none}}

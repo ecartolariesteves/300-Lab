@@ -28,6 +28,8 @@ function endGame(winner){
  else if(winner===2){if(mode==='cpu')stats.losses++;else stats.losses++;streak=0;}
  else{stats.draws++;streak=0;}
  if(mode==='cpu'&&winner===1){const best=bestRead();best[difficulty]=Math.max(best[difficulty]||0,streak);bestWrite(best);updateBest();}
+ // El mensaje de estado también refleja el final (antes seguía diciendo "pensando…")
+ $('message').textContent=winner?(mode==='cpu'?(winner===1?'¡Has ganado!':'Gana el ordenador.'):(winner===1?'Gana Rojo.':'Gana Amarillo.')):'Empate: el tablero está lleno.';
  $('result-title').textContent=winner?'¡Cuatro en raya!':'¡Empate!';
  $('result').textContent=winner?(winner===1?'Gana Rojo':'Gana Amarillo'):'El tablero está lleno.'; $('overlay').hidden=false;render();
 }

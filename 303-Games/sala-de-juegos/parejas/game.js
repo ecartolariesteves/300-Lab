@@ -27,12 +27,15 @@ const fmt=n=>Math.floor(n/60)+':'+String(n%60).padStart(2,'0');
 function bestRead(){try{return JSON.parse(localStorage.getItem('parejas-best')||'{}')}catch(_){return{}}}
 function bestWrite(v){try{localStorage.setItem('parejas-best',JSON.stringify(v))}catch(_){}}
 function startClock(){if(!timer)timer=setInterval(()=>{seconds++;$('timer').textContent=fmt(seconds)},1000)}
-function icon(card){return '<svg viewBox="0 0 100 100" role="img" aria-label="'+card.id+'"><g fill="'+card.color+'" stroke="'+card.color+'" stroke-linejoin="round" stroke-linecap="round">'+PATHS[card.id]+'</g></svg>'}
+// Nombre legible de cada dibujo (para el lector de pantalla)
+const NAMES={estrella:'estrella',luna:'luna',gota:'gota',rayo:'rayo',hoja:'hoja',ancla:'ancla',flor:'flor',montana:'montaña',corazon:'corazón',espiral:'espiral',rombo:'rombo',campana:'campana',caracol:'caracol',cometa:'cometa',corona:'corona',pez:'pez',hongo:'seta',sol:'sol'};
+const nameOf=card=>NAMES[card.id]||card.id;
+function icon(card){return '<svg viewBox="0 0 100 100" role="img" aria-label="'+nameOf(card)+'"><g fill="'+card.color+'" stroke="'+card.color+'" stroke-linejoin="round" stroke-linecap="round">'+PATHS[card.id]+'</g></svg>'}
 function render(){
  const board=$('board');board.dataset.level=level;board.replaceChildren();
  cards.forEach((c,i)=>{
   const b=document.createElement('button');b.type='button';b.className='memory-card'+(c.matched?' matched':'');
-  b.dataset.index=i;b.setAttribute('aria-pressed',String(c.revealed||c.matched));b.setAttribute('aria-label',(c.revealed||c.matched)?c.id:'Carta '+(i+1)+', boca abajo');
+  b.dataset.index=i;b.setAttribute('aria-pressed',String(c.revealed||c.matched));b.setAttribute('aria-label',(c.revealed||c.matched)?nameOf(c):'Carta '+(i+1)+', boca abajo');
   b.setAttribute('aria-disabled',String(c.matched));b.tabIndex=i===selected?0:-1;
   b.innerHTML='<span class="card-inner"><span class="card-face card-back" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M50 12 88 50 50 88 12 50Z" fill="none" stroke="#f3efe2" stroke-width="5"/><circle cx="50" cy="50" r="18" fill="none" stroke="#f2a33a" stroke-width="5"/></svg></span><span class="card-face card-front">'+icon(c)+'</span></span>';
   board.append(b);
