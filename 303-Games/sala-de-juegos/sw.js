@@ -3,7 +3,7 @@
    Guarda las páginas y recursos propios para poder jugar sin conexión.
    ========================================================= */
 
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v4';
 const APP_CACHE = `sala-juegos-${CACHE_VERSION}`;
 const FONT_CACHE = `sala-juegos-fonts-${CACHE_VERSION}`;
 const SITE_ROOT = new URL('./', self.location.href);
@@ -39,6 +39,11 @@ const PRECACHE_FILES = [
   'ultima-parada/style.css',
   'ultima-parada/levels.js',
   'ultima-parada/game.js',
+  'poker/index.html',
+  'poker/style.css',
+  'poker/engine.js',
+  'poker/game.js',
+  'poker/ranges.json',
   'aprende/index.html',
   'aprende/aprende.css',
   'aprende/buscaminas/index.html',
@@ -167,7 +172,7 @@ self.addEventListener('fetch', (event) => {
   // CSS, JavaScript e imágenes propias: respondemos al instante desde la caché y la
   // actualizamos en segundo plano (stale-while-revalidate). Así, tras subir cambios,
   // la página y sus scripts no se quedan desincronizados aunque no cambie CACHE_VERSION.
-  if (/\.(?:css|js|svg|png|webmanifest)$/i.test(url.pathname)) {
+  if (/\.(?:css|js|svg|png|webmanifest|json)$/i.test(url.pathname)) {
     event.respondWith((async () => {
       const cache = await caches.open(APP_CACHE);
       const cached = await cache.match(request, { ignoreSearch: true });

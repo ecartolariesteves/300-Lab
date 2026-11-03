@@ -1,0 +1,5207 @@
+{
+ "version": 1,
+ "name": "Referencia aproximada 6-max · 100 bb",
+ "notes": "Aproximación construida a mano a partir de las ideas habituales de las estrategias de solver para 6-max cash a 100 bb (sin rake, apertura 2,5 bb, 3-bet 3x en posición y 4x sin posición). No es la salida exacta de un solver.",
+ "charts": {
+  "RFI_UTG": {
+   "22": {
+    "raise": 0.5
+   },
+   "33": {
+    "raise": 1
+   },
+   "44": {
+    "raise": 1
+   },
+   "55": {
+    "raise": 1
+   },
+   "66": {
+    "raise": 1
+   },
+   "77": {
+    "raise": 1
+   },
+   "88": {
+    "raise": 1
+   },
+   "99": {
+    "raise": 1
+   },
+   "TT": {
+    "raise": 1
+   },
+   "JJ": {
+    "raise": 1
+   },
+   "QQ": {
+    "raise": 1
+   },
+   "KK": {
+    "raise": 1
+   },
+   "AA": {
+    "raise": 1
+   },
+   "A2s": {
+    "raise": 1
+   },
+   "A3s": {
+    "raise": 1
+   },
+   "A4s": {
+    "raise": 1
+   },
+   "A5s": {
+    "raise": 1
+   },
+   "A6s": {
+    "raise": 1
+   },
+   "A7s": {
+    "raise": 1
+   },
+   "A8s": {
+    "raise": 1
+   },
+   "A9s": {
+    "raise": 1
+   },
+   "ATs": {
+    "raise": 1
+   },
+   "AJs": {
+    "raise": 1
+   },
+   "AQs": {
+    "raise": 1
+   },
+   "AKs": {
+    "raise": 1
+   },
+   "KTs": {
+    "raise": 1
+   },
+   "KJs": {
+    "raise": 1
+   },
+   "KQs": {
+    "raise": 1
+   },
+   "K9s": {
+    "raise": 0.5
+   },
+   "QTs": {
+    "raise": 1
+   },
+   "QJs": {
+    "raise": 1
+   },
+   "Q9s": {
+    "raise": 0.25
+   },
+   "JTs": {
+    "raise": 1
+   },
+   "J9s": {
+    "raise": 0.25
+   },
+   "T9s": {
+    "raise": 1
+   },
+   "98s": {
+    "raise": 0.5
+   },
+   "87s": {
+    "raise": 0.25
+   },
+   "76s": {
+    "raise": 0.25
+   },
+   "ATo": {
+    "raise": 1
+   },
+   "AJo": {
+    "raise": 1
+   },
+   "AQo": {
+    "raise": 1
+   },
+   "AKo": {
+    "raise": 1
+   },
+   "KJo": {
+    "raise": 1
+   },
+   "KQo": {
+    "raise": 1
+   },
+   "KTo": {
+    "raise": 0.25
+   },
+   "QJo": {
+    "raise": 0.5
+   }
+  },
+  "RFI_HJ": {
+   "22": {
+    "raise": 1
+   },
+   "33": {
+    "raise": 1
+   },
+   "44": {
+    "raise": 1
+   },
+   "55": {
+    "raise": 1
+   },
+   "66": {
+    "raise": 1
+   },
+   "77": {
+    "raise": 1
+   },
+   "88": {
+    "raise": 1
+   },
+   "99": {
+    "raise": 1
+   },
+   "TT": {
+    "raise": 1
+   },
+   "JJ": {
+    "raise": 1
+   },
+   "QQ": {
+    "raise": 1
+   },
+   "KK": {
+    "raise": 1
+   },
+   "AA": {
+    "raise": 1
+   },
+   "A2s": {
+    "raise": 1
+   },
+   "A3s": {
+    "raise": 1
+   },
+   "A4s": {
+    "raise": 1
+   },
+   "A5s": {
+    "raise": 1
+   },
+   "A6s": {
+    "raise": 1
+   },
+   "A7s": {
+    "raise": 1
+   },
+   "A8s": {
+    "raise": 1
+   },
+   "A9s": {
+    "raise": 1
+   },
+   "ATs": {
+    "raise": 1
+   },
+   "AJs": {
+    "raise": 1
+   },
+   "AQs": {
+    "raise": 1
+   },
+   "AKs": {
+    "raise": 1
+   },
+   "K8s": {
+    "raise": 1
+   },
+   "K9s": {
+    "raise": 1
+   },
+   "KTs": {
+    "raise": 1
+   },
+   "KJs": {
+    "raise": 1
+   },
+   "KQs": {
+    "raise": 1
+   },
+   "K7s": {
+    "raise": 0.5
+   },
+   "Q9s": {
+    "raise": 1
+   },
+   "QTs": {
+    "raise": 1
+   },
+   "QJs": {
+    "raise": 1
+   },
+   "Q8s": {
+    "raise": 0.25
+   },
+   "J9s": {
+    "raise": 1
+   },
+   "JTs": {
+    "raise": 1
+   },
+   "T9s": {
+    "raise": 1
+   },
+   "T8s": {
+    "raise": 0.5
+   },
+   "98s": {
+    "raise": 1
+   },
+   "87s": {
+    "raise": 0.75
+   },
+   "76s": {
+    "raise": 0.5
+   },
+   "65s": {
+    "raise": 0.5
+   },
+   "A9o": {
+    "raise": 1
+   },
+   "ATo": {
+    "raise": 1
+   },
+   "AJo": {
+    "raise": 1
+   },
+   "AQo": {
+    "raise": 1
+   },
+   "AKo": {
+    "raise": 1
+   },
+   "A8o": {
+    "raise": 0.25
+   },
+   "KTo": {
+    "raise": 1
+   },
+   "KJo": {
+    "raise": 1
+   },
+   "KQo": {
+    "raise": 1
+   },
+   "QJo": {
+    "raise": 1
+   },
+   "QTo": {
+    "raise": 0.5
+   },
+   "JTo": {
+    "raise": 0.5
+   }
+  },
+  "RFI_CO": {
+   "22": {
+    "raise": 1
+   },
+   "33": {
+    "raise": 1
+   },
+   "44": {
+    "raise": 1
+   },
+   "55": {
+    "raise": 1
+   },
+   "66": {
+    "raise": 1
+   },
+   "77": {
+    "raise": 1
+   },
+   "88": {
+    "raise": 1
+   },
+   "99": {
+    "raise": 1
+   },
+   "TT": {
+    "raise": 1
+   },
+   "JJ": {
+    "raise": 1
+   },
+   "QQ": {
+    "raise": 1
+   },
+   "KK": {
+    "raise": 1
+   },
+   "AA": {
+    "raise": 1
+   },
+   "A2s": {
+    "raise": 1
+   },
+   "A3s": {
+    "raise": 1
+   },
+   "A4s": {
+    "raise": 1
+   },
+   "A5s": {
+    "raise": 1
+   },
+   "A6s": {
+    "raise": 1
+   },
+   "A7s": {
+    "raise": 1
+   },
+   "A8s": {
+    "raise": 1
+   },
+   "A9s": {
+    "raise": 1
+   },
+   "ATs": {
+    "raise": 1
+   },
+   "AJs": {
+    "raise": 1
+   },
+   "AQs": {
+    "raise": 1
+   },
+   "AKs": {
+    "raise": 1
+   },
+   "K5s": {
+    "raise": 1
+   },
+   "K6s": {
+    "raise": 1
+   },
+   "K7s": {
+    "raise": 1
+   },
+   "K8s": {
+    "raise": 1
+   },
+   "K9s": {
+    "raise": 1
+   },
+   "KTs": {
+    "raise": 1
+   },
+   "KJs": {
+    "raise": 1
+   },
+   "KQs": {
+    "raise": 1
+   },
+   "K4s": {
+    "raise": 0.5
+   },
+   "Q8s": {
+    "raise": 1
+   },
+   "Q9s": {
+    "raise": 1
+   },
+   "QTs": {
+    "raise": 1
+   },
+   "QJs": {
+    "raise": 1
+   },
+   "Q7s": {
+    "raise": 0.5
+   },
+   "J8s": {
+    "raise": 1
+   },
+   "J9s": {
+    "raise": 1
+   },
+   "JTs": {
+    "raise": 1
+   },
+   "T8s": {
+    "raise": 1
+   },
+   "T9s": {
+    "raise": 1
+   },
+   "97s": {
+    "raise": 1
+   },
+   "98s": {
+    "raise": 1
+   },
+   "86s": {
+    "raise": 1
+   },
+   "87s": {
+    "raise": 1
+   },
+   "75s": {
+    "raise": 1
+   },
+   "76s": {
+    "raise": 1
+   },
+   "65s": {
+    "raise": 1
+   },
+   "54s": {
+    "raise": 0.75
+   },
+   "A8o": {
+    "raise": 1
+   },
+   "A9o": {
+    "raise": 1
+   },
+   "ATo": {
+    "raise": 1
+   },
+   "AJo": {
+    "raise": 1
+   },
+   "AQo": {
+    "raise": 1
+   },
+   "AKo": {
+    "raise": 1
+   },
+   "A7o": {
+    "raise": 0.5
+   },
+   "A5o": {
+    "raise": 0.5
+   },
+   "KTo": {
+    "raise": 1
+   },
+   "KJo": {
+    "raise": 1
+   },
+   "KQo": {
+    "raise": 1
+   },
+   "K9o": {
+    "raise": 0.5
+   },
+   "QTo": {
+    "raise": 1
+   },
+   "QJo": {
+    "raise": 1
+   },
+   "JTo": {
+    "raise": 1
+   },
+   "T9o": {
+    "raise": 0.25
+   }
+  },
+  "RFI_BTN": {
+   "22": {
+    "raise": 1
+   },
+   "33": {
+    "raise": 1
+   },
+   "44": {
+    "raise": 1
+   },
+   "55": {
+    "raise": 1
+   },
+   "66": {
+    "raise": 1
+   },
+   "77": {
+    "raise": 1
+   },
+   "88": {
+    "raise": 1
+   },
+   "99": {
+    "raise": 1
+   },
+   "TT": {
+    "raise": 1
+   },
+   "JJ": {
+    "raise": 1
+   },
+   "QQ": {
+    "raise": 1
+   },
+   "KK": {
+    "raise": 1
+   },
+   "AA": {
+    "raise": 1
+   },
+   "A2s": {
+    "raise": 1
+   },
+   "A3s": {
+    "raise": 1
+   },
+   "A4s": {
+    "raise": 1
+   },
+   "A5s": {
+    "raise": 1
+   },
+   "A6s": {
+    "raise": 1
+   },
+   "A7s": {
+    "raise": 1
+   },
+   "A8s": {
+    "raise": 1
+   },
+   "A9s": {
+    "raise": 1
+   },
+   "ATs": {
+    "raise": 1
+   },
+   "AJs": {
+    "raise": 1
+   },
+   "AQs": {
+    "raise": 1
+   },
+   "AKs": {
+    "raise": 1
+   },
+   "K2s": {
+    "raise": 1
+   },
+   "K3s": {
+    "raise": 1
+   },
+   "K4s": {
+    "raise": 1
+   },
+   "K5s": {
+    "raise": 1
+   },
+   "K6s": {
+    "raise": 1
+   },
+   "K7s": {
+    "raise": 1
+   },
+   "K8s": {
+    "raise": 1
+   },
+   "K9s": {
+    "raise": 1
+   },
+   "KTs": {
+    "raise": 1
+   },
+   "KJs": {
+    "raise": 1
+   },
+   "KQs": {
+    "raise": 1
+   },
+   "Q4s": {
+    "raise": 1
+   },
+   "Q5s": {
+    "raise": 1
+   },
+   "Q6s": {
+    "raise": 1
+   },
+   "Q7s": {
+    "raise": 1
+   },
+   "Q8s": {
+    "raise": 1
+   },
+   "Q9s": {
+    "raise": 1
+   },
+   "QTs": {
+    "raise": 1
+   },
+   "QJs": {
+    "raise": 1
+   },
+   "Q3s": {
+    "raise": 0.5
+   },
+   "Q2s": {
+    "raise": 0.5
+   },
+   "J6s": {
+    "raise": 1
+   },
+   "J7s": {
+    "raise": 1
+   },
+   "J8s": {
+    "raise": 1
+   },
+   "J9s": {
+    "raise": 1
+   },
+   "JTs": {
+    "raise": 1
+   },
+   "J5s": {
+    "raise": 0.5
+   },
+   "T6s": {
+    "raise": 1
+   },
+   "T7s": {
+    "raise": 1
+   },
+   "T8s": {
+    "raise": 1
+   },
+   "T9s": {
+    "raise": 1
+   },
+   "96s": {
+    "raise": 1
+   },
+   "97s": {
+    "raise": 1
+   },
+   "98s": {
+    "raise": 1
+   },
+   "85s": {
+    "raise": 1
+   },
+   "86s": {
+    "raise": 1
+   },
+   "87s": {
+    "raise": 1
+   },
+   "74s": {
+    "raise": 1
+   },
+   "75s": {
+    "raise": 1
+   },
+   "76s": {
+    "raise": 1
+   },
+   "64s": {
+    "raise": 1
+   },
+   "65s": {
+    "raise": 1
+   },
+   "53s": {
+    "raise": 1
+   },
+   "54s": {
+    "raise": 1
+   },
+   "43s": {
+    "raise": 0.5
+   },
+   "A2o": {
+    "raise": 1
+   },
+   "A3o": {
+    "raise": 1
+   },
+   "A4o": {
+    "raise": 1
+   },
+   "A5o": {
+    "raise": 1
+   },
+   "A6o": {
+    "raise": 1
+   },
+   "A7o": {
+    "raise": 1
+   },
+   "A8o": {
+    "raise": 1
+   },
+   "A9o": {
+    "raise": 1
+   },
+   "ATo": {
+    "raise": 1
+   },
+   "AJo": {
+    "raise": 1
+   },
+   "AQo": {
+    "raise": 1
+   },
+   "AKo": {
+    "raise": 1
+   },
+   "K8o": {
+    "raise": 1
+   },
+   "K9o": {
+    "raise": 1
+   },
+   "KTo": {
+    "raise": 1
+   },
+   "KJo": {
+    "raise": 1
+   },
+   "KQo": {
+    "raise": 1
+   },
+   "K7o": {
+    "raise": 0.5
+   },
+   "K6o": {
+    "raise": 0.5
+   },
+   "Q9o": {
+    "raise": 1
+   },
+   "QTo": {
+    "raise": 1
+   },
+   "QJo": {
+    "raise": 1
+   },
+   "Q8o": {
+    "raise": 0.5
+   },
+   "J9o": {
+    "raise": 1
+   },
+   "JTo": {
+    "raise": 1
+   },
+   "J8o": {
+    "raise": 0.5
+   },
+   "T8o": {
+    "raise": 1
+   },
+   "T9o": {
+    "raise": 1
+   },
+   "98o": {
+    "raise": 1
+   },
+   "97o": {
+    "raise": 0.25
+   },
+   "87o": {
+    "raise": 0.5
+   }
+  },
+  "RFI_SB": {
+   "22": {
+    "raise": 1
+   },
+   "33": {
+    "raise": 1
+   },
+   "44": {
+    "raise": 1
+   },
+   "55": {
+    "raise": 1
+   },
+   "66": {
+    "raise": 1
+   },
+   "77": {
+    "raise": 1
+   },
+   "88": {
+    "raise": 1
+   },
+   "99": {
+    "raise": 1
+   },
+   "TT": {
+    "raise": 1
+   },
+   "JJ": {
+    "raise": 1
+   },
+   "QQ": {
+    "raise": 1
+   },
+   "KK": {
+    "raise": 1
+   },
+   "AA": {
+    "raise": 1
+   },
+   "A2s": {
+    "raise": 1
+   },
+   "A3s": {
+    "raise": 1
+   },
+   "A4s": {
+    "raise": 1
+   },
+   "A5s": {
+    "raise": 1
+   },
+   "A6s": {
+    "raise": 1
+   },
+   "A7s": {
+    "raise": 1
+   },
+   "A8s": {
+    "raise": 1
+   },
+   "A9s": {
+    "raise": 1
+   },
+   "ATs": {
+    "raise": 1
+   },
+   "AJs": {
+    "raise": 1
+   },
+   "AQs": {
+    "raise": 1
+   },
+   "AKs": {
+    "raise": 1
+   },
+   "K2s": {
+    "raise": 1
+   },
+   "K3s": {
+    "raise": 1
+   },
+   "K4s": {
+    "raise": 1
+   },
+   "K5s": {
+    "raise": 1
+   },
+   "K6s": {
+    "raise": 1
+   },
+   "K7s": {
+    "raise": 1
+   },
+   "K8s": {
+    "raise": 1
+   },
+   "K9s": {
+    "raise": 1
+   },
+   "KTs": {
+    "raise": 1
+   },
+   "KJs": {
+    "raise": 1
+   },
+   "KQs": {
+    "raise": 1
+   },
+   "Q5s": {
+    "raise": 1
+   },
+   "Q6s": {
+    "raise": 1
+   },
+   "Q7s": {
+    "raise": 1
+   },
+   "Q8s": {
+    "raise": 1
+   },
+   "Q9s": {
+    "raise": 1
+   },
+   "QTs": {
+    "raise": 1
+   },
+   "QJs": {
+    "raise": 1
+   },
+   "Q4s": {
+    "raise": 0.5
+   },
+   "J7s": {
+    "raise": 1
+   },
+   "J8s": {
+    "raise": 1
+   },
+   "J9s": {
+    "raise": 1
+   },
+   "JTs": {
+    "raise": 1
+   },
+   "J6s": {
+    "raise": 0.5
+   },
+   "T7s": {
+    "raise": 1
+   },
+   "T8s": {
+    "raise": 1
+   },
+   "T9s": {
+    "raise": 1
+   },
+   "96s": {
+    "raise": 1
+   },
+   "97s": {
+    "raise": 1
+   },
+   "98s": {
+    "raise": 1
+   },
+   "86s": {
+    "raise": 1
+   },
+   "87s": {
+    "raise": 1
+   },
+   "75s": {
+    "raise": 1
+   },
+   "76s": {
+    "raise": 1
+   },
+   "64s": {
+    "raise": 1
+   },
+   "65s": {
+    "raise": 1
+   },
+   "54s": {
+    "raise": 1
+   },
+   "53s": {
+    "raise": 0.5
+   },
+   "A2o": {
+    "raise": 1
+   },
+   "A3o": {
+    "raise": 1
+   },
+   "A4o": {
+    "raise": 1
+   },
+   "A5o": {
+    "raise": 1
+   },
+   "A6o": {
+    "raise": 1
+   },
+   "A7o": {
+    "raise": 1
+   },
+   "A8o": {
+    "raise": 1
+   },
+   "A9o": {
+    "raise": 1
+   },
+   "ATo": {
+    "raise": 1
+   },
+   "AJo": {
+    "raise": 1
+   },
+   "AQo": {
+    "raise": 1
+   },
+   "AKo": {
+    "raise": 1
+   },
+   "K9o": {
+    "raise": 1
+   },
+   "KTo": {
+    "raise": 1
+   },
+   "KJo": {
+    "raise": 1
+   },
+   "KQo": {
+    "raise": 1
+   },
+   "K8o": {
+    "raise": 0.5
+   },
+   "Q9o": {
+    "raise": 1
+   },
+   "QTo": {
+    "raise": 1
+   },
+   "QJo": {
+    "raise": 1
+   },
+   "J9o": {
+    "raise": 1
+   },
+   "JTo": {
+    "raise": 1
+   },
+   "T9o": {
+    "raise": 1
+   },
+   "98o": {
+    "raise": 0.5
+   }
+  },
+  "VS_OPEN_HJ_vs_UTG": {
+   "77": {
+    "call": 0.25
+   },
+   "88": {
+    "call": 0.4
+   },
+   "99": {
+    "call": 0.55
+   },
+   "QQ": {
+    "3bet": 1
+   },
+   "KK": {
+    "3bet": 1
+   },
+   "AA": {
+    "3bet": 1
+   },
+   "AKs": {
+    "3bet": 1
+   },
+   "AKo": {
+    "3bet": 0.75
+   },
+   "AQs": {
+    "3bet": 0.25,
+    "call": 0.5
+   },
+   "A5s": {
+    "3bet": 0.5
+   },
+   "A4s": {
+    "3bet": 0.5
+   },
+   "JJ": {
+    "call": 0.65
+   },
+   "TT": {
+    "call": 0.65
+   },
+   "AJs": {
+    "call": 0.4
+   },
+   "KQs": {
+    "call": 0.5
+   },
+   "KJs": {
+    "call": 0.25
+   },
+   "QJs": {
+    "call": 0.3
+   },
+   "JTs": {
+    "call": 0.3
+   },
+   "AQo": {
+    "call": 0.2
+   }
+  },
+  "VS_OPEN_CO_vs_UTG": {
+   "77": {
+    "call": 0.25
+   },
+   "88": {
+    "call": 0.45
+   },
+   "99": {
+    "call": 0.65
+   },
+   "QQ": {
+    "3bet": 1
+   },
+   "KK": {
+    "3bet": 1
+   },
+   "AA": {
+    "3bet": 1
+   },
+   "AKs": {
+    "3bet": 1
+   },
+   "AKo": {
+    "3bet": 0.75
+   },
+   "AQs": {
+    "3bet": 0.25,
+    "call": 0.55
+   },
+   "A5s": {
+    "3bet": 0.5
+   },
+   "A4s": {
+    "3bet": 0.5
+   },
+   "JJ": {
+    "call": 0.7
+   },
+   "TT": {
+    "call": 0.7
+   },
+   "AJs": {
+    "call": 0.45
+   },
+   "KQs": {
+    "call": 0.55
+   },
+   "KJs": {
+    "call": 0.25
+   },
+   "QJs": {
+    "call": 0.35
+   },
+   "JTs": {
+    "call": 0.35
+   },
+   "AQo": {
+    "call": 0.25
+   }
+  },
+  "VS_OPEN_BTN_vs_UTG": {
+   "66": {
+    "call": 0.3
+   },
+   "77": {
+    "call": 0.3
+   },
+   "88": {
+    "call": 0.5
+   },
+   "99": {
+    "call": 0.7
+   },
+   "QQ": {
+    "3bet": 1
+   },
+   "KK": {
+    "3bet": 1
+   },
+   "AA": {
+    "3bet": 1
+   },
+   "AKs": {
+    "3bet": 1
+   },
+   "AKo": {
+    "3bet": 0.75
+   },
+   "AQs": {
+    "3bet": 0.25,
+    "call": 0.6
+   },
+   "A5s": {
+    "3bet": 0.5
+   },
+   "A4s": {
+    "3bet": 0.5
+   },
+   "JJ": {
+    "call": 0.8
+   },
+   "TT": {
+    "call": 0.8
+   },
+   "AJs": {
+    "call": 0.5
+   },
+   "KQs": {
+    "call": 0.6
+   },
+   "KJs": {
+    "call": 0.3
+   },
+   "QJs": {
+    "call": 0.4
+   },
+   "JTs": {
+    "call": 0.4
+   },
+   "AQo": {
+    "call": 0.25
+   },
+   "ATs": {
+    "call": 0.3
+   },
+   "KTs": {
+    "call": 0.25
+   },
+   "T9s": {
+    "call": 0.25
+   }
+  },
+  "VS_OPEN_SB_vs_UTG": {
+   "99": {
+    "call": 0.2
+   },
+   "QQ": {
+    "3bet": 1
+   },
+   "KK": {
+    "3bet": 1
+   },
+   "AA": {
+    "3bet": 1
+   },
+   "JJ": {
+    "3bet": 0.6,
+    "call": 0.2
+   },
+   "TT": {
+    "3bet": 0.3,
+    "call": 0.3
+   },
+   "AKs": {
+    "3bet": 1
+   },
+   "AKo": {
+    "3bet": 1
+   },
+   "AQs": {
+    "3bet": 0.7,
+    "call": 0.2
+   },
+   "AJs": {
+    "3bet": 0.3
+   },
+   "KQs": {
+    "3bet": 0.4
+   },
+   "A5s": {
+    "3bet": 0.5
+   },
+   "A4s": {
+    "3bet": 0.4
+   }
+  },
+  "VS_OPEN_BB_vs_UTG": {
+   "22": {
+    "call": 1
+   },
+   "33": {
+    "call": 1
+   },
+   "44": {
+    "call": 1
+   },
+   "55": {
+    "call": 1
+   },
+   "66": {
+    "call": 1
+   },
+   "77": {
+    "call": 1
+   },
+   "88": {
+    "call": 1
+   },
+   "99": {
+    "call": 1
+   },
+   "QQ": {
+    "3bet": 1
+   },
+   "KK": {
+    "3bet": 1
+   },
+   "AA": {
+    "3bet": 1
+   },
+   "AKs": {
+    "3bet": 1
+   },
+   "AKo": {
+    "3bet": 0.5,
+    "call": 0.5
+   },
+   "AQs": {
+    "3bet": 0.25,
+    "call": 0.75
+   },
+   "A5s": {
+    "3bet": 0.5,
+    "call": 0.5
+   },
+   "A4s": {
+    "3bet": 0.3,
+    "call": 0.7
+   },
+   "TT": {
+    "call": 1
+   },
+   "JJ": {
+    "call": 1
+   },
+   "A2s": {
+    "call": 1
+   },
+   "A3s": {
+    "call": 1
+   },
+   "A6s": {
+    "call": 1
+   },
+   "A7s": {
+    "call": 1
+   },
+   "A8s": {
+    "call": 1
+   },
+   "A9s": {
+    "call": 1
+   },
+   "ATs": {
+    "call": 1
+   },
+   "AJs": {
+    "call": 1
+   },
+   "K6s": {
+    "call": 1
+   },
+   "K7s": {
+    "call": 1
+   },
+   "K8s": {
+    "call": 1
+   },
+   "K9s": {
+    "call": 1
+   },
+   "KTs": {
+    "call": 1
+   },
+   "KJs": {
+    "call": 1
+   },
+   "KQs": {
+    "call": 1
+   },
+   "K5s": {
+    "call": 0.5
+   },
+   "K4s": {
+    "call": 0.5
+   },
+   "Q8s": {
+    "call": 1
+   },
+   "Q9s": {
+    "call": 1
+   },
+   "QTs": {
+    "call": 1
+   },
+   "QJs": {
+    "call": 1
+   },
+   "Q7s": {
+    "call": 0.5
+   },
+   "Q6s": {
+    "call": 0.5
+   },
+   "J8s": {
+    "call": 1
+   },
+   "J9s": {
+    "call": 1
+   },
+   "JTs": {
+    "call": 1
+   },
+   "J7s": {
+    "call": 0.5
+   },
+   "T8s": {
+    "call": 1
+   },
+   "T9s": {
+    "call": 1
+   },
+   "T7s": {
+    "call": 0.5
+   },
+   "97s": {
+    "call": 1
+   },
+   "98s": {
+    "call": 1
+   },
+   "96s": {
+    "call": 0.5
+   },
+   "87s": {
+    "call": 1
+   },
+   "86s": {
+    "call": 0.5
+   },
+   "85s": {
+    "call": 0.25
+   },
+   "76s": {
+    "call": 1
+   },
+   "75s": {
+    "call": 0.5
+   },
+   "65s": {
+    "call": 1
+   },
+   "64s": {
+    "call": 0.5
+   },
+   "54s": {
+    "call": 1
+   },
+   "53s": {
+    "call": 0.5
+   },
+   "K3s": {
+    "call": 0.5
+   },
+   "K2s": {
+    "call": 0.25
+   },
+   "Q5s": {
+    "call": 0.25
+   },
+   "J6s": {
+    "call": 0.25
+   },
+   "AJo": {
+    "call": 1
+   },
+   "AQo": {
+    "call": 1
+   },
+   "ATo": {
+    "call": 1
+   },
+   "A9o": {
+    "call": 0.5
+   },
+   "A8o": {
+    "call": 0.25
+   },
+   "KJo": {
+    "call": 1
+   },
+   "KQo": {
+    "call": 1
+   },
+   "KTo": {
+    "call": 0.75
+   },
+   "K9o": {
+    "call": 0.25
+   },
+   "QJo": {
+    "call": 1
+   },
+   "QTo": {
+    "call": 0.5
+   },
+   "JTo": {
+    "call": 0.75
+   },
+   "T9o": {
+    "call": 0.25
+   }
+  },
+  "VS_OPEN_CO_vs_HJ": {
+   "66": {
+    "call": 0.25
+   },
+   "77": {
+    "call": 0.35
+   },
+   "88": {
+    "call": 0.55
+   },
+   "99": {
+    "call": 0.65
+   },
+   "QQ": {
+    "3bet": 1
+   },
+   "KK": {
+    "3bet": 1
+   },
+   "AA": {
+    "3bet": 1
+   },
+   "JJ": {
+    "3bet": 0.25,
+    "call": 0.7
+   },
+   "AKs": {
+    "3bet": 1
+   },
+   "AKo": {
+    "3bet": 0.85
+   },
+   "AQs": {
+    "3bet": 0.5,
+    "call": 0.45
+   },
+   "KQs": {
+    "3bet": 0.25,
+    "call": 0.55
+   },
+   "A5s": {
+    "3bet": 0.6
+   },
+   "A4s": {
+    "3bet": 0.6
+   },
+   "A3s": {
+    "3bet": 0.3
+   },
+   "KJs": {
+    "3bet": 0.25,
+    "call": 0.35
+   },
+   "TT": {
+    "call": 0.7
+   },
+   "AJs": {
+    "call": 0.55
+   },
+   "ATs": {
+    "call": 0.25
+   },
+   "QJs": {
+    "call": 0.45
+   },
+   "JTs": {
+    "call": 0.45
+   },
+   "T9s": {
+    "call": 0.25
+   },
+   "AQo": {
+    "call": 0.25
+   }
+  },
+  "VS_OPEN_BTN_vs_HJ": {
+   "55": {
+    "call": 0.25
+   },
+   "66": {
+    "call": 0.25
+   },
+   "77": {
+    "call": 0.4
+   },
+   "88": {
+    "call": 0.6
+   },
+   "99": {
+    "call": 0.7
+   },
+   "QQ": {
+    "3bet": 1
+   },
+   "KK": {
+    "3bet": 1
+   },
+   "AA": {
+    "3bet": 1
+   },
+   "JJ": {
+    "3bet": 0.25,
+    "call": 0.75
+   },
+   "AKs": {
+    "3bet": 1
+   },
+   "AKo": {
+    "3bet": 0.85
+   },
+   "AQs": {
+    "3bet": 0.5,
+    "call": 0.5
+   },
+   "KQs": {
+    "3bet": 0.25,
+    "call": 0.6
+   },
+   "A5s": {
+    "3bet": 0.6
+   },
+   "A4s": {
+    "3bet": 0.6
+   },
+   "A3s": {
+    "3bet": 0.3
+   },
+   "KJs": {
+    "3bet": 0.25,
+    "call": 0.4
+   },
+   "TT": {
+    "call": 0.8
+   },
+   "AJs": {
+    "call": 0.6
+   },
+   "ATs": {
+    "call": 0.5
+   },
+   "QJs": {
+    "call": 0.5
+   },
+   "JTs": {
+    "call": 0.5
+   },
+   "T9s": {
+    "call": 0.25
+   },
+   "AQo": {
+    "call": 0.3
+   },
+   "KTs": {
+    "call": 0.4
+   },
+   "QTs": {
+    "call": 0.3
+   },
+   "98s": {
+    "call": 0.25
+   }
+  },
+  "VS_OPEN_SB_vs_HJ": {
+   "88": {
+    "call": 0.2
+   },
+   "99": {
+    "3bet": 0.25,
+    "call": 0.3
+   },
+   "JJ": {
+    "3bet": 1
+   },
+   "QQ": {
+    "3bet": 1
+   },
+   "KK": {
+    "3bet": 1
+   },
+   "AA": {
+    "3bet": 1
+   },
+   "TT": {
+    "3bet": 0.5,
+    "call": 0.25
+   },
+   "AQs": {
+    "3bet": 1
+   },
+   "AKs": {
+    "3bet": 1
+   },
+   "AKo": {
+    "3bet": 1
+   },
+   "AQo": {
+    "3bet": 0.3
+   },
+   "AJs": {
+    "3bet": 0.5,
+    "call": 0.2
+   },
+   "KQs": {
+    "3bet": 0.5
+   },
+   "KJs": {
+    "3bet": 0.25
+   },
+   "A5s": {
+    "3bet": 0.6
+   },
+   "A4s": {
+    "3bet": 0.5
+   },
+   "A3s": {
+    "3bet": 0.3
+   }
+  },
+  "VS_OPEN_BB_vs_HJ": {
+   "22": {
+    "call": 1
+   },
+   "33": {
+    "call": 1
+   },
+   "44": {
+    "call": 1
+   },
+   "55": {
+    "call": 1
+   },
+   "66": {
+    "call": 1
+   },
+   "77": {
+    "call": 1
+   },
+   "88": {
+    "call": 1
+   },
+   "99": {
+    "call": 1
+   },
+   "QQ": {
+    "3bet": 1
+   },
+   "KK": {
+    "3bet": 1
+   },
+   "AA": {
+    "3bet": 1
+   },
+   "JJ": {
+    "3bet": 0.3,
+    "call": 0.7
+   },
+   "AKs": {
+    "3bet": 1
+   },
+   "AKo": {
+    "3bet": 0.6,
+    "call": 0.4
+   },
+   "AQs": {
+    "3bet": 0.4,
+    "call": 0.6
+   },
+   "A5s": {
+    "3bet": 0.5,
+    "call": 0.5
+   },
+   "A4s": {
+    "3bet": 0.4,
+    "call": 0.6
+   },
+   "KQs": {
+    "3bet": 0.2,
+    "call": 0.8
+   },
+   "TT": {
+    "call": 1
+   },
+   "A2s": {
+    "call": 1
+   },
+   "A3s": {
+    "call": 1
+   },
+   "A6s": {
+    "call": 1
+   },
+   "A7s": {
+    "call": 1
+   },
+   "A8s": {
+    "call": 1
+   },
+   "A9s": {
+    "call": 1
+   },
+   "ATs": {
+    "call": 1
+   },
+   "AJs": {
+    "call": 1
+   },
+   "K4s": {
+    "call": 1
+   },
+   "K5s": {
+    "call": 1
+   },
+   "K6s": {
+    "call": 1
+   },
+   "K7s": {
+    "call": 1
+   },
+   "K8s": {
+    "call": 1
+   },
+   "K9s": {
+    "call": 1
+   },
+   "KTs": {
+    "call": 1
+   },
+   "KJs": {
+    "call": 1
+   },
+   "K3s": {
+    "call": 0.5
+   },
+   "K2s": {
+    "call": 0.5
+   },
+   "Q7s": {
+    "call": 1
+   },
+   "Q8s": {
+    "call": 1
+   },
+   "Q9s": {
+    "call": 1
+   },
+   "QTs": {
+    "call": 1
+   },
+   "QJs": {
+    "call": 1
+   },
+   "Q6s": {
+    "call": 0.5
+   },
+   "Q5s": {
+    "call": 0.5
+   },
+   "J7s": {
+    "call": 1
+   },
+   "J8s": {
+    "call": 1
+   },
+   "J9s": {
+    "call": 1
+   },
+   "JTs": {
+    "call": 1
+   },
+   "J6s": {
+    "call": 0.5
+   },
+   "T7s": {
+    "call": 1
+   },
+   "T8s": {
+    "call": 1
+   },
+   "T9s": {
+    "call": 1
+   },
+   "96s": {
+    "call": 1
+   },
+   "97s": {
+    "call": 1
+   },
+   "98s": {
+    "call": 1
+   },
+   "86s": {
+    "call": 1
+   },
+   "87s": {
+    "call": 1
+   },
+   "85s": {
+    "call": 0.5
+   },
+   "75s": {
+    "call": 1
+   },
+   "76s": {
+    "call": 1
+   },
+   "64s": {
+    "call": 1
+   },
+   "65s": {
+    "call": 1
+   },
+   "53s": {
+    "call": 1
+   },
+   "54s": {
+    "call": 1
+   },
+   "43s": {
+    "call": 0.25
+   },
+   "ATo": {
+    "call": 1
+   },
+   "AJo": {
+    "call": 1
+   },
+   "AQo": {
+    "call": 1
+   },
+   "A9o": {
+    "call": 1
+   },
+   "A8o": {
+    "call": 0.5
+   },
+   "A5o": {
+    "call": 0.25
+   },
+   "KTo": {
+    "call": 1
+   },
+   "KJo": {
+    "call": 1
+   },
+   "KQo": {
+    "call": 1
+   },
+   "K9o": {
+    "call": 0.5
+   },
+   "QTo": {
+    "call": 1
+   },
+   "QJo": {
+    "call": 1
+   },
+   "Q9o": {
+    "call": 0.25
+   },
+   "JTo": {
+    "call": 1
+   },
+   "J9o": {
+    "call": 0.25
+   },
+   "T9o": {
+    "call": 0.5
+   }
+  },
+  "VS_OPEN_BTN_vs_CO": {
+   "44": {
+    "call": 0.25
+   },
+   "55": {
+    "call": 0.25
+   },
+   "66": {
+    "call": 0.4
+   },
+   "77": {
+    "call": 0.6
+   },
+   "88": {
+    "call": 0.7
+   },
+   "99": {
+    "call": 0.7
+   },
+   "JJ": {
+    "3bet": 1
+   },
+   "QQ": {
+    "3bet": 1
+   },
+   "KK": {
+    "3bet": 1
+   },
+   "AA": {
+    "3bet": 1
+   },
+   "TT": {
+    "3bet": 0.3,
+    "call": 0.7
+   },
+   "AQs": {
+    "3bet": 1
+   },
+   "AKs": {
+    "3bet": 1
+   },
+   "AKo": {
+    "3bet": 1
+   },
+   "AQo": {
+    "3bet": 0.4,
+    "call": 0.4
+   },
+   "AJs": {
+    "3bet": 0.3,
+    "call": 0.6
+   },
+   "KQs": {
+    "3bet": 0.4,
+    "call": 0.6
+   },
+   "A5s": {
+    "3bet": 0.7
+   },
+   "A4s": {
+    "3bet": 0.7
+   },
+   "A3s": {
+    "3bet": 0.5
+   },
+   "A2s": {
+    "3bet": 0.3
+   },
+   "K9s": {
+    "3bet": 0.3,
+    "call": 0.25
+   },
+   "QTs": {
+    "3bet": 0.3,
+    "call": 0.4
+   },
+   "J9s": {
+    "3bet": 0.3,
+    "call": 0.3
+   },
+   "T9s": {
+    "3bet": 0.25,
+    "call": 0.5
+   },
+   "ATs": {
+    "call": 0.5
+   },
+   "KJs": {
+    "call": 0.5
+   },
+   "KTs": {
+    "call": 0.4
+   },
+   "QJs": {
+    "call": 0.6
+   },
+   "JTs": {
+    "call": 0.6
+   },
+   "98s": {
+    "call": 0.3
+   },
+   "AJo": {
+    "call": 0.2
+   },
+   "A9s": {
+    "call": 0.3
+   },
+   "87s": {
+    "call": 0.25
+   },
+   "KQo": {
+    "call": 0.3
+   }
+  },
+  "VS_OPEN_SB_vs_CO": {
+   "77": {
+    "call": 0.2
+   },
+   "88": {
+    "call": 0.3
+   },
+   "99": {
+    "3bet": 0.5,
+    "call": 0.25
+   },
+   "TT": {
+    "3bet": 1
+   },
+   "JJ": {
+    "3bet": 1
+   },
+   "QQ": {
+    "3bet": 1
+   },
+   "KK": {
+    "3bet": 1
+   },
+   "AA": {
+    "3bet": 1
+   },
+   "AJs": {
+    "3bet": 1
+   },
+   "AQs": {
+    "3bet": 1
+   },
+   "AKs": {
+    "3bet": 1
+   },
+   "ATs": {
+    "3bet": 0.6,
+    "call": 0.2
+   },
+   "AQo": {
+    "3bet": 1
+   },
+   "AKo": {
+    "3bet": 1
+   },
+   "AJo": {
+    "3bet": 0.3
+   },
+   "KQs": {
+    "3bet": 1
+   },
+   "KJs": {
+    "3bet": 0.6
+   },
+   "QJs": {
+    "3bet": 0.4
+   },
+   "A5s": {
+    "3bet": 0.8
+   },
+   "A4s": {
+    "3bet": 0.7
+   },
+   "A3s": {
+    "3bet": 0.5
+   },
+   "A2s": {
+    "3bet": 0.4
+   },
+   "K9s": {
+    "3bet": 0.3
+   },
+   "T9s": {
+    "3bet": 0.3
+   }
+  },
+  "VS_OPEN_BB_vs_CO": {
+   "22": {
+    "call": 1
+   },
+   "33": {
+    "call": 1
+   },
+   "44": {
+    "call": 1
+   },
+   "55": {
+    "call": 1
+   },
+   "66": {
+    "call": 1
+   },
+   "77": {
+    "call": 1
+   },
+   "88": {
+    "call": 1
+   },
+   "99": {
+    "call": 1
+   },
+   "JJ": {
+    "3bet": 1
+   },
+   "QQ": {
+    "3bet": 1
+   },
+   "KK": {
+    "3bet": 1
+   },
+   "AA": {
+    "3bet": 1
+   },
+   "TT": {
+    "3bet": 0.3,
+    "call": 0.7
+   },
+   "AQs": {
+    "3bet": 1
+   },
+   "AKs": {
+    "3bet": 1
+   },
+   "AKo": {
+    "3bet": 1
+   },
+   "AQo": {
+    "3bet": 0.3,
+    "call": 0.7
+   },
+   "KQs": {
+    "3bet": 0.3,
+    "call": 0.7
+   },
+   "A5s": {
+    "3bet": 0.6,
+    "call": 0.4
+   },
+   "A4s": {
+    "3bet": 0.5,
+    "call": 0.5
+   },
+   "A3s": {
+    "3bet": 0.3,
+    "call": 0.7
+   },
+   "K9s": {
+    "3bet": 0.2,
+    "call": 0.8
+   },
+   "76s": {
+    "3bet": 0.2,
+    "call": 0.8
+   },
+   "A2s": {
+    "call": 1
+   },
+   "A6s": {
+    "call": 1
+   },
+   "A7s": {
+    "call": 1
+   },
+   "A8s": {
+    "call": 1
+   },
+   "A9s": {
+    "call": 1
+   },
+   "ATs": {
+    "call": 1
+   },
+   "AJs": {
+    "call": 1
+   },
+   "K2s": {
+    "call": 1
+   },
+   "K3s": {
+    "call": 1
+   },
+   "K4s": {
+    "call": 1
+   },
+   "K5s": {
+    "call": 1
+   },
+   "K6s": {
+    "call": 1
+   },
+   "K7s": {
+    "call": 1
+   },
+   "K8s": {
+    "call": 1
+   },
+   "KTs": {
+    "call": 1
+   },
+   "KJs": {
+    "call": 1
+   },
+   "Q4s": {
+    "call": 1
+   },
+   "Q5s": {
+    "call": 1
+   },
+   "Q6s": {
+    "call": 1
+   },
+   "Q7s": {
+    "call": 1
+   },
+   "Q8s": {
+    "call": 1
+   },
+   "Q9s": {
+    "call": 1
+   },
+   "QTs": {
+    "call": 1
+   },
+   "QJs": {
+    "call": 1
+   },
+   "Q3s": {
+    "call": 0.5
+   },
+   "J6s": {
+    "call": 1
+   },
+   "J7s": {
+    "call": 1
+   },
+   "J8s": {
+    "call": 1
+   },
+   "J9s": {
+    "call": 1
+   },
+   "JTs": {
+    "call": 1
+   },
+   "T6s": {
+    "call": 1
+   },
+   "T7s": {
+    "call": 1
+   },
+   "T8s": {
+    "call": 1
+   },
+   "T9s": {
+    "call": 1
+   },
+   "96s": {
+    "call": 1
+   },
+   "97s": {
+    "call": 1
+   },
+   "98s": {
+    "call": 1
+   },
+   "85s": {
+    "call": 1
+   },
+   "86s": {
+    "call": 1
+   },
+   "87s": {
+    "call": 1
+   },
+   "74s": {
+    "call": 1
+   },
+   "75s": {
+    "call": 1
+   },
+   "64s": {
+    "call": 1
+   },
+   "65s": {
+    "call": 1
+   },
+   "53s": {
+    "call": 1
+   },
+   "54s": {
+    "call": 1
+   },
+   "43s": {
+    "call": 1
+   },
+   "A7o": {
+    "call": 1
+   },
+   "A8o": {
+    "call": 1
+   },
+   "A9o": {
+    "call": 1
+   },
+   "ATo": {
+    "call": 1
+   },
+   "AJo": {
+    "call": 1
+   },
+   "A5o": {
+    "call": 1
+   },
+   "A6o": {
+    "call": 0.5
+   },
+   "A4o": {
+    "call": 0.5
+   },
+   "K9o": {
+    "call": 1
+   },
+   "KTo": {
+    "call": 1
+   },
+   "KJo": {
+    "call": 1
+   },
+   "KQo": {
+    "call": 1
+   },
+   "K8o": {
+    "call": 0.5
+   },
+   "Q9o": {
+    "call": 1
+   },
+   "QTo": {
+    "call": 1
+   },
+   "QJo": {
+    "call": 1
+   },
+   "J9o": {
+    "call": 1
+   },
+   "JTo": {
+    "call": 1
+   },
+   "T9o": {
+    "call": 1
+   },
+   "98o": {
+    "call": 1
+   },
+   "87o": {
+    "call": 0.5
+   }
+  },
+  "VS_OPEN_SB_vs_BTN": {
+   "55": {
+    "call": 0.2
+   },
+   "66": {
+    "call": 0.3
+   },
+   "77": {
+    "3bet": 0.4,
+    "call": 0.3
+   },
+   "88": {
+    "3bet": 0.6,
+    "call": 0.25
+   },
+   "99": {
+    "3bet": 1
+   },
+   "TT": {
+    "3bet": 1
+   },
+   "JJ": {
+    "3bet": 1
+   },
+   "QQ": {
+    "3bet": 1
+   },
+   "KK": {
+    "3bet": 1
+   },
+   "AA": {
+    "3bet": 1
+   },
+   "ATs": {
+    "3bet": 1
+   },
+   "AJs": {
+    "3bet": 1
+   },
+   "AQs": {
+    "3bet": 1
+   },
+   "AKs": {
+    "3bet": 1
+   },
+   "A9s": {
+    "3bet": 0.6
+   },
+   "AJo": {
+    "3bet": 1
+   },
+   "AQo": {
+    "3bet": 1
+   },
+   "AKo": {
+    "3bet": 1
+   },
+   "ATo": {
+    "3bet": 0.5
+   },
+   "KTs": {
+    "3bet": 1
+   },
+   "KJs": {
+    "3bet": 1
+   },
+   "KQs": {
+    "3bet": 1
+   },
+   "KQo": {
+    "3bet": 1
+   },
+   "KJo": {
+    "3bet": 0.4
+   },
+   "QTs": {
+    "3bet": 1
+   },
+   "QJs": {
+    "3bet": 1
+   },
+   "JTs": {
+    "3bet": 0.6
+   },
+   "A5s": {
+    "3bet": 1
+   },
+   "A4s": {
+    "3bet": 1
+   },
+   "A3s": {
+    "3bet": 0.7
+   },
+   "A2s": {
+    "3bet": 0.6
+   },
+   "K9s": {
+    "3bet": 0.6
+   },
+   "K8s": {
+    "3bet": 0.3
+   },
+   "Q9s": {
+    "3bet": 0.4
+   },
+   "J9s": {
+    "3bet": 0.4
+   },
+   "T9s": {
+    "3bet": 0.5
+   },
+   "98s": {
+    "3bet": 0.4
+   },
+   "87s": {
+    "3bet": 0.3
+   }
+  },
+  "VS_OPEN_BB_vs_BTN": {
+   "22": {
+    "call": 1
+   },
+   "33": {
+    "call": 1
+   },
+   "44": {
+    "call": 1
+   },
+   "55": {
+    "call": 1
+   },
+   "66": {
+    "call": 1
+   },
+   "77": {
+    "call": 1
+   },
+   "88": {
+    "call": 1
+   },
+   "99": {
+    "3bet": 0.3,
+    "call": 0.7
+   },
+   "TT": {
+    "3bet": 1
+   },
+   "JJ": {
+    "3bet": 1
+   },
+   "QQ": {
+    "3bet": 1
+   },
+   "KK": {
+    "3bet": 1
+   },
+   "AA": {
+    "3bet": 1
+   },
+   "AJs": {
+    "3bet": 1
+   },
+   "AQs": {
+    "3bet": 1
+   },
+   "AKs": {
+    "3bet": 1
+   },
+   "AQo": {
+    "3bet": 1
+   },
+   "AKo": {
+    "3bet": 1
+   },
+   "AJo": {
+    "3bet": 0.3,
+    "call": 0.7
+   },
+   "KQs": {
+    "3bet": 1
+   },
+   "KJs": {
+    "3bet": 0.4,
+    "call": 0.6
+   },
+   "A5s": {
+    "3bet": 0.7,
+    "call": 0.3
+   },
+   "A4s": {
+    "3bet": 0.6,
+    "call": 0.4
+   },
+   "A3s": {
+    "3bet": 0.5,
+    "call": 0.5
+   },
+   "K9s": {
+    "3bet": 0.3,
+    "call": 0.7
+   },
+   "Q9s": {
+    "3bet": 0.3,
+    "call": 0.7
+   },
+   "J9s": {
+    "3bet": 0.3,
+    "call": 0.7
+   },
+   "T8s": {
+    "3bet": 0.3,
+    "call": 0.7
+   },
+   "76s": {
+    "3bet": 0.3,
+    "call": 0.7
+   },
+   "65s": {
+    "3bet": 0.3,
+    "call": 0.7
+   },
+   "A2s": {
+    "call": 1
+   },
+   "A6s": {
+    "call": 1
+   },
+   "A7s": {
+    "call": 1
+   },
+   "A8s": {
+    "call": 1
+   },
+   "A9s": {
+    "call": 1
+   },
+   "ATs": {
+    "call": 1
+   },
+   "K2s": {
+    "call": 1
+   },
+   "K3s": {
+    "call": 1
+   },
+   "K4s": {
+    "call": 1
+   },
+   "K5s": {
+    "call": 1
+   },
+   "K6s": {
+    "call": 1
+   },
+   "K7s": {
+    "call": 1
+   },
+   "K8s": {
+    "call": 1
+   },
+   "KTs": {
+    "call": 1
+   },
+   "Q2s": {
+    "call": 1
+   },
+   "Q3s": {
+    "call": 1
+   },
+   "Q4s": {
+    "call": 1
+   },
+   "Q5s": {
+    "call": 1
+   },
+   "Q6s": {
+    "call": 1
+   },
+   "Q7s": {
+    "call": 1
+   },
+   "Q8s": {
+    "call": 1
+   },
+   "QTs": {
+    "call": 1
+   },
+   "QJs": {
+    "call": 1
+   },
+   "J4s": {
+    "call": 1
+   },
+   "J5s": {
+    "call": 1
+   },
+   "J6s": {
+    "call": 1
+   },
+   "J7s": {
+    "call": 1
+   },
+   "J8s": {
+    "call": 1
+   },
+   "JTs": {
+    "call": 1
+   },
+   "J3s": {
+    "call": 0.5
+   },
+   "T5s": {
+    "call": 1
+   },
+   "T6s": {
+    "call": 1
+   },
+   "T7s": {
+    "call": 1
+   },
+   "T9s": {
+    "call": 1
+   },
+   "95s": {
+    "call": 1
+   },
+   "96s": {
+    "call": 1
+   },
+   "97s": {
+    "call": 1
+   },
+   "98s": {
+    "call": 1
+   },
+   "84s": {
+    "call": 1
+   },
+   "85s": {
+    "call": 1
+   },
+   "86s": {
+    "call": 1
+   },
+   "87s": {
+    "call": 1
+   },
+   "74s": {
+    "call": 1
+   },
+   "75s": {
+    "call": 1
+   },
+   "63s": {
+    "call": 1
+   },
+   "64s": {
+    "call": 1
+   },
+   "52s": {
+    "call": 1
+   },
+   "53s": {
+    "call": 1
+   },
+   "54s": {
+    "call": 1
+   },
+   "42s": {
+    "call": 1
+   },
+   "43s": {
+    "call": 1
+   },
+   "32s": {
+    "call": 0.5
+   },
+   "A2o": {
+    "call": 1
+   },
+   "A3o": {
+    "call": 1
+   },
+   "A4o": {
+    "call": 1
+   },
+   "A5o": {
+    "call": 1
+   },
+   "A6o": {
+    "call": 1
+   },
+   "A7o": {
+    "call": 1
+   },
+   "A8o": {
+    "call": 1
+   },
+   "A9o": {
+    "call": 1
+   },
+   "ATo": {
+    "call": 1
+   },
+   "K5o": {
+    "call": 1
+   },
+   "K6o": {
+    "call": 1
+   },
+   "K7o": {
+    "call": 1
+   },
+   "K8o": {
+    "call": 1
+   },
+   "K9o": {
+    "call": 1
+   },
+   "KTo": {
+    "call": 1
+   },
+   "KJo": {
+    "call": 1
+   },
+   "KQo": {
+    "call": 1
+   },
+   "K4o": {
+    "call": 0.5
+   },
+   "Q8o": {
+    "call": 1
+   },
+   "Q9o": {
+    "call": 1
+   },
+   "QTo": {
+    "call": 1
+   },
+   "QJo": {
+    "call": 1
+   },
+   "Q7o": {
+    "call": 0.5
+   },
+   "J8o": {
+    "call": 1
+   },
+   "J9o": {
+    "call": 1
+   },
+   "JTo": {
+    "call": 1
+   },
+   "T8o": {
+    "call": 1
+   },
+   "T9o": {
+    "call": 1
+   },
+   "97o": {
+    "call": 1
+   },
+   "98o": {
+    "call": 1
+   },
+   "87o": {
+    "call": 1
+   },
+   "86o": {
+    "call": 0.5
+   },
+   "76o": {
+    "call": 0.5
+   },
+   "65o": {
+    "call": 0.5
+   }
+  },
+  "VS_OPEN_BB_vs_SB": {
+   "22": {
+    "call": 1
+   },
+   "33": {
+    "call": 1
+   },
+   "44": {
+    "call": 1
+   },
+   "55": {
+    "call": 1
+   },
+   "66": {
+    "call": 1
+   },
+   "77": {
+    "call": 1
+   },
+   "88": {
+    "3bet": 0.4,
+    "call": 0.6
+   },
+   "99": {
+    "3bet": 1
+   },
+   "TT": {
+    "3bet": 1
+   },
+   "JJ": {
+    "3bet": 1
+   },
+   "QQ": {
+    "3bet": 1
+   },
+   "KK": {
+    "3bet": 1
+   },
+   "AA": {
+    "3bet": 1
+   },
+   "ATs": {
+    "3bet": 1
+   },
+   "AJs": {
+    "3bet": 1
+   },
+   "AQs": {
+    "3bet": 1
+   },
+   "AKs": {
+    "3bet": 1
+   },
+   "AJo": {
+    "3bet": 1
+   },
+   "AQo": {
+    "3bet": 1
+   },
+   "AKo": {
+    "3bet": 1
+   },
+   "ATo": {
+    "3bet": 0.4,
+    "call": 0.6
+   },
+   "KTs": {
+    "3bet": 1
+   },
+   "KJs": {
+    "3bet": 1
+   },
+   "KQs": {
+    "3bet": 1
+   },
+   "KQo": {
+    "3bet": 1
+   },
+   "KJo": {
+    "3bet": 0.4,
+    "call": 0.6
+   },
+   "QJs": {
+    "3bet": 1
+   },
+   "QTs": {
+    "3bet": 0.5,
+    "call": 0.5
+   },
+   "JTs": {
+    "3bet": 0.5,
+    "call": 0.5
+   },
+   "A5s": {
+    "3bet": 1
+   },
+   "A4s": {
+    "3bet": 0.8,
+    "call": 0.2
+   },
+   "A3s": {
+    "3bet": 0.6,
+    "call": 0.4
+   },
+   "A2s": {
+    "3bet": 0.5,
+    "call": 0.5
+   },
+   "K9s": {
+    "3bet": 0.5,
+    "call": 0.5
+   },
+   "K7s": {
+    "3bet": 0.3,
+    "call": 0.7
+   },
+   "Q9s": {
+    "3bet": 0.4,
+    "call": 0.6
+   },
+   "J9s": {
+    "3bet": 0.4,
+    "call": 0.6
+   },
+   "T9s": {
+    "3bet": 0.4,
+    "call": 0.6
+   },
+   "87s": {
+    "3bet": 0.3,
+    "call": 0.7
+   },
+   "76s": {
+    "3bet": 0.3,
+    "call": 0.7
+   },
+   "65s": {
+    "3bet": 0.3,
+    "call": 0.7
+   },
+   "A6s": {
+    "call": 1
+   },
+   "A7s": {
+    "call": 1
+   },
+   "A8s": {
+    "call": 1
+   },
+   "A9s": {
+    "call": 1
+   },
+   "K2s": {
+    "call": 1
+   },
+   "K3s": {
+    "call": 1
+   },
+   "K4s": {
+    "call": 1
+   },
+   "K5s": {
+    "call": 1
+   },
+   "K6s": {
+    "call": 1
+   },
+   "K8s": {
+    "call": 1
+   },
+   "Q2s": {
+    "call": 1
+   },
+   "Q3s": {
+    "call": 1
+   },
+   "Q4s": {
+    "call": 1
+   },
+   "Q5s": {
+    "call": 1
+   },
+   "Q6s": {
+    "call": 1
+   },
+   "Q7s": {
+    "call": 1
+   },
+   "Q8s": {
+    "call": 1
+   },
+   "J2s": {
+    "call": 1
+   },
+   "J3s": {
+    "call": 1
+   },
+   "J4s": {
+    "call": 1
+   },
+   "J5s": {
+    "call": 1
+   },
+   "J6s": {
+    "call": 1
+   },
+   "J7s": {
+    "call": 1
+   },
+   "J8s": {
+    "call": 1
+   },
+   "T3s": {
+    "call": 1
+   },
+   "T4s": {
+    "call": 1
+   },
+   "T5s": {
+    "call": 1
+   },
+   "T6s": {
+    "call": 1
+   },
+   "T7s": {
+    "call": 1
+   },
+   "T8s": {
+    "call": 1
+   },
+   "94s": {
+    "call": 1
+   },
+   "95s": {
+    "call": 1
+   },
+   "96s": {
+    "call": 1
+   },
+   "97s": {
+    "call": 1
+   },
+   "98s": {
+    "call": 1
+   },
+   "84s": {
+    "call": 1
+   },
+   "85s": {
+    "call": 1
+   },
+   "86s": {
+    "call": 1
+   },
+   "73s": {
+    "call": 1
+   },
+   "74s": {
+    "call": 1
+   },
+   "75s": {
+    "call": 1
+   },
+   "63s": {
+    "call": 1
+   },
+   "64s": {
+    "call": 1
+   },
+   "52s": {
+    "call": 1
+   },
+   "53s": {
+    "call": 1
+   },
+   "54s": {
+    "call": 1
+   },
+   "42s": {
+    "call": 1
+   },
+   "43s": {
+    "call": 1
+   },
+   "32s": {
+    "call": 1
+   },
+   "A2o": {
+    "call": 1
+   },
+   "A3o": {
+    "call": 1
+   },
+   "A4o": {
+    "call": 1
+   },
+   "A5o": {
+    "call": 1
+   },
+   "A6o": {
+    "call": 1
+   },
+   "A7o": {
+    "call": 1
+   },
+   "A8o": {
+    "call": 1
+   },
+   "A9o": {
+    "call": 1
+   },
+   "K2o": {
+    "call": 1
+   },
+   "K3o": {
+    "call": 1
+   },
+   "K4o": {
+    "call": 1
+   },
+   "K5o": {
+    "call": 1
+   },
+   "K6o": {
+    "call": 1
+   },
+   "K7o": {
+    "call": 1
+   },
+   "K8o": {
+    "call": 1
+   },
+   "K9o": {
+    "call": 1
+   },
+   "KTo": {
+    "call": 1
+   },
+   "Q5o": {
+    "call": 1
+   },
+   "Q6o": {
+    "call": 1
+   },
+   "Q7o": {
+    "call": 1
+   },
+   "Q8o": {
+    "call": 1
+   },
+   "Q9o": {
+    "call": 1
+   },
+   "QTo": {
+    "call": 1
+   },
+   "QJo": {
+    "call": 1
+   },
+   "Q4o": {
+    "call": 0.5
+   },
+   "J7o": {
+    "call": 1
+   },
+   "J8o": {
+    "call": 1
+   },
+   "J9o": {
+    "call": 1
+   },
+   "JTo": {
+    "call": 1
+   },
+   "J6o": {
+    "call": 0.5
+   },
+   "T7o": {
+    "call": 1
+   },
+   "T8o": {
+    "call": 1
+   },
+   "T9o": {
+    "call": 1
+   },
+   "96o": {
+    "call": 1
+   },
+   "97o": {
+    "call": 1
+   },
+   "98o": {
+    "call": 1
+   },
+   "86o": {
+    "call": 1
+   },
+   "87o": {
+    "call": 1
+   },
+   "75o": {
+    "call": 1
+   },
+   "76o": {
+    "call": 1
+   },
+   "65o": {
+    "call": 1
+   },
+   "54o": {
+    "call": 0.5
+   }
+  },
+  "VS_3BET_UTG_vs_HJ": {
+   "55": {
+    "call": 0.2
+   },
+   "66": {
+    "call": 0.35
+   },
+   "77": {
+    "call": 0.5
+   },
+   "88": {
+    "call": 0.65
+   },
+   "99": {
+    "call": 0.75
+   },
+   "KK": {
+    "4bet": 1
+   },
+   "AA": {
+    "4bet": 1
+   },
+   "QQ": {
+    "4bet": 0.5,
+    "call": 0.45
+   },
+   "AKs": {
+    "4bet": 1
+   },
+   "AKo": {
+    "4bet": 0.6
+   },
+   "A5s": {
+    "4bet": 0.4
+   },
+   "A4s": {
+    "4bet": 0.25
+   },
+   "JJ": {
+    "call": 1
+   },
+   "TT": {
+    "call": 1
+   },
+   "AQs": {
+    "call": 0.6
+   },
+   "AJs": {
+    "call": 1
+   },
+   "ATs": {
+    "call": 0.65
+   },
+   "A9s": {
+    "call": 0.25
+   },
+   "KQs": {
+    "call": 1
+   },
+   "KJs": {
+    "call": 0.7
+   },
+   "KTs": {
+    "call": 0.45
+   },
+   "QJs": {
+    "call": 0.7
+   },
+   "QTs": {
+    "call": 0.35
+   },
+   "JTs": {
+    "call": 0.65
+   },
+   "T9s": {
+    "call": 0.45
+   },
+   "98s": {
+    "call": 0.25
+   },
+   "AQo": {
+    "call": 0.65
+   },
+   "AJo": {
+    "call": 0.25
+   },
+   "KQo": {
+    "call": 0.35
+   }
+  },
+  "VS_3BET_UTG_vs_CO": {
+   "55": {
+    "call": 0.25
+   },
+   "66": {
+    "call": 0.4
+   },
+   "77": {
+    "call": 0.6
+   },
+   "88": {
+    "call": 0.75
+   },
+   "99": {
+    "call": 0.9
+   },
+   "KK": {
+    "4bet": 1
+   },
+   "AA": {
+    "4bet": 1
+   },
+   "QQ": {
+    "4bet": 0.5,
+    "call": 0.5
+   },
+   "AKs": {
+    "4bet": 1
+   },
+   "AKo": {
+    "4bet": 0.6
+   },
+   "A5s": {
+    "4bet": 0.4
+   },
+   "A4s": {
+    "4bet": 0.25
+   },
+   "JJ": {
+    "call": 1
+   },
+   "TT": {
+    "call": 1
+   },
+   "AQs": {
+    "call": 0.7
+   },
+   "AJs": {
+    "call": 1
+   },
+   "ATs": {
+    "call": 0.75
+   },
+   "A9s": {
+    "call": 0.3
+   },
+   "KQs": {
+    "call": 1
+   },
+   "KJs": {
+    "call": 0.8
+   },
+   "KTs": {
+    "call": 0.5
+   },
+   "QJs": {
+    "call": 0.8
+   },
+   "QTs": {
+    "call": 0.4
+   },
+   "JTs": {
+    "call": 0.75
+   },
+   "T9s": {
+    "call": 0.5
+   },
+   "98s": {
+    "call": 0.3
+   },
+   "AQo": {
+    "call": 0.75
+   },
+   "AJo": {
+    "call": 0.3
+   },
+   "KQo": {
+    "call": 0.4
+   }
+  },
+  "VS_3BET_UTG_vs_BTN": {
+   "55": {
+    "call": 0.25
+   },
+   "66": {
+    "call": 0.4
+   },
+   "77": {
+    "call": 0.6
+   },
+   "88": {
+    "call": 0.75
+   },
+   "99": {
+    "call": 0.9
+   },
+   "QQ": {
+    "4bet": 1
+   },
+   "KK": {
+    "4bet": 1
+   },
+   "AA": {
+    "4bet": 1
+   },
+   "JJ": {
+    "4bet": 0.3,
+    "call": 0.7
+   },
+   "AKs": {
+    "4bet": 1
+   },
+   "AKo": {
+    "4bet": 0.75
+   },
+   "AQs": {
+    "4bet": 0.3,
+    "call": 0.7
+   },
+   "A5s": {
+    "4bet": 0.5
+   },
+   "A4s": {
+    "4bet": 0.4
+   },
+   "A3s": {
+    "4bet": 0.2
+   },
+   "TT": {
+    "call": 1
+   },
+   "AJs": {
+    "call": 1
+   },
+   "ATs": {
+    "call": 0.75
+   },
+   "A9s": {
+    "call": 0.3
+   },
+   "KQs": {
+    "call": 1
+   },
+   "KJs": {
+    "call": 0.8
+   },
+   "KTs": {
+    "call": 0.5
+   },
+   "QJs": {
+    "call": 0.8
+   },
+   "QTs": {
+    "call": 0.4
+   },
+   "JTs": {
+    "call": 0.75
+   },
+   "T9s": {
+    "call": 0.5
+   },
+   "98s": {
+    "call": 0.3
+   },
+   "AQo": {
+    "call": 0.75
+   },
+   "AJo": {
+    "call": 0.3
+   },
+   "KQo": {
+    "call": 0.4
+   }
+  },
+  "VS_3BET_UTG_vs_SB": {
+   "55": {
+    "call": 0.4
+   },
+   "66": {
+    "call": 0.6
+   },
+   "77": {
+    "call": 0.8
+   },
+   "88": {
+    "call": 1
+   },
+   "99": {
+    "call": 1
+   },
+   "QQ": {
+    "4bet": 1
+   },
+   "KK": {
+    "4bet": 1
+   },
+   "AA": {
+    "4bet": 1
+   },
+   "JJ": {
+    "4bet": 0.3,
+    "call": 0.7
+   },
+   "AKs": {
+    "4bet": 1
+   },
+   "AKo": {
+    "4bet": 0.75
+   },
+   "AQs": {
+    "4bet": 0.3,
+    "call": 0.7
+   },
+   "A5s": {
+    "4bet": 0.5
+   },
+   "A4s": {
+    "4bet": 0.4
+   },
+   "A3s": {
+    "4bet": 0.2
+   },
+   "TT": {
+    "call": 1
+   },
+   "AJs": {
+    "call": 1
+   },
+   "ATs": {
+    "call": 1
+   },
+   "A9s": {
+    "call": 0.5
+   },
+   "KQs": {
+    "call": 1
+   },
+   "KJs": {
+    "call": 1
+   },
+   "KTs": {
+    "call": 0.7
+   },
+   "QJs": {
+    "call": 1
+   },
+   "QTs": {
+    "call": 0.6
+   },
+   "JTs": {
+    "call": 1
+   },
+   "T9s": {
+    "call": 0.7
+   },
+   "98s": {
+    "call": 0.5
+   },
+   "87s": {
+    "call": 0.25
+   },
+   "AQo": {
+    "call": 0.75
+   },
+   "AJo": {
+    "call": 0.5
+   },
+   "KQo": {
+    "call": 0.5
+   }
+  },
+  "VS_3BET_UTG_vs_BB": {
+   "55": {
+    "call": 0.35
+   },
+   "66": {
+    "call": 0.55
+   },
+   "77": {
+    "call": 0.7
+   },
+   "88": {
+    "call": 1
+   },
+   "99": {
+    "call": 1
+   },
+   "QQ": {
+    "4bet": 1
+   },
+   "KK": {
+    "4bet": 1
+   },
+   "AA": {
+    "4bet": 1
+   },
+   "JJ": {
+    "4bet": 0.3,
+    "call": 0.7
+   },
+   "AKs": {
+    "4bet": 1
+   },
+   "AKo": {
+    "4bet": 0.75
+   },
+   "AQs": {
+    "4bet": 0.3,
+    "call": 0.65
+   },
+   "A5s": {
+    "4bet": 0.5
+   },
+   "A4s": {
+    "4bet": 0.4
+   },
+   "A3s": {
+    "4bet": 0.2
+   },
+   "TT": {
+    "call": 1
+   },
+   "AJs": {
+    "call": 1
+   },
+   "ATs": {
+    "call": 1
+   },
+   "A9s": {
+    "call": 0.45
+   },
+   "KQs": {
+    "call": 1
+   },
+   "KJs": {
+    "call": 1
+   },
+   "KTs": {
+    "call": 0.65
+   },
+   "QJs": {
+    "call": 1
+   },
+   "QTs": {
+    "call": 0.55
+   },
+   "JTs": {
+    "call": 1
+   },
+   "T9s": {
+    "call": 0.65
+   },
+   "98s": {
+    "call": 0.45
+   },
+   "87s": {
+    "call": 0.25
+   },
+   "AQo": {
+    "call": 0.7
+   },
+   "AJo": {
+    "call": 0.45
+   },
+   "KQo": {
+    "call": 0.45
+   }
+  },
+  "VS_3BET_HJ_vs_CO": {
+   "55": {
+    "call": 0.25
+   },
+   "66": {
+    "call": 0.4
+   },
+   "77": {
+    "call": 0.6
+   },
+   "88": {
+    "call": 0.75
+   },
+   "99": {
+    "call": 0.9
+   },
+   "KK": {
+    "4bet": 1
+   },
+   "AA": {
+    "4bet": 1
+   },
+   "QQ": {
+    "4bet": 0.5,
+    "call": 0.5
+   },
+   "AKs": {
+    "4bet": 1
+   },
+   "AKo": {
+    "4bet": 0.6
+   },
+   "A5s": {
+    "4bet": 0.4
+   },
+   "A4s": {
+    "4bet": 0.25
+   },
+   "JJ": {
+    "call": 1
+   },
+   "TT": {
+    "call": 1
+   },
+   "AQs": {
+    "call": 0.7
+   },
+   "AJs": {
+    "call": 1
+   },
+   "ATs": {
+    "call": 0.75
+   },
+   "A9s": {
+    "call": 0.3
+   },
+   "KQs": {
+    "call": 1
+   },
+   "KJs": {
+    "call": 0.8
+   },
+   "KTs": {
+    "call": 0.5
+   },
+   "QJs": {
+    "call": 0.8
+   },
+   "QTs": {
+    "call": 0.4
+   },
+   "JTs": {
+    "call": 0.75
+   },
+   "T9s": {
+    "call": 0.5
+   },
+   "98s": {
+    "call": 0.3
+   },
+   "AQo": {
+    "call": 0.75
+   },
+   "AJo": {
+    "call": 0.3
+   },
+   "KQo": {
+    "call": 0.4
+   }
+  },
+  "VS_3BET_HJ_vs_BTN": {
+   "55": {
+    "call": 0.25
+   },
+   "66": {
+    "call": 0.4
+   },
+   "77": {
+    "call": 0.6
+   },
+   "88": {
+    "call": 0.75
+   },
+   "99": {
+    "call": 0.9
+   },
+   "QQ": {
+    "4bet": 1
+   },
+   "KK": {
+    "4bet": 1
+   },
+   "AA": {
+    "4bet": 1
+   },
+   "JJ": {
+    "4bet": 0.3,
+    "call": 0.7
+   },
+   "AKs": {
+    "4bet": 1
+   },
+   "AKo": {
+    "4bet": 0.75
+   },
+   "AQs": {
+    "4bet": 0.3,
+    "call": 0.7
+   },
+   "A5s": {
+    "4bet": 0.5
+   },
+   "A4s": {
+    "4bet": 0.4
+   },
+   "A3s": {
+    "4bet": 0.2
+   },
+   "TT": {
+    "call": 1
+   },
+   "AJs": {
+    "call": 1
+   },
+   "ATs": {
+    "call": 0.75
+   },
+   "A9s": {
+    "call": 0.3
+   },
+   "KQs": {
+    "call": 1
+   },
+   "KJs": {
+    "call": 0.8
+   },
+   "KTs": {
+    "call": 0.5
+   },
+   "QJs": {
+    "call": 0.8
+   },
+   "QTs": {
+    "call": 0.4
+   },
+   "JTs": {
+    "call": 0.75
+   },
+   "T9s": {
+    "call": 0.5
+   },
+   "98s": {
+    "call": 0.3
+   },
+   "AQo": {
+    "call": 0.75
+   },
+   "AJo": {
+    "call": 0.3
+   },
+   "KQo": {
+    "call": 0.4
+   }
+  },
+  "VS_3BET_HJ_vs_SB": {
+   "55": {
+    "call": 0.4
+   },
+   "66": {
+    "call": 0.6
+   },
+   "77": {
+    "call": 0.8
+   },
+   "88": {
+    "call": 1
+   },
+   "99": {
+    "call": 1
+   },
+   "QQ": {
+    "4bet": 1
+   },
+   "KK": {
+    "4bet": 1
+   },
+   "AA": {
+    "4bet": 1
+   },
+   "JJ": {
+    "4bet": 0.3,
+    "call": 0.7
+   },
+   "AKs": {
+    "4bet": 1
+   },
+   "AKo": {
+    "4bet": 0.75
+   },
+   "AQs": {
+    "4bet": 0.3,
+    "call": 0.7
+   },
+   "A5s": {
+    "4bet": 0.5
+   },
+   "A4s": {
+    "4bet": 0.4
+   },
+   "A3s": {
+    "4bet": 0.2
+   },
+   "TT": {
+    "call": 1
+   },
+   "AJs": {
+    "call": 1
+   },
+   "ATs": {
+    "call": 1
+   },
+   "A9s": {
+    "call": 0.5
+   },
+   "KQs": {
+    "call": 1
+   },
+   "KJs": {
+    "call": 1
+   },
+   "KTs": {
+    "call": 0.7
+   },
+   "QJs": {
+    "call": 1
+   },
+   "QTs": {
+    "call": 0.6
+   },
+   "JTs": {
+    "call": 1
+   },
+   "T9s": {
+    "call": 0.7
+   },
+   "98s": {
+    "call": 0.5
+   },
+   "87s": {
+    "call": 0.4
+   },
+   "AQo": {
+    "call": 0.75
+   },
+   "AJo": {
+    "call": 0.5
+   },
+   "KQo": {
+    "call": 0.5
+   }
+  },
+  "VS_3BET_HJ_vs_BB": {
+   "55": {
+    "call": 0.35
+   },
+   "66": {
+    "call": 0.55
+   },
+   "77": {
+    "call": 0.7
+   },
+   "88": {
+    "call": 1
+   },
+   "99": {
+    "call": 1
+   },
+   "QQ": {
+    "4bet": 1
+   },
+   "KK": {
+    "4bet": 1
+   },
+   "AA": {
+    "4bet": 1
+   },
+   "JJ": {
+    "4bet": 0.3,
+    "call": 0.7
+   },
+   "AKs": {
+    "4bet": 1
+   },
+   "AKo": {
+    "4bet": 0.75
+   },
+   "AQs": {
+    "4bet": 0.3,
+    "call": 0.65
+   },
+   "A5s": {
+    "4bet": 0.5
+   },
+   "A4s": {
+    "4bet": 0.4
+   },
+   "A3s": {
+    "4bet": 0.2
+   },
+   "TT": {
+    "call": 1
+   },
+   "AJs": {
+    "call": 1
+   },
+   "ATs": {
+    "call": 1
+   },
+   "A9s": {
+    "call": 0.45
+   },
+   "KQs": {
+    "call": 1
+   },
+   "KJs": {
+    "call": 1
+   },
+   "KTs": {
+    "call": 0.65
+   },
+   "QJs": {
+    "call": 1
+   },
+   "QTs": {
+    "call": 0.55
+   },
+   "JTs": {
+    "call": 1
+   },
+   "T9s": {
+    "call": 0.65
+   },
+   "98s": {
+    "call": 0.45
+   },
+   "87s": {
+    "call": 0.35
+   },
+   "AQo": {
+    "call": 0.7
+   },
+   "AJo": {
+    "call": 0.45
+   },
+   "KQo": {
+    "call": 0.45
+   }
+  },
+  "VS_3BET_CO_vs_BTN": {
+   "44": {
+    "call": 0.25
+   },
+   "55": {
+    "call": 0.4
+   },
+   "66": {
+    "call": 0.6
+   },
+   "77": {
+    "call": 0.6
+   },
+   "88": {
+    "call": 0.75
+   },
+   "99": {
+    "call": 0.9
+   },
+   "QQ": {
+    "4bet": 1
+   },
+   "KK": {
+    "4bet": 1
+   },
+   "AA": {
+    "4bet": 1
+   },
+   "JJ": {
+    "4bet": 0.3,
+    "call": 0.7
+   },
+   "AKs": {
+    "4bet": 1
+   },
+   "AKo": {
+    "4bet": 0.75
+   },
+   "AQs": {
+    "4bet": 0.3,
+    "call": 0.7
+   },
+   "A5s": {
+    "4bet": 0.5
+   },
+   "A4s": {
+    "4bet": 0.4
+   },
+   "A3s": {
+    "4bet": 0.2
+   },
+   "TT": {
+    "call": 1
+   },
+   "AJs": {
+    "call": 1
+   },
+   "ATs": {
+    "call": 0.75
+   },
+   "A9s": {
+    "call": 0.5
+   },
+   "KQs": {
+    "call": 1
+   },
+   "KJs": {
+    "call": 0.8
+   },
+   "KTs": {
+    "call": 0.5
+   },
+   "QJs": {
+    "call": 0.8
+   },
+   "QTs": {
+    "call": 0.4
+   },
+   "JTs": {
+    "call": 0.75
+   },
+   "T9s": {
+    "call": 0.7
+   },
+   "98s": {
+    "call": 0.5
+   },
+   "AQo": {
+    "call": 0.75
+   },
+   "AJo": {
+    "call": 0.5
+   },
+   "KQo": {
+    "call": 0.5
+   },
+   "A7s": {
+    "call": 0.3
+   },
+   "A6s": {
+    "call": 0.3
+   },
+   "K8s": {
+    "call": 0.3
+   },
+   "T8s": {
+    "call": 0.3
+   },
+   "KJo": {
+    "call": 0.3
+   },
+   "QJo": {
+    "call": 0.25
+   },
+   "A8s": {
+    "call": 0.4
+   },
+   "K9s": {
+    "call": 0.5
+   },
+   "Q9s": {
+    "call": 0.4
+   },
+   "J9s": {
+    "call": 0.5
+   },
+   "87s": {
+    "call": 0.4
+   },
+   "76s": {
+    "call": 0.3
+   },
+   "ATo": {
+    "call": 0.25
+   }
+  },
+  "VS_3BET_CO_vs_SB": {
+   "44": {
+    "call": 0.25
+   },
+   "55": {
+    "call": 0.4
+   },
+   "66": {
+    "call": 0.6
+   },
+   "77": {
+    "call": 0.8
+   },
+   "88": {
+    "call": 1
+   },
+   "99": {
+    "call": 1
+   },
+   "QQ": {
+    "4bet": 1
+   },
+   "KK": {
+    "4bet": 1
+   },
+   "AA": {
+    "4bet": 1
+   },
+   "JJ": {
+    "4bet": 0.3,
+    "call": 0.7
+   },
+   "AKs": {
+    "4bet": 1
+   },
+   "AKo": {
+    "4bet": 0.75
+   },
+   "AQs": {
+    "4bet": 0.3,
+    "call": 0.7
+   },
+   "A5s": {
+    "4bet": 0.5
+   },
+   "A4s": {
+    "4bet": 0.4
+   },
+   "A3s": {
+    "4bet": 0.2
+   },
+   "TT": {
+    "call": 1
+   },
+   "AJs": {
+    "call": 1
+   },
+   "ATs": {
+    "call": 1
+   },
+   "A9s": {
+    "call": 0.5
+   },
+   "KQs": {
+    "call": 1
+   },
+   "KJs": {
+    "call": 1
+   },
+   "KTs": {
+    "call": 0.7
+   },
+   "QJs": {
+    "call": 1
+   },
+   "QTs": {
+    "call": 0.6
+   },
+   "JTs": {
+    "call": 1
+   },
+   "T9s": {
+    "call": 0.7
+   },
+   "98s": {
+    "call": 0.5
+   },
+   "87s": {
+    "call": 0.4
+   },
+   "AQo": {
+    "call": 0.75
+   },
+   "AJo": {
+    "call": 0.5
+   },
+   "KQo": {
+    "call": 0.5
+   },
+   "A7s": {
+    "call": 0.3
+   },
+   "A6s": {
+    "call": 0.3
+   },
+   "K8s": {
+    "call": 0.3
+   },
+   "T8s": {
+    "call": 0.3
+   },
+   "KJo": {
+    "call": 0.3
+   },
+   "QJo": {
+    "call": 0.25
+   },
+   "A8s": {
+    "call": 0.4
+   },
+   "K9s": {
+    "call": 0.5
+   },
+   "Q9s": {
+    "call": 0.4
+   },
+   "J9s": {
+    "call": 0.5
+   },
+   "76s": {
+    "call": 0.3
+   },
+   "ATo": {
+    "call": 0.25
+   }
+  },
+  "VS_3BET_CO_vs_BB": {
+   "44": {
+    "call": 0.25
+   },
+   "55": {
+    "call": 0.35
+   },
+   "66": {
+    "call": 0.55
+   },
+   "77": {
+    "call": 0.7
+   },
+   "88": {
+    "call": 1
+   },
+   "99": {
+    "call": 1
+   },
+   "QQ": {
+    "4bet": 1
+   },
+   "KK": {
+    "4bet": 1
+   },
+   "AA": {
+    "4bet": 1
+   },
+   "JJ": {
+    "4bet": 0.3,
+    "call": 0.7
+   },
+   "AKs": {
+    "4bet": 1
+   },
+   "AKo": {
+    "4bet": 0.75
+   },
+   "AQs": {
+    "4bet": 0.3,
+    "call": 0.65
+   },
+   "A5s": {
+    "4bet": 0.5
+   },
+   "A4s": {
+    "4bet": 0.4
+   },
+   "A3s": {
+    "4bet": 0.2
+   },
+   "TT": {
+    "call": 1
+   },
+   "AJs": {
+    "call": 1
+   },
+   "ATs": {
+    "call": 1
+   },
+   "A9s": {
+    "call": 0.45
+   },
+   "KQs": {
+    "call": 1
+   },
+   "KJs": {
+    "call": 1
+   },
+   "KTs": {
+    "call": 0.65
+   },
+   "QJs": {
+    "call": 1
+   },
+   "QTs": {
+    "call": 0.55
+   },
+   "JTs": {
+    "call": 1
+   },
+   "T9s": {
+    "call": 0.65
+   },
+   "98s": {
+    "call": 0.45
+   },
+   "87s": {
+    "call": 0.35
+   },
+   "AQo": {
+    "call": 0.7
+   },
+   "AJo": {
+    "call": 0.45
+   },
+   "KQo": {
+    "call": 0.45
+   },
+   "A7s": {
+    "call": 0.25
+   },
+   "A6s": {
+    "call": 0.25
+   },
+   "K8s": {
+    "call": 0.25
+   },
+   "T8s": {
+    "call": 0.25
+   },
+   "KJo": {
+    "call": 0.25
+   },
+   "QJo": {
+    "call": 0.25
+   },
+   "A8s": {
+    "call": 0.35
+   },
+   "K9s": {
+    "call": 0.45
+   },
+   "Q9s": {
+    "call": 0.35
+   },
+   "J9s": {
+    "call": 0.45
+   },
+   "76s": {
+    "call": 0.25
+   },
+   "ATo": {
+    "call": 0.25
+   }
+  },
+  "VS_3BET_BTN_vs_SB": {
+   "22": {
+    "call": 0.3
+   },
+   "33": {
+    "call": 0.4
+   },
+   "44": {
+    "call": 0.5
+   },
+   "55": {
+    "call": 0.6
+   },
+   "66": {
+    "call": 0.8
+   },
+   "77": {
+    "call": 0.9
+   },
+   "88": {
+    "call": 1
+   },
+   "99": {
+    "call": 1
+   },
+   "QQ": {
+    "4bet": 1
+   },
+   "KK": {
+    "4bet": 1
+   },
+   "AA": {
+    "4bet": 1
+   },
+   "JJ": {
+    "4bet": 0.5,
+    "call": 0.5
+   },
+   "TT": {
+    "4bet": 0.25,
+    "call": 0.75
+   },
+   "AKs": {
+    "4bet": 1
+   },
+   "AKo": {
+    "4bet": 1
+   },
+   "AQs": {
+    "4bet": 0.5,
+    "call": 0.5
+   },
+   "AQo": {
+    "4bet": 0.25,
+    "call": 0.75
+   },
+   "A5s": {
+    "4bet": 0.6
+   },
+   "A4s": {
+    "4bet": 0.5
+   },
+   "A3s": {
+    "4bet": 0.4
+   },
+   "K9s": {
+    "4bet": 0.2,
+    "call": 0.8
+   },
+   "KJo": {
+    "4bet": 0.15,
+    "call": 0.6
+   },
+   "AJs": {
+    "call": 1
+   },
+   "ATs": {
+    "call": 1
+   },
+   "A9s": {
+    "call": 0.8
+   },
+   "KQs": {
+    "call": 1
+   },
+   "KJs": {
+    "call": 1
+   },
+   "KTs": {
+    "call": 0.7
+   },
+   "QJs": {
+    "call": 1
+   },
+   "QTs": {
+    "call": 0.6
+   },
+   "JTs": {
+    "call": 1
+   },
+   "T9s": {
+    "call": 1
+   },
+   "98s": {
+    "call": 0.8
+   },
+   "87s": {
+    "call": 0.7
+   },
+   "AJo": {
+    "call": 0.75
+   },
+   "KQo": {
+    "call": 0.8
+   },
+   "A8s": {
+    "call": 0.7
+   },
+   "A7s": {
+    "call": 0.6
+   },
+   "A6s": {
+    "call": 0.5
+   },
+   "K8s": {
+    "call": 0.5
+   },
+   "K7s": {
+    "call": 0.4
+   },
+   "K6s": {
+    "call": 0.3
+   },
+   "Q9s": {
+    "call": 0.8
+   },
+   "Q8s": {
+    "call": 0.5
+   },
+   "J9s": {
+    "call": 0.8
+   },
+   "J8s": {
+    "call": 0.4
+   },
+   "T8s": {
+    "call": 0.7
+   },
+   "97s": {
+    "call": 0.6
+   },
+   "86s": {
+    "call": 0.4
+   },
+   "76s": {
+    "call": 0.6
+   },
+   "75s": {
+    "call": 0.3
+   },
+   "65s": {
+    "call": 0.6
+   },
+   "54s": {
+    "call": 0.5
+   },
+   "ATo": {
+    "call": 0.6
+   },
+   "A9o": {
+    "call": 0.3
+   },
+   "KTo": {
+    "call": 0.4
+   },
+   "QJo": {
+    "call": 0.6
+   },
+   "QTo": {
+    "call": 0.3
+   },
+   "JTo": {
+    "call": 0.5
+   }
+  },
+  "VS_3BET_BTN_vs_BB": {
+   "22": {
+    "call": 0.25
+   },
+   "33": {
+    "call": 0.35
+   },
+   "44": {
+    "call": 0.45
+   },
+   "55": {
+    "call": 0.55
+   },
+   "66": {
+    "call": 0.7
+   },
+   "77": {
+    "call": 0.8
+   },
+   "88": {
+    "call": 1
+   },
+   "99": {
+    "call": 1
+   },
+   "QQ": {
+    "4bet": 1
+   },
+   "KK": {
+    "4bet": 1
+   },
+   "AA": {
+    "4bet": 1
+   },
+   "JJ": {
+    "4bet": 0.5,
+    "call": 0.5
+   },
+   "TT": {
+    "4bet": 0.25,
+    "call": 0.75
+   },
+   "AKs": {
+    "4bet": 1
+   },
+   "AKo": {
+    "4bet": 1
+   },
+   "AQs": {
+    "4bet": 0.5,
+    "call": 0.5
+   },
+   "AQo": {
+    "4bet": 0.25,
+    "call": 0.7
+   },
+   "A5s": {
+    "4bet": 0.6
+   },
+   "A4s": {
+    "4bet": 0.5
+   },
+   "A3s": {
+    "4bet": 0.4
+   },
+   "K9s": {
+    "4bet": 0.2,
+    "call": 0.7
+   },
+   "KJo": {
+    "4bet": 0.15,
+    "call": 0.55
+   },
+   "AJs": {
+    "call": 1
+   },
+   "ATs": {
+    "call": 1
+   },
+   "A9s": {
+    "call": 0.7
+   },
+   "KQs": {
+    "call": 1
+   },
+   "KJs": {
+    "call": 1
+   },
+   "KTs": {
+    "call": 0.65
+   },
+   "QJs": {
+    "call": 1
+   },
+   "QTs": {
+    "call": 0.55
+   },
+   "JTs": {
+    "call": 1
+   },
+   "T9s": {
+    "call": 1
+   },
+   "98s": {
+    "call": 0.7
+   },
+   "87s": {
+    "call": 0.65
+   },
+   "AJo": {
+    "call": 0.7
+   },
+   "KQo": {
+    "call": 0.7
+   },
+   "A8s": {
+    "call": 0.65
+   },
+   "A7s": {
+    "call": 0.55
+   },
+   "A6s": {
+    "call": 0.45
+   },
+   "K8s": {
+    "call": 0.45
+   },
+   "K7s": {
+    "call": 0.35
+   },
+   "K6s": {
+    "call": 0.25
+   },
+   "Q9s": {
+    "call": 0.7
+   },
+   "Q8s": {
+    "call": 0.45
+   },
+   "J9s": {
+    "call": 0.7
+   },
+   "J8s": {
+    "call": 0.35
+   },
+   "T8s": {
+    "call": 0.65
+   },
+   "97s": {
+    "call": 0.55
+   },
+   "86s": {
+    "call": 0.35
+   },
+   "76s": {
+    "call": 0.55
+   },
+   "75s": {
+    "call": 0.25
+   },
+   "65s": {
+    "call": 0.55
+   },
+   "54s": {
+    "call": 0.45
+   },
+   "ATo": {
+    "call": 0.55
+   },
+   "A9o": {
+    "call": 0.25
+   },
+   "KTo": {
+    "call": 0.35
+   },
+   "QJo": {
+    "call": 0.55
+   },
+   "QTo": {
+    "call": 0.25
+   },
+   "JTo": {
+    "call": 0.45
+   }
+  },
+  "VS_3BET_SB_vs_BB": {
+   "22": {
+    "call": 0.3
+   },
+   "33": {
+    "call": 0.4
+   },
+   "44": {
+    "call": 0.5
+   },
+   "55": {
+    "call": 0.6
+   },
+   "66": {
+    "call": 0.8
+   },
+   "77": {
+    "call": 0.9
+   },
+   "88": {
+    "call": 1
+   },
+   "99": {
+    "call": 0.9
+   },
+   "QQ": {
+    "4bet": 1
+   },
+   "KK": {
+    "4bet": 1
+   },
+   "AA": {
+    "4bet": 1
+   },
+   "JJ": {
+    "4bet": 0.5,
+    "call": 0.5
+   },
+   "TT": {
+    "4bet": 0.25,
+    "call": 0.75
+   },
+   "AKs": {
+    "4bet": 1
+   },
+   "AKo": {
+    "4bet": 1
+   },
+   "AQs": {
+    "4bet": 0.5,
+    "call": 0.5
+   },
+   "AQo": {
+    "4bet": 0.25,
+    "call": 0.75
+   },
+   "A5s": {
+    "4bet": 0.6
+   },
+   "A4s": {
+    "4bet": 0.5
+   },
+   "A3s": {
+    "4bet": 0.4
+   },
+   "K9s": {
+    "4bet": 0.2,
+    "call": 0.8
+   },
+   "KJo": {
+    "4bet": 0.15,
+    "call": 0.6
+   },
+   "AJs": {
+    "call": 1
+   },
+   "ATs": {
+    "call": 0.75
+   },
+   "A9s": {
+    "call": 0.8
+   },
+   "KQs": {
+    "call": 1
+   },
+   "KJs": {
+    "call": 0.8
+   },
+   "KTs": {
+    "call": 0.5
+   },
+   "QJs": {
+    "call": 0.8
+   },
+   "QTs": {
+    "call": 0.4
+   },
+   "JTs": {
+    "call": 0.75
+   },
+   "T9s": {
+    "call": 1
+   },
+   "98s": {
+    "call": 0.8
+   },
+   "AJo": {
+    "call": 0.75
+   },
+   "KQo": {
+    "call": 0.8
+   },
+   "A8s": {
+    "call": 0.7
+   },
+   "A7s": {
+    "call": 0.6
+   },
+   "A6s": {
+    "call": 0.5
+   },
+   "K8s": {
+    "call": 0.5
+   },
+   "K7s": {
+    "call": 0.4
+   },
+   "K6s": {
+    "call": 0.3
+   },
+   "Q9s": {
+    "call": 0.8
+   },
+   "Q8s": {
+    "call": 0.5
+   },
+   "J9s": {
+    "call": 0.8
+   },
+   "J8s": {
+    "call": 0.4
+   },
+   "T8s": {
+    "call": 0.7
+   },
+   "97s": {
+    "call": 0.6
+   },
+   "87s": {
+    "call": 0.7
+   },
+   "86s": {
+    "call": 0.4
+   },
+   "76s": {
+    "call": 0.6
+   },
+   "75s": {
+    "call": 0.3
+   },
+   "65s": {
+    "call": 0.6
+   },
+   "54s": {
+    "call": 0.5
+   },
+   "ATo": {
+    "call": 0.6
+   },
+   "A9o": {
+    "call": 0.3
+   },
+   "KTo": {
+    "call": 0.4
+   },
+   "QJo": {
+    "call": 0.6
+   },
+   "QTo": {
+    "call": 0.3
+   },
+   "JTo": {
+    "call": 0.5
+   }
+  }
+ }
+}

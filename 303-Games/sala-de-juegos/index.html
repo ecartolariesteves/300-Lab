@@ -189,7 +189,7 @@ a.game:hover { transform: translateY(-3px); border-color: var(--muted); }
         <button type="button" data-filter="logica" aria-pressed="false">Lógica</button>
         <button type="button" data-filter="arcade" aria-pressed="false">Arcade</button>
       </div>
-      <span class="count">6 disponibles · 2 en camino</span>
+      <span class="count">7 disponibles · 2 en camino</span>
     </div>
 
     <ul class="games" id="games">
@@ -227,6 +227,12 @@ a.game:hover { transform: translateY(-3px); border-color: var(--muted); }
         <a class="game" href="ultima-parada/index.html">
           <svg class="thumb" viewBox="0 0 64 64" aria-hidden="true"><use href="#ico-ultima-parada"/></svg>
           <span class="game-info"><strong>Última Parada</strong><span class="tag">Puzle</span></span>
+        </a>
+      </li>
+      <li data-cat="cartas">
+        <a class="game" href="poker/index.html">
+          <svg class="thumb" viewBox="0 0 64 64" aria-hidden="true"><use href="#ico-poker"/></svg>
+          <span class="game-info"><strong>Mesa de Estudio</strong><span class="tag">Cartas</span></span>
         </a>
       </li>
       <li data-cat="cartas">
@@ -326,6 +332,21 @@ a.game:hover { transform: translateY(-3px); border-color: var(--muted); }
     <path d="M13 37h9M42 43h9" stroke="#F3EFE2" stroke-width="2" stroke-linecap="round"/>
     <path d="M23 7h18m-5-5 5 5-5 5" fill="none" stroke="#F2A33A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
   </symbol>
+  <symbol id="ico-poker" viewBox="0 0 64 64">
+    <rect width="64" height="64" fill="#1F5C45"/>
+    <g transform="rotate(-10 24 29)">
+      <rect x="7" y="7" width="27" height="38" rx="3" fill="#FBF9F2" stroke="#1C2A22" stroke-width="1.5"/>
+      <text x="12" y="22" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700" fill="#C92A2A">A</text>
+      <text x="12" y="35" font-size="13" fill="#C92A2A">♥</text>
+    </g>
+    <g transform="rotate(9 41 30)">
+      <rect x="29" y="8" width="27" height="38" rx="3" fill="#FBF9F2" stroke="#1C2A22" stroke-width="1.5"/>
+      <text x="34" y="23" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700" fill="#1C2A22">K</text>
+      <text x="34" y="36" font-size="13" fill="#1C2A22">♠</text>
+    </g>
+    <circle cx="43" cy="48" r="11" fill="#F2A33A" stroke="#3D2604" stroke-width="2"/>
+    <circle cx="43" cy="48" r="7" fill="none" stroke="#3D2604" stroke-width="1.5" stroke-dasharray="2 2"/>
+  </symbol>
   <symbol id="ico-sudoku" viewBox="0 0 64 64">
     <rect width="64" height="64" fill="#FBF9F2"/>
     <g stroke="#B9C9BE" stroke-width="0.8">
@@ -366,6 +387,7 @@ const DAILY = [
   { name: 'Sudoku',     href: 'sudoku/index.html',     icon: 'ico-sudoku' },
   { name: 'Serpiente',  href: 'serpiente/index.html',  icon: 'ico-serpiente' },
   { name: 'Última Parada', href: 'ultima-parada/index.html', icon: 'ico-ultima-parada' },
+  { name: 'Mesa de Estudio', href: 'poker/index.html', icon: 'ico-poker' },
 ];
 const dayNumber = Math.floor(Date.now() / 86400000);
 const today = DAILY[dayNumber % DAILY.length];

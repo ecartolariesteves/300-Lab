@@ -21,6 +21,10 @@ serpiente/
   index.html, style.css, game.js   (juego clásico con teclado y controles táctiles)
 ultima-parada/
   index.html, style.css, levels.js, game.js, test-levels.mjs
+poker/
+  index.html, style.css, engine.js, game.js, ranges.json
+  tests/validate-ranges.mjs, tests/test-engine.mjs
+  tools/build-ranges.mjs   (genera ranges.json a partir de rangos en notación de póker)
 aprende/
   index.html          Portada de los tutoriales
   aprende.css         Estilos de los tutoriales
@@ -30,6 +34,17 @@ aprende/
 Para añadir un juego nuevo: crea una carpeta (`2048/`, `solitario/`…) con sus tres archivos,
 enlaza `../assets/base.css` en su `index.html` y cambia su tarjeta en la página inicial de
 "Próximamente" a un enlace.
+
+## Probar Mesa de Estudio
+
+Desde la carpeta del juego:
+
+```
+node tests/validate-ranges.mjs ranges.json
+node tests/test-engine.mjs
+```
+
+Los rangos son una referencia aproximada 6-max a 100 bb; no representan la salida exacta de un solver.
 
 ## Probar en local
 
@@ -48,3 +63,13 @@ y entra en http://localhost:8000
 3. Origen: GitHub, repositorio `300-Lab`, rama `main`.
 4. Detalles de compilación: preset **Custom**, App location `/303-Games/sala-de-juegos`, Api location vacío, Output location vacío.
 5. Azure crea un workflow de GitHub Actions; cada `git push` publica la nueva versión.
+
+### Cambiar los rangos de referencia
+
+Los rangos se escriben en `poker/tools/build-ranges.mjs`, en notación de póker (`22+`, `A2s+`, `KTs:0.5`…).
+Después se regenera el JSON y se valida:
+
+```
+node tools/build-ranges.mjs ranges.json
+node tests/validate-ranges.mjs ranges.json
+```
