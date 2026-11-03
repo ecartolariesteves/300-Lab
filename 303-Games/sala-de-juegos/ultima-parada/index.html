@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Última Parada · Sala de Juegos</title>
+<meta name="description" content="Ordena los autobuses, recoge a los pasajeros de sus colores y evita llenar la parada. Un puzle de lógica con niveles infinitos.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="style.css">
+<script src="levels.js" defer></script>
+<script src="game.js" defer></script>
+<link rel="manifest" href="../manifest.webmanifest">
+<meta name="theme-color" content="#1F5C45">
+<link rel="icon" href="../assets/icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sala de Juegos">
+<script src="../assets/pwa.js" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="inner">
+    <a class="logo" href="../">Sala de Juegos</a>
+    <nav class="site-nav" aria-label="Principal"><a href="../">Juegos</a><a href="../aprende/index.html">Aprende</a></nav>
+  </div>
+</header>
+<main class="page">
+  <header class="game-head">
+    <p class="crumbs"><a href="../">Juegos</a> › Puzles › Última Parada</p>
+    <h1>Última Parada</h1>
+    <p class="brief" id="brief">Ordena los autobuses y ayuda a todos a llegar a su destino.</p>
+  </header>
+
+  <section class="panel" aria-label="Estado del nivel">
+    <div class="readout level-readout">
+      <label>Nivel</label>
+      <div class="level-switch">
+        <button type="button" id="previous" class="level-arrow" aria-label="Nivel anterior">‹</button>
+        <output id="level-number">1</output>
+        <button type="button" id="next" class="level-arrow" aria-label="Siguiente nivel" disabled>›</button>
+      </div>
+    </div>
+    <button type="button" class="reset" id="retry">Reintentar</button>
+    <div class="readout">
+      <label for="passengers-left">Pasajeros</label>
+      <output id="passengers-left">0</output>
+    </div>
+  </section>
+
+  <section class="play-area" aria-label="Partida de Última Parada">
+    <div class="board-frame">
+      <div class="board" id="board" role="group" aria-label="Aparcamiento. Selecciona un autobús para intentar sacarlo."></div>
+    </div>
+    <div class="stop-section">
+      <div class="section-label"><h2>Parada</h2><span id="bay-count">0 / 5 plazas</span></div>
+      <div class="bays" id="bays" aria-label="Plazas de la parada"></div>
+    </div>
+    <div class="queue-section">
+      <div class="section-label"><h2>Cola de pasajeros</h2><span id="queue-count">0 pasajeros</span></div>
+      <div class="queue" id="queue" aria-label="Próximos pasajeros"></div>
+    </div>
+    <div class="game-tools">
+      <p class="message" id="message" role="status" aria-live="polite">Elige un autobús que tenga el camino libre.</p>
+      <button type="button" class="reset hint-button" id="hint">Pista <span id="hint-count">(0)</span></button>
+    </div>
+  </section>
+
+  <div class="overlay" id="overlay" hidden>
+    <div class="result-card">
+      <p class="overlay-kicker" id="result-kicker">Nivel completado</p>
+      <h2 class="overlay-title" id="result-title">¡Nivel 1 superado!</h2>
+      <p class="overlay-text" id="result-text"></p>
+      <button type="button" class="reset primary" id="result-action">Siguiente nivel</button>
+    </div>
+  </div>
+
+  <section class="notes-sec notes">
+    <div>
+      <h2>Cómo se juega</h2>
+      <ul>
+        <li>Toca un autobús para sacarlo: solo puede salir si todas las casillas delante de su morro están libres.</li>
+        <li>Los pasajeros suben por orden de llegada al autobús de su color. Cada autobús puede llevar a tres personas.</li>
+        <li>La parada tiene un número limitado de plazas. Si se llena y el primer pasajero no puede subir, hay atasco.</li>
+        <li>Vacía la cola para ganar. Usa Pista si necesitas ayuda; cada pista queda contabilizada.</li>
+        <li>El progreso guarda el nivel más alto alcanzado en este dispositivo.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Récord</h2>
+      <p class="record-copy">Nivel más alto alcanzado: <strong id="record">1</strong></p>
+    </div>
+  </section>
+</main>
+<footer class="site-footer">
+  <div class="inner">
+    <a class="logo" href="../">Sala de Juegos</a>
+    <span>Juegos clásicos hechos a mano con HTML, CSS y JavaScript.</span>
+  </div>
+</footer>
+</body>
+</html>
