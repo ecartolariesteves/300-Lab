@@ -1,0 +1,176 @@
+/* Estilos compartidos por toda la Sala de Juegos: colores (modo claro y oscuro), tipografías,
+   cabecera, pie y piezas comunes. Cada juego añade su propio style.css encima de este.
+   Identidad: "verde mesa" — tapete de juego verde, fondo crema y un único acento ámbar. */
+:root {
+  --bg: #F3EFE2;          /* fondo crema */
+  --paper: #FBF9F2;       /* tarjetas, casillas abiertas */
+  --ink: #1C2A22;
+  --muted: #5B6B60;
+  --line: #DDD6C3;
+  --felt: #1F5C45;        /* verde mesa: cabecera, paneles */
+  --felt-deep: #163F31;   /* pie, fondos de tablero */
+  --felt-soft: #CFE3D6;   /* texto secundario sobre verde */
+  --felt-label: #8FB5A0;  /* etiquetas pequeñas sobre verde */
+  --tile: #4E9A73;        /* casilla tapada */
+  --tile-hi: #63AD86;
+  --tile-lo: #163F31;
+  --signal: #F2A33A;      /* acento ámbar */
+  --accent-ink: #3D2604;  /* texto sobre el acento */
+  --flag: #C92A2A;
+  --n1: #185FA5; --n2: #2B7A2B; --n3: #B3261E; --n4: #3C3489;
+  --n5: #8A3B12; --n6: #0F6E56; --n7: #1C2A22; --n8: #5B6B60;
+  --f-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F1A15; --paper: #17241D; --ink: #E6EDE7; --muted: #9DB3A6; --line: #2A3B32;
+    --felt: #1A4E3B; --felt-deep: #0B2219; --felt-soft: #CFE3D6; --felt-label: #8FB5A0;
+    --tile: #3E7F5E; --tile-hi: #4E9A73; --tile-lo: #0B2219;
+    --signal: #F2A33A; --accent-ink: #3D2604; --flag: #FF6B6B;
+    --n1: #7DB4F0; --n2: #7ACB6A; --n3: #FF7B7B; --n4: #B6A9FF;
+    --n5: #FFAD6B; --n6: #5ED3B0; --n7: #E6EDE7; --n8: #9DB3A6;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F1A15; --paper: #17241D; --ink: #E6EDE7; --muted: #9DB3A6; --line: #2A3B32;
+  --felt: #1A4E3B; --felt-deep: #0B2219; --felt-soft: #CFE3D6; --felt-label: #8FB5A0;
+  --tile: #3E7F5E; --tile-hi: #4E9A73; --tile-lo: #0B2219;
+  --signal: #F2A33A; --accent-ink: #3D2604; --flag: #FF6B6B;
+  --n1: #7DB4F0; --n2: #7ACB6A; --n3: #FF7B7B; --n4: #B6A9FF;
+  --n5: #FFAD6B; --n6: #5ED3B0; --n7: #E6EDE7; --n8: #9DB3A6;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 16px/1.5 var(--f-body);
+}
+a { color: var(--felt); }
+button:focus-visible, a:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; }
+
+/* Contenedor común: ancho máximo y márgenes laterales (respetando el notch del móvil) */
+.inner, .page {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.page {
+  max-width: 980px;
+  padding-block: 18px 48px;
+  display: grid;
+  gap: 18px;
+}
+
+/* ---------- Cabecera del sitio ---------- */
+.site-header { background: var(--felt); color: var(--bg); }
+.site-header .inner {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding-block: 14px;
+}
+.logo {
+  font: 800 1.45rem/1 var(--f-display);
+  letter-spacing: -0.01em;
+  color: #F3EFE2;
+  text-decoration: none;
+}
+.site-nav { display: flex; gap: 22px; font-weight: 600; }
+.site-nav a { color: var(--felt-soft); text-decoration: none; padding: 8px 0; }
+.site-nav a:hover, .site-nav a[aria-current="page"] { color: #F3EFE2; }
+
+/* ---------- Pie del sitio ---------- */
+.site-footer { margin-top: auto; background: var(--felt-deep); color: var(--felt-soft); font-size: 0.92rem; }
+.site-footer .inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 24px;
+  padding-block: 26px 34px;
+}
+.site-footer .logo { font-size: 1.2rem; }
+
+/* ---------- Cabecera de cada juego ---------- */
+.game-head { display: grid; gap: 6px; }
+.crumbs { margin: 0; font: 500 0.78rem/1.4 var(--f-mono); color: var(--muted); }
+.crumbs a { color: var(--muted); }
+h1 {
+  margin: 0;
+  font: 800 clamp(2.2rem, 8vw, 3.4rem)/0.95 var(--f-display);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.brief { margin: 0; font: 500 0.8rem/1.4 var(--f-mono); color: var(--muted); }
+
+/* ---------- Botones ---------- */
+.reset {
+  font: 600 0.92rem/1 var(--f-body);
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 11px 16px;
+  cursor: pointer;
+}
+.reset:hover { border-color: var(--muted); }
+.reset.primary { background: var(--signal); color: var(--accent-ink); border-color: var(--signal); }
+.reset:disabled { opacity: 0.45; cursor: default; }
+
+/* ---------- Panel de marcadores (verde mesa) ---------- */
+.panel {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--felt);
+  border-radius: 12px;
+}
+.panel .reset { background: #F3EFE2; color: #1C2A22; border-color: #F3EFE2; }
+.readout { display: grid; gap: 4px; }
+.readout:last-child { text-align: right; }
+.readout label {
+  font: 600 0.66rem/1 var(--f-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--felt-label);
+}
+.readout output {
+  font: 700 1.7rem/1 var(--f-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--signal);
+}
+
+/* ---------- Notas al pie de cada juego ---------- */
+.notes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+}
+.notes h2 { margin: 0 0 8px; font: 800 1.4rem/1.1 var(--f-display); }
+.notes ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 0.95rem; max-width: 60ch; }
+.notes li + li { margin-top: 5px; }
+
+/* Enlace al tutorial desde un juego */
+.howto { margin: 0; font-weight: 600; }
+
+@media (max-width: 480px) {
+  .site-header .inner { gap: 18px; }
+  .panel { padding: 10px 12px; }
+  .readout output { font-size: 1.4rem; }
+  .reset { padding: 10px 12px; font-size: 0.85rem; }
+}

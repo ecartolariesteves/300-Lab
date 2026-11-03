@@ -1,0 +1,100 @@
+/* Estilos propios del Buscaminas (lo común está en assets/base.css) */
+
+/* ---------- Selector de nivel ---------- */
+.levels {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.levels button, .mode button {
+  font: 600 0.9rem/1 var(--f-body);
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+.levels button small {
+  display: block;
+  margin-top: 4px;
+  font: 500 0.68rem/1 var(--f-mono);
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+.levels button[aria-pressed="true"], .mode button[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+.levels button[aria-pressed="true"] small { color: var(--tile-hi); }
+
+.levels button:hover, .mode button:hover { border-color: var(--muted); }
+
+.mode { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.mode .hint { font-size: 0.85rem; color: var(--muted); margin-left: 4px; }
+.mode svg { width: 14px; height: 14px; vertical-align: -2px; margin-right: 6px; }
+
+/* ---------- Tablero ---------- */
+.board-wrap {
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.board {
+  --cell: 34px;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), var(--cell));
+  gap: 2px;
+  width: max-content;
+  margin: 0 auto;
+  padding: 6px;
+  background: var(--tile-lo);
+  border-radius: 6px;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.cell {
+  width: var(--cell);
+  height: var(--cell);
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  background: var(--tile);
+  box-shadow: inset 2px 2px 0 var(--tile-hi), inset -2px -2px 0 var(--tile-lo);
+  font: 700 calc(var(--cell) * 0.5)/1 var(--f-mono);
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.cell:hover:not(.open) { background: var(--tile-hi); }
+.cell.open {
+  background: var(--paper);
+  box-shadow: none;
+  cursor: default;
+}
+.cell.open.has-num { cursor: pointer; }
+.cell svg { width: 62%; height: 62%; }
+.cell.boom { background: var(--signal); }
+.cell.wrong svg { opacity: 0.45; }
+.n1 { color: var(--n1); } .n2 { color: var(--n2); } .n3 { color: var(--n3); } .n4 { color: var(--n4); }
+.n5 { color: var(--n5); } .n6 { color: var(--n6); } .n7 { color: var(--n7); } .n8 { color: var(--n8); }
+
+@keyframes pop { from { transform: scale(0.85); } to { transform: scale(1); } }
+.cell.open { animation: pop 120ms ease-out; }
+@media (prefers-reduced-motion: reduce) { .cell.open { animation: none; } }
+
+/* ---------- Mensaje final ---------- */
+.result {
+  margin: 0;
+  text-align: center;
+  font: 800 1.6rem/1.1 var(--f-display);
+}
+.result.win { color: var(--n2); }
+.result.lose { color: var(--signal); }
+
+/* ---------- Mejores tiempos ---------- */
+.best { margin: 0; display: grid; gap: 4px; font-size: 0.92rem; }
+.best div { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px dashed var(--line); padding-bottom: 4px; }
+.best dt { color: var(--muted); }
+.best dd { margin: 0; font-family: var(--f-mono); font-variant-numeric: tabular-nums; }

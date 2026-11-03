@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aprende · Sala de Juegos</title>
+<meta name="description" content="Aprende a programar juegos clásicos en JavaScript, paso a paso y sin librerías: Buscaminas, 2048 y Solitario.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="aprende.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="inner">
+    <a class="logo" href="../">Sala de Juegos</a>
+    <nav class="site-nav" aria-label="Principal"><a href="../">Juegos</a><a href="./" aria-current="page">Aprende</a></nav>
+  </div>
+</header>
+
+<section class="learn-hero">
+  <div class="inner">
+    <span class="eyebrow">Aprende</span>
+    <h1>Juega y aprende a programarlo</h1>
+    <p>Cada juego de la Sala tiene su tutorial: el mismo código que estás jugando, explicado paso a paso, con demos que puedes tocar. HTML, CSS y JavaScript, sin librerías.</p>
+  </div>
+</section>
+
+<main class="inner">
+  <section class="block" aria-labelledby="series-title">
+    <h2 id="series-title">Tutoriales</h2>
+    <ul class="series">
+      <li>
+        <a class="serie" href="buscaminas/index.html">
+          <span class="pill">Disponible</span>
+          <h3>Haz tu propio Buscaminas</h3>
+          <p>Arrays, vecinas, azar con Fisher–Yates y el algoritmo flood fill.</p>
+          <span class="meta">6 pasos · 30 min · nivel inicial</span>
+        </a>
+      </li>
+      <li>
+        <div class="serie soon">
+          <span class="pill">Próximamente</span>
+          <h3>Haz tu propio 2048</h3>
+          <p>Matrices, gestos de deslizar en el móvil y animaciones con CSS.</p>
+          <span class="meta">nivel inicial</span>
+        </div>
+      </li>
+      <li>
+        <div class="serie soon">
+          <span class="pill">Próximamente</span>
+          <h3>Haz tu propio Solitario</h3>
+          <p>Reglas de cartas, arrastrar y soltar, y deshacer movimientos.</p>
+          <span class="meta">nivel intermedio</span>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <section class="block" aria-labelledby="needs-title" style="padding-bottom: 48px">
+    <h2 id="needs-title">Antes de empezar</h2>
+    <ul class="needs">
+      <li><strong>Un navegador</strong> moderno: Chrome, Firefox, Edge o Safari.</li>
+      <li><strong>Un editor de texto.</strong> Recomendamos VS Code, que es gratuito.</li>
+      <li><strong>Lo básico de JavaScript:</strong> variables, funciones, arrays y bucles. Si te suenan, puedes seguir los tutoriales.</li>
+      <li><strong>Ganas de trastear.</strong> Cada tutorial termina con retos para modificar el juego a tu manera.</li>
+    </ul>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <a class="logo" href="../">Sala de Juegos</a>
+    <span>Juegos clásicos hechos a mano con HTML, CSS y JavaScript.</span>
+  </div>
+</footer>
+</body>
+</html>

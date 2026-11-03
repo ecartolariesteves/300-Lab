@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Haz tu propio Buscaminas · Sala de Juegos</title>
+<meta name="description" content="Tutorial paso a paso para programar un Buscaminas en JavaScript, sin librerías, con demos interactivas.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="../../assets/base.css">
+<link rel="stylesheet" href="../aprende.css">
+<script src="demos.js" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="inner">
+    <a class="logo" href="../../">Sala de Juegos</a>
+    <nav class="site-nav" aria-label="Principal"><a href="../../">Juegos</a><a href="../" aria-current="page">Aprende</a></nav>
+  </div>
+</header>
+<main class="inner">
+<article class="tutorial">
+  <header class="game-head">
+    <p class="crumbs"><a href="../">Aprende</a> › Buscaminas</p>
+    <h1>Haz tu propio Buscaminas</h1>
+    <p class="brief">6 pasos · unos 30 minutos · JavaScript sin librerías</p>
+  </header>
+
+  <p class="lead">Vamos a construir, paso a paso, el mismo Buscaminas que tienes en la Sala de Juegos. Si sabes qué es una variable, una función y un array, puedes seguirlo. Solo necesitas un navegador y un editor de texto, como VS Code.</p>
+
+  <ol class="toc">
+    <li><a href="#paso-1">El tablero es una lista</a></li>
+    <li><a href="#paso-2">Las casillas vecinas</a></li>
+    <li><a href="#paso-3">Colocar las minas</a></li>
+    <li><a href="#paso-4">Calcular los números</a></li>
+    <li><a href="#paso-5">Abrir casillas en cadena</a></li>
+    <li><a href="#paso-6">Clics, banderas y final de partida</a></li>
+  </ol>
+
+  <section class="step" id="paso-1">
+    <h2><span class="num">1</span>El tablero es una lista</h2>
+    <p>Aunque en pantalla vemos una cuadrícula, es más cómodo guardar las casillas en un array plano, una detrás de otra. La casilla de la fila <code>r</code> y la columna <code>c</code> está en la posición <code>r × columnas + c</code>. Para hacer el camino inverso usamos la división entera y el resto.</p>
+    <pre class="code"><code><span class="k">const</span> rows = 9, cols = 9;
+
+<span class="c">// Una casilla = un objeto con cuatro datos</span>
+<span class="k">const</span> cells = Array.from({ length: rows * cols }, () =&gt; ({
+  mine: false,   <span class="c">// ¿hay mina?</span>
+  count: 0,      <span class="c">// cuántas minas tiene alrededor</span>
+  open: false,   <span class="c">// ¿está abierta?</span>
+  flag: false,   <span class="c">// ¿tiene bandera?</span>
+}));
+
+<span class="c">// De fila y columna a índice, y vuelta</span>
+<span class="k">const</span> index = r * cols + c;
+<span class="k">const</span> r = Math.floor(index / cols);
+<span class="k">const</span> c = index % cols;</code></pre>
+    <p class="callout"><strong>Por qué así:</strong> con un solo índice por casilla, guardar, buscar y dibujar es mucho más sencillo que con un array de arrays. Cada botón del tablero lleva su índice en <code>data-i</code>.</p>
+  </section>
+
+  <section class="step" id="paso-2">
+    <h2><span class="num">2</span>Las casillas vecinas</h2>
+    <p>Casi todo en el Buscaminas depende de las ocho casillas que rodean a otra. Recorremos los desplazamientos de −1 a 1 en filas y columnas, saltamos la propia casilla y descartamos las que se salen del tablero. Por eso los bordes tienen 5 vecinas y las esquinas solo 3.</p>
+    <pre class="code"><code><span class="k">function</span> neighbors(i) {
+  <span class="k">const</span> r = Math.floor(i / cols), c = i % cols;
+  <span class="k">const</span> result = [];
+  <span class="k">for</span> (<span class="k">let</span> dr = -1; dr &lt;= 1; dr++) {
+    <span class="k">for</span> (<span class="k">let</span> dc = -1; dc &lt;= 1; dc++) {
+      <span class="k">if</span> (dr === 0 &amp;&amp; dc === 0) <span class="k">continue</span>;     <span class="c">// la propia casilla no cuenta</span>
+      <span class="k">const</span> nr = r + dr, nc = c + dc;
+      <span class="c">// Solo las que están dentro del tablero</span>
+      <span class="k">if</span> (nr &gt;= 0 &amp;&amp; nr &lt; rows &amp;&amp; nc &gt;= 0 &amp;&amp; nc &lt; cols) {
+        result.push(nr * cols + nc);
+      }
+    }
+  }
+  <span class="k">return</span> result;
+}</code></pre>
+    <div class="demo">
+      <span class="demo-label">Pruébalo · toca una casilla</span>
+      <div class="demo-grid" id="demo-vecinas"></div>
+      <p class="demo-out" id="demo-vecinas-out" aria-live="polite">Toca una casilla para ver su fila, su columna y sus vecinas. Prueba también una esquina.</p>
+    </div>
+  </section>
+
+  <section class="step" id="paso-3">
+    <h2><span class="num">3</span>Colocar las minas</h2>
+    <p>El truco para que nunca pierdas en la primera jugada: las minas se colocan <em>después</em> del primer clic, evitando esa casilla y sus vecinas. Para elegirlas al azar barajamos la lista de casillas libres con el algoritmo de Fisher–Yates, en el que cualquier orden es igual de probable, y nos quedamos con las primeras.</p>
+    <pre class="code"><code><span class="k">function</span> placeMines(safeIndex) {
+  <span class="c">// La casilla pulsada y sus vecinas nunca tienen mina</span>
+  <span class="k">const</span> forbidden = <span class="k">new</span> Set([safeIndex, ...neighbors(safeIndex)]);
+  <span class="k">const</span> candidates = [];
+  <span class="k">for</span> (<span class="k">let</span> i = 0; i &lt; cells.length; i++) {
+    <span class="k">if</span> (!forbidden.has(i)) candidates.push(i);
+  }
+
+  <span class="c">// Barajado Fisher–Yates: recorre de atrás hacia delante</span>
+  <span class="c">// e intercambia cada posición con otra al azar anterior</span>
+  <span class="k">for</span> (<span class="k">let</span> i = candidates.length - 1; i &gt; 0; i--) {
+    <span class="k">const</span> j = Math.floor(Math.random() * (i + 1));
+    [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+  }
+
+  <span class="c">// Las primeras de la lista barajada son las minas</span>
+  candidates.slice(0, totalMines).forEach((i) =&gt; (cells[i].mine = true));
+}</code></pre>
+  </section>
+
+  <section class="step" id="paso-4">
+    <h2><span class="num">4</span>Calcular los números</h2>
+    <p>Con las minas colocadas, cada casilla guarda cuántas tiene alrededor. Lo calculamos una sola vez al empezar, en lugar de repetirlo en cada clic. Fíjate cómo reutilizamos <code>neighbors</code>: una línea basta.</p>
+    <pre class="code"><code>cells.forEach((cell, i) =&gt; {
+  cell.count = neighbors(i).filter((n) =&gt; cells[n].mine).length;
+});</code></pre>
+  </section>
+
+  <section class="step" id="paso-5">
+    <h2><span class="num">5</span>Abrir casillas en cadena</h2>
+    <p>Cuando abres una casilla sin minas alrededor, sus vecinas se abren solas, y si alguna de ellas también es un 0, la cadena sigue. Es un recorrido de grafo conocido como <em>flood fill</em>. Lo hacemos con una pila: metemos la casilla pulsada, sacamos una, la abrimos y, si es un 0, metemos sus vecinas. Repetimos hasta vaciar la pila.</p>
+    <pre class="code"><code><span class="k">function</span> openCell(i) {
+  <span class="k">if</span> (cells[i].open || cells[i].flag) <span class="k">return</span>;
+  <span class="k">if</span> (cells[i].mine) <span class="k">return</span> lose(i);
+
+  <span class="k">const</span> stack = [i];                <span class="c">// casillas pendientes de abrir</span>
+  <span class="k">while</span> (stack.length) {
+    <span class="k">const</span> k = stack.pop();          <span class="c">// sacamos la última</span>
+    <span class="k">const</span> cell = cells[k];
+    <span class="k">if</span> (cell.open || cell.flag) <span class="k">continue</span>;
+    cell.open = true;
+    paint(k);                       <span class="c">// la dibujamos abierta</span>
+    <span class="c">// Si no tiene minas alrededor, sus vecinas también se abren</span>
+    <span class="k">if</span> (cell.count === 0) stack.push(...neighbors(k));
+  }
+  checkWin();
+}</code></pre>
+    <div class="demo">
+      <span class="demo-label">Pruébalo · mira cómo se propaga</span>
+      <div class="demo-grid" id="demo-flood"></div>
+      <p class="demo-out" id="demo-flood-out" aria-live="polite">Toca una casilla.</p>
+      <button type="button" class="reset" id="demo-flood-reset">Reiniciar demo</button>
+    </div>
+    <p class="callout"><strong>¿Y por qué no recursión?</strong> Una función que se llama a sí misma también funciona, pero en un tablero grande puede encadenar cientos de llamadas y agotar la pila del navegador. Con un array como pila, el límite es la memoria.</p>
+  </section>
+
+  <section class="step" id="paso-6">
+    <h2><span class="num">6</span>Clics, banderas y final de partida</h2>
+    <p>En vez de poner un listener en cada una de las 81 casillas, ponemos uno solo en el tablero y miramos qué casilla se ha pulsado con <code>closest</code>. Es la <em>delegación de eventos</em>. El clic derecho dispara <code>contextmenu</code>, que usamos para la bandera. En el juego real, además, una pulsación larga de 400 ms pone bandera en el móvil.</p>
+    <pre class="code"><code><span class="c">// Un solo listener para todo el tablero (delegación de eventos)</span>
+board.addEventListener(<span class="s">'click'</span>, (e) =&gt; {
+  <span class="k">const</span> cell = e.target.closest(<span class="s">'.cell'</span>);
+  <span class="k">if</span> (cell) openCell(+cell.dataset.i);
+});
+
+<span class="c">// Clic derecho: bandera en lugar del menú del navegador</span>
+board.addEventListener(<span class="s">'contextmenu'</span>, (e) =&gt; {
+  <span class="k">const</span> cell = e.target.closest(<span class="s">'.cell'</span>);
+  <span class="k">if</span> (!cell) <span class="k">return</span>;
+  e.preventDefault();
+  toggleFlag(+cell.dataset.i);
+});
+
+<span class="c">// Se gana cuando solo quedan tapadas las minas</span>
+<span class="k">function</span> checkWin() {
+  <span class="k">const</span> opened = cells.filter((c) =&gt; c.open).length;
+  <span class="k">if</span> (opened === cells.length - totalMines) win();
+}</code></pre>
+  </section>
+
+  <section class="finish">
+    <h2>¡Ya lo tienes!</h2>
+    <p>Estos seis pasos son el corazón del juego. El resto es dibujar: un botón por casilla, colores para cada número y un temporizador. Juega el resultado y compáralo con lo que has aprendido.</p>
+    <a class="cta" href="../../buscaminas/index.html">Jugar al Buscaminas</a>
+    <p><strong>Retos para seguir practicando:</strong></p>
+    <ul>
+      <li>Añade un cuarto nivel con el tamaño y las minas que quieras.</li>
+      <li>Muestra cuántas casillas quedan por abrir.</li>
+      <li>Haz que suene algo al pisar una mina, con la Web Audio API.</li>
+    </ul>
+  </section>
+</article>
+</main>
+<footer class="site-footer">
+  <div class="inner">
+    <a class="logo" href="../../">Sala de Juegos</a>
+    <span>Juegos clásicos hechos a mano con HTML, CSS y JavaScript.</span>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Buscaminas · Sala de Juegos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="style.css">
+<script src="game.js" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="inner">
+    <a class="logo" href="../">Sala de Juegos</a>
+    <nav class="site-nav" aria-label="Principal"><a href="../">Juegos</a><a href="../aprende/index.html">Aprende</a></nav>
+  </div>
+</header>
+<main class="page">
+  <header class="game-head">
+    <p class="crumbs"><a href="../">Juegos</a> › Lógica › Buscaminas</p>
+    <h1>Buscaminas</h1>
+    <p class="brief" id="brief">Campo 9 × 9 · 10 minas</p>
+  </header>
+
+  <!-- Selector de dificultad -->
+  <nav class="levels" aria-label="Dificultad">
+    <button type="button" id="lvl-facil" data-level="facil" aria-pressed="true">Principiante<small>9×9 · 10</small></button>
+    <button type="button" id="lvl-medio" data-level="medio" aria-pressed="false">Intermedio<small>16×16 · 40</small></button>
+    <button type="button" id="lvl-experto" data-level="experto" aria-pressed="false">Experto<small>16×30 · 99</small></button>
+  </nav>
+
+  <!-- Contadores y botón de reinicio -->
+  <section class="panel" aria-label="Estado de la partida">
+    <div class="readout">
+      <label for="mines-left">Minas</label>
+      <output id="mines-left">010</output>
+    </div>
+    <button type="button" class="reset" id="reset">Nueva partida</button>
+    <div class="readout">
+      <label for="timer">Tiempo</label>
+      <output id="timer">000</output>
+    </div>
+  </section>
+
+  <!-- Modo de toque: pensado para el móvil -->
+  <div class="mode" role="group" aria-label="Acción al tocar">
+    <button type="button" id="mode-open" aria-pressed="true">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></svg>Abrir
+    </button>
+    <button type="button" id="mode-flag" aria-pressed="false">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 1v14" stroke="currentColor" stroke-width="2"/><path d="M5 2h8l-2.5 3.5L13 9H5z" fill="currentColor"/></svg>Bandera
+    </button>
+    <span class="hint">o mantén pulsado / clic derecho</span>
+  </div>
+
+  <div class="board-wrap">
+    <div class="board" id="board" role="grid" aria-label="Tablero"></div>
+  </div>
+
+  <p class="result" id="result" hidden></p>
+
+  <section class="notes">
+    <div>
+      <h2>Cómo se juega</h2>
+      <ul>
+        <li>Abre casillas sin tocar ninguna mina. La primera siempre es segura.</li>
+        <li>Cada número indica cuántas minas hay en las 8 casillas que lo rodean.</li>
+        <li>Marca con bandera donde creas que hay una mina.</li>
+        <li>Si un número ya tiene todas sus banderas, púlsalo para abrir el resto de vecinas de golpe.</li>
+        <li>Con teclado: Tab para moverte, Enter para abrir, F para bandera.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Mejores tiempos</h2>
+      <dl class="best" id="best"></dl>
+    </div>
+  </section>
+
+  <p class="howto"><a href="../aprende/buscaminas/index.html">¿Cómo está hecho este juego? Aprende a programarlo paso a paso →</a></p>
+</main>
+<footer class="site-footer">
+  <div class="inner">
+    <a class="logo" href="../">Sala de Juegos</a>
+    <span>Juegos clásicos hechos a mano con HTML, CSS y JavaScript.</span>
+  </div>
+</footer>
+</body>
+</html>

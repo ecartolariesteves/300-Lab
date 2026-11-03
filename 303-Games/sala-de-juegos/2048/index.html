@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>2048 · Sala de Juegos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="style.css">
+<script src="game.js" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="inner">
+    <a class="logo" href="../">Sala de Juegos</a>
+    <nav class="site-nav" aria-label="Principal"><a href="../">Juegos</a><a href="../aprende/index.html">Aprende</a></nav>
+  </div>
+</header>
+<main class="page">
+  <header class="game-head">
+    <p class="crumbs"><a href="../">Juegos</a> › Puzle › 2048</p>
+    <h1>2048</h1>
+    <p class="brief">Tablero 4 × 4 · suma fichas iguales</p>
+  </header>
+
+  <!-- Marcadores y botón de reinicio -->
+  <section class="panel" aria-label="Puntuación">
+    <div class="readout">
+      <label for="score">Puntos</label>
+      <output id="score">0</output>
+    </div>
+    <button type="button" class="reset" id="reset">Nueva partida</button>
+    <div class="readout">
+      <label for="best">Récord</label>
+      <output id="best">0</output>
+    </div>
+  </section>
+
+  <!-- Tablero: las fichas se colocan encima de la cuadrícula de fondo -->
+  <div class="board" id="board" aria-label="Tablero 2048. Usa las flechas o desliza para mover.">
+    <div class="grid" aria-hidden="true"></div>
+    <div class="tiles" id="tiles"></div>
+
+    <!-- Mensaje de victoria o fin de partida -->
+    <div class="overlay" id="overlay" hidden>
+      <p class="overlay-title" id="overlay-title"></p>
+      <p class="overlay-text" id="overlay-text"></p>
+      <div class="overlay-actions">
+        <button type="button" class="reset" id="keep-going" hidden>Seguir jugando</button>
+        <button type="button" class="reset primary" id="retry">Nueva partida</button>
+      </div>
+    </div>
+  </div>
+
+  <section class="notes">
+    <div>
+      <h2>Cómo se juega</h2>
+      <ul>
+        <li>Desliza el dedo sobre el tablero, o usa las flechas (o W A S D) del teclado.</li>
+        <li>Todas las fichas se mueven a la vez hacia ese lado.</li>
+        <li>Dos fichas con el mismo número se fusionan en una con la suma.</li>
+        <li>Tras cada movimiento aparece un 2 (a veces un 4) en una casilla libre.</li>
+        <li>Llega a la ficha 2048. Pierdes si el tablero se llena sin movimientos posibles.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Escala de fichas</h2>
+      <div class="scale" aria-hidden="true">
+        <span class="t v2">2</span><span class="t v8">8</span><span class="t v32">32</span><span class="t v128 d3">128</span><span class="t v512 d3">512</span><span class="t v2048 d4">2048</span>
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="site-footer">
+  <div class="inner">
+    <a class="logo" href="../">Sala de Juegos</a>
+    <span>Juegos clásicos hechos a mano con HTML, CSS y JavaScript.</span>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,112 @@
+/* Estilos propios del 2048 (lo común está en assets/base.css) */
+
+/* ---------- Tablero ----------
+   El tamaño se calcula con variables CSS: así las fichas se colocan con transform
+   y se pueden animar al moverse. */
+.board {
+  --size: min(440px, calc(100vw - 32px));
+  --gap: calc(var(--size) * 0.025);
+  --cell: calc((var(--size) - var(--gap) * 5) / 4);
+  position: relative;
+  width: var(--size);
+  height: var(--size);
+  margin: 0 auto;
+  background: var(--tile-lo);
+  border-radius: 8px;
+  touch-action: none;          /* el deslizamiento mueve fichas, no la página */
+  user-select: none;
+  -webkit-user-select: none;
+}
+.board:focus-visible { outline: 3px solid var(--signal); outline-offset: 3px; }
+
+/* Cuadrícula de fondo: 16 huecos vacíos */
+.grid {
+  position: absolute;
+  inset: var(--gap);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--gap);
+}
+.grid span {
+  border-radius: 5px;
+  background: var(--tile);
+  opacity: 0.55;
+}
+
+.tiles { position: absolute; inset: 0; }
+
+/* ---------- Fichas ---------- */
+.t {
+  display: grid;
+  place-items: center;
+  border-radius: 5px;
+  font: 700 calc(var(--cell) * 0.42)/1 var(--f-mono);
+  font-variant-numeric: tabular-nums;
+}
+.tiles .t {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--cell);
+  height: var(--cell);
+  transform: translate(
+    calc(var(--gap) + var(--c) * (var(--cell) + var(--gap))),
+    calc(var(--gap) + var(--r) * (var(--cell) + var(--gap)))
+  );
+  transition: transform 110ms ease-in-out;
+}
+.t.d3 { font-size: calc(var(--cell) * 0.34); }
+.t.d4 { font-size: calc(var(--cell) * 0.27); }
+.t.d5 { font-size: calc(var(--cell) * 0.22); }
+
+/* Colores por valor: van del papel al naranja de señalización */
+.v2    { background: var(--paper);   color: var(--ink); }
+.v4    { background: var(--tile-hi); color: #1C2A22; }
+.v8    { background: var(--n6);      color: var(--bg); }
+.v16   { background: var(--n2);      color: var(--bg); }
+.v32   { background: var(--n1);      color: var(--bg); }
+.v64   { background: var(--n4);      color: var(--bg); }
+.v128  { background: var(--n5);      color: var(--bg); }
+.v256  { background: var(--n3);      color: var(--bg); }
+.v512  { background: var(--flag);    color: var(--bg); }
+.v1024 { background: var(--signal);  color: var(--accent-ink); }
+.v2048 { background: var(--ink);     color: var(--signal); box-shadow: 0 0 0 3px var(--signal); }
+.vbig  { background: var(--ink);     color: var(--paper); }
+
+/* Animaciones: aparecer y fusionarse */
+.tiles .t.new .in    { animation: appear 160ms ease-out; }
+.tiles .t.merged .in { animation: merge 160ms ease-out; }
+.t .in { display: grid; place-items: center; width: 100%; height: 100%; border-radius: inherit; }
+@keyframes appear { from { transform: scale(0.2); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes merge  { 50% { transform: scale(1.14); } }
+@media (prefers-reduced-motion: reduce) {
+  .tiles .t { transition: none; }
+  .tiles .t .in { animation: none !important; }
+}
+
+/* ---------- Mensaje de victoria / derrota ---------- */
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 10px;
+  padding: 20px;
+  text-align: center;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--bg) 84%, transparent);
+}
+.overlay-title {
+  margin: 0;
+  font: 800 clamp(2.4rem, 11vw, 3.6rem)/0.9 var(--f-display);
+}
+.overlay.win .overlay-title { color: var(--n2); }
+.overlay.lose .overlay-title { color: var(--signal); }
+.overlay-text { margin: 0; color: var(--muted); }
+.overlay-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+
+/* ---------- Escala en las notas ---------- */
+.scale { display: flex; flex-wrap: wrap; gap: 6px; --cell: 44px; }
+.scale .t { width: var(--cell); height: var(--cell); }

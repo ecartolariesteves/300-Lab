@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Solitario · Sala de Juegos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="style.css">
+<script src="game.js" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="inner">
+    <a class="logo" href="../">Sala de Juegos</a>
+    <nav class="site-nav" aria-label="Principal"><a href="../">Juegos</a><a href="../aprende/index.html">Aprende</a></nav>
+  </div>
+</header>
+<main class="page">
+  <header class="game-head">
+    <p class="crumbs"><a href="../">Juegos</a> › Cartas › Solitario</p>
+    <h1>Solitario</h1>
+    <p class="brief" id="brief">Klondike · robar 1 carta</p>
+  </header>
+
+  <!-- Marcadores -->
+  <section class="panel" aria-label="Estado de la partida">
+    <div class="readout">
+      <label for="moves">Movimientos</label>
+      <output id="moves">0</output>
+    </div>
+    <button type="button" class="reset" id="reset">Nueva partida</button>
+    <div class="readout">
+      <label for="timer">Tiempo</label>
+      <output id="timer">0:00</output>
+    </div>
+  </section>
+
+  <!-- Opciones -->
+  <div class="controls">
+    <div class="seg" role="group" aria-label="Cartas a robar">
+      <button type="button" id="draw-1" aria-pressed="true">Robar 1</button>
+      <button type="button" id="draw-3" aria-pressed="false">Robar 3</button>
+    </div>
+    <button type="button" class="reset" id="undo">Deshacer</button>
+    <button type="button" class="reset primary" id="finish" hidden>Recoger cartas</button>
+  </div>
+
+  <!-- Mesa de juego -->
+  <div class="table" id="table">
+    <div class="row-top">
+      <button type="button" class="slot stock" id="stock" aria-label="Mazo: robar cartas"></button>
+      <div class="slot waste" id="waste" aria-label="Descarte"></div>
+      <div class="spacer" aria-hidden="true"></div>
+      <div class="slot found" data-drop="f0"></div>
+      <div class="slot found" data-drop="f1"></div>
+      <div class="slot found" data-drop="f2"></div>
+      <div class="slot found" data-drop="f3"></div>
+    </div>
+    <div class="tableau" id="tableau">
+      <div class="col" data-drop="t0"></div>
+      <div class="col" data-drop="t1"></div>
+      <div class="col" data-drop="t2"></div>
+      <div class="col" data-drop="t3"></div>
+      <div class="col" data-drop="t4"></div>
+      <div class="col" data-drop="t5"></div>
+      <div class="col" data-drop="t6"></div>
+    </div>
+
+    <!-- Mensaje de victoria -->
+    <div class="overlay" id="overlay" hidden>
+      <p class="overlay-title">¡Resuelto!</p>
+      <p class="overlay-text" id="overlay-text"></p>
+      <button type="button" class="reset primary" id="again">Otra partida</button>
+    </div>
+  </div>
+
+  <section class="notes">
+    <div>
+      <h2>Cómo se juega</h2>
+      <ul>
+        <li>Sube las cuatro escaleras, una por palo, de As a Rey.</li>
+        <li>En las columnas, coloca cartas en orden descendente alternando rojo y negro.</li>
+        <li>Toca una carta y irá sola a su mejor sitio, o arrástrala a donde quieras.</li>
+        <li>En una columna vacía solo puede ir un Rey.</li>
+        <li>Toca el mazo para robar. Cuando se acaba, vuelve a darse la vuelta el descarte.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Mejores tiempos</h2>
+      <dl class="best" id="best"></dl>
+    </div>
+  </section>
+</main>
+<footer class="site-footer">
+  <div class="inner">
+    <a class="logo" href="../">Sala de Juegos</a>
+    <span>Juegos clásicos hechos a mano con HTML, CSS y JavaScript.</span>
+  </div>
+</footer>
+</body>
+</html>

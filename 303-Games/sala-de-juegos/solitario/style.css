@@ -1,0 +1,200 @@
+/* Estilos propios del Solitario (lo común está en assets/base.css) */
+
+/* Las cartas son claras también en modo oscuro, como una baraja real */
+:root {
+  --face: #fbfbf7;
+  --face-ink: #1f241b;
+  --face-red: #c92a2a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --face: #dfe3d5; --face-ink: #141811; --face-red: #b3261e; }
+}
+:root[data-theme="dark"] { --face: #dfe3d5; --face-ink: #141811; --face-red: #b3261e; }
+
+/* ---------- Opciones ---------- */
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.seg { display: flex; }
+.seg button {
+  font: 600 0.9rem/1 var(--f-body);
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  padding: 10px 14px;
+  cursor: pointer;
+}
+.seg button:first-child { border-radius: 8px 0 0 8px; }
+.seg button:last-child { border-radius: 0 8px 8px 0; border-left: 0; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+/* ---------- Mesa ----------
+   El ancho de carta (--cw) se calcula para que quepan 7 columnas en pantalla. */
+.table {
+  --g: clamp(4px, 1.3vw, 10px);
+  --pad: calc(var(--g) * 1.5);
+  --cw: calc((min(760px, 100vw - 32px) - 2 * var(--pad) - 6 * var(--g)) / 7);
+  --ch: calc(var(--cw) * 1.4);
+  --r: calc(var(--cw) * 0.09);
+  position: relative;
+  width: fit-content;
+  margin: 0 auto;
+  padding: var(--pad);
+  display: grid;
+  gap: calc(var(--g) * 2.2);
+  background: var(--tile-lo);
+  border-radius: 8px;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.row-top, .tableau {
+  display: grid;
+  grid-template-columns: repeat(7, var(--cw));
+  gap: var(--g);
+}
+
+/* Huecos: mazo, descarte y escaleras */
+.slot {
+  position: relative;
+  width: var(--cw);
+  height: var(--ch);
+  border-radius: var(--r);
+  border: 1.5px dashed var(--tile-hi);
+  padding: 0;
+  background: transparent;
+}
+.found::before {
+  content: "A";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font: 800 calc(var(--cw) * 0.45)/1 var(--f-display);
+  color: var(--tile-hi);
+  opacity: 0.7;
+}
+.waste { border-color: transparent; }
+.stock { cursor: pointer; }
+.stock .count {
+  position: absolute;
+  right: -4px;
+  bottom: -6px;
+  z-index: 2;
+  min-width: 1.6em;
+  padding: 2px 4px;
+  border-radius: 99px;
+  background: var(--ink);
+  color: var(--paper);
+  font: 700 0.68rem/1.2 var(--f-mono);
+}
+.stock .recycle {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font: 700 calc(var(--cw) * 0.45)/1 var(--f-mono);
+  color: var(--tile-hi);
+}
+.stock:focus-visible, .card:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; }
+
+/* Columnas: crecen según las cartas que tengan */
+.col {
+  position: relative;
+  min-height: calc(var(--ch) * (1 + 0.12 * var(--cd, 0) + 0.27 * var(--cu, 0)));
+}
+.col::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--cw);
+  height: var(--ch);
+  border: 1.5px dashed var(--tile-hi);
+  border-radius: var(--r);
+  opacity: 0.6;
+}
+
+/* ---------- Cartas ---------- */
+.card {
+  position: absolute;
+  left: 0;
+  /* --d = cartas boca abajo encima, --u = cartas boca arriba encima */
+  top: calc(var(--ch) * (0.12 * var(--d, 0) + 0.27 * var(--u, 0)));
+  width: var(--cw);
+  height: var(--ch);
+  margin: 0;
+  padding: 0;
+  border-radius: var(--r);
+  border: 1px solid color-mix(in srgb, var(--face-ink) 22%, transparent);
+  background: var(--face);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
+  font-family: var(--f-mono);
+  text-align: left;
+  touch-action: none;          /* para poder arrastrar con el dedo */
+  cursor: grab;
+}
+.card.red   { color: var(--face-red); }
+.card.black { color: var(--face-ink); }
+.card .corner {
+  position: absolute;
+  top: calc(var(--cw) * 0.05);
+  left: calc(var(--cw) * 0.07);
+  display: grid;
+  justify-items: center;
+  font-weight: 700;
+  font-size: calc(var(--cw) * 0.28);
+  line-height: 0.95;
+}
+.card .corner .s { font-size: calc(var(--cw) * 0.24); }
+.card.r10 .corner { letter-spacing: -0.1em; }
+.card .pip {
+  position: absolute;
+  right: calc(var(--cw) * 0.07);
+  bottom: calc(var(--cw) * 0.03);
+  font-size: calc(var(--cw) * 0.58);
+  line-height: 1;
+}
+
+/* Dorso: rayas en los verdes de la casa */
+.card.back {
+  cursor: default;
+  border: calc(var(--cw) * 0.05) solid var(--face);
+  background: repeating-linear-gradient(45deg, var(--tile) 0 4px, var(--tile-hi) 4px 8px);
+}
+
+/* Descarte en abanico al robar 3 */
+.waste .card { top: 0; left: calc(var(--fan, 0) * var(--cw) * 0.3); }
+.stock .card { top: 0; }
+
+/* Estados */
+.card.lifted { opacity: 0; }
+.ghost { position: fixed; inset: 0; z-index: 50; pointer-events: none; }
+.ghost .card { box-shadow: 0 8px 18px rgb(0 0 0 / 0.35); cursor: grabbing; }
+@keyframes shake { 25% { translate: -4px 0; } 75% { translate: 4px 0; } }
+.card.nope { animation: shake 180ms ease-in-out 2; }
+@media (prefers-reduced-motion: reduce) { .card.nope { animation: none; } }
+
+/* ---------- Victoria ---------- */
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 10px;
+  padding: 20px;
+  text-align: center;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+}
+.overlay-title {
+  margin: 0;
+  font: 800 clamp(2.4rem, 11vw, 3.6rem)/0.9 var(--f-display);
+  color: var(--n2);
+}
+.overlay-text { margin: 0; color: var(--muted); }
+
+/* ---------- Mejores tiempos ---------- */
+.best { margin: 0; display: grid; gap: 4px; font-size: 0.92rem; }
+.best div { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px dashed var(--line); padding-bottom: 4px; }
+.best dt { color: var(--muted); }
+.best dd { margin: 0; font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
