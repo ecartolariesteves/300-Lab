@@ -79,7 +79,7 @@ async function findCachedPage(requestUrl) {
 }
 
 // Las fuentes se actualizan en segundo plano, pero se sirven desde caché si ya existen.
-async function fontResponse(request) {
+async function fontResponse(request, event) {
   const cache = await caches.open(FONT_CACHE);
   const cached = await cache.match(request);
 
@@ -90,6 +90,8 @@ async function fontResponse(request) {
     }
     return response;
   });
+  // Mantenemos viva la actualización aunque ya podamos responder desde caché.
+  event.waitUntil(refresh.then(() => undefined).catch(() => {}));
 
   if (cached) {
     // No bloqueamos la página mientras se actualiza la fuente.
@@ -115,7 +117,7 @@ self.addEventListener('fetch', (event) => {
 
   // Las fuentes externas usan una caché independiente (stale-while-revalidate).
   if (isGoogleFont(url)) {
-    event.respondWith(fontResponse(request));
+    event.respondWith(fontResponse(request, event));
     return;
   }
 
