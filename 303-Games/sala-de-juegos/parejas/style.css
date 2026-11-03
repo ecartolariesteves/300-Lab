@@ -1,0 +1,26 @@
+/* Parejas: cartas con iconos de forma y color; el papel permanece claro en ambos temas. */
+:root{--memory-face:#fbfbf7;--memory-ink:#1c2a22}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.seg{display:flex}
+.seg button{min-height:44px;padding:10px 14px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font:600 .9rem var(--f-body);cursor:pointer}
+.seg button:first-child{border-radius:8px 0 0 8px}.seg button:last-child{border-radius:0 8px 8px 0}.seg button+button{border-left:0}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.message{min-height:1.5em;margin:0;color:var(--muted);font-weight:600}
+.board-wrap{position:relative;width:min(620px,100%);margin:0 auto}
+.board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;perspective:900px}
+.board[data-level=medio]{grid-template-columns:repeat(5,minmax(0,1fr))}
+.board[data-level=dificil]{grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}
+.memory-card{position:relative;min-width:0;aspect-ratio:1;border:0;padding:0;background:transparent;cursor:pointer;perspective:700px}
+.card-inner{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .42s cubic-bezier(.2,.7,.2,1)}
+.memory-card[aria-pressed=true] .card-inner{transform:rotateY(180deg)}
+.card-face{position:absolute;inset:0;display:grid;place-items:center;border-radius:10px;backface-visibility:hidden;border:2px solid #d8d2c0;box-shadow:0 2px 5px rgb(0 0 0 / .12)}
+.card-back{background:repeating-linear-gradient(135deg,#1f5c45 0 7px,#2e7958 7px 14px);color:#f3efe2}
+.card-back svg{width:48%;height:48%}
+.card-front{background:var(--memory-face);transform:rotateY(180deg)}
+.card-front svg{width:65%;height:65%;overflow:visible}
+.memory-card.matched .card-front{border-color:#4e9a73;background:#e8f2e9}
+.memory-card:focus-visible{outline:3px solid var(--signal);outline-offset:3px;border-radius:10px}
+.memory-card:disabled{cursor:default}
+.overlay{position:absolute;inset:0;z-index:5;display:grid;place-content:center;justify-items:center;gap:10px;padding:20px;border-radius:12px;text-align:center;background:rgb(15 26 21 / .9);color:#f3efe2}
+.overlay-title{margin:0;font:800 clamp(2rem,8vw,3.2rem)/1 var(--f-display);color:#f2a33a}
+@media(max-width:440px){.board{gap:6px}.board[data-level=dificil]{gap:4px}.card-face{border-radius:7px}.board-wrap{margin-inline:-4px}}
+@media(prefers-reduced-motion:reduce){.card-inner{transition:none}}
