@@ -1,0 +1,18 @@
+/* Spider: las cartas conservan el papel claro en ambos temas. */
+:root{--card-face:#fbfbf7;--card-ink:#1f241b;--card-red:#c92a2a}
+.board-wrap{position:relative;overflow-x:auto;padding-bottom:8px}
+.columns{min-width:700px;display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:5px;align-items:start}
+.spider-col{position:relative;min-height:150px;border:1px dashed var(--tile-hi);border-radius:7px;background:var(--felt-deep)}
+.playing-card{position:relative;display:grid;place-items:start center;width:100%;min-height:clamp(38px,5vw,68px);margin:0;padding:4px 1px;border:1px solid #b9b9ad;border-radius:5px;background:var(--card-face);color:var(--card-ink);font:700 clamp(.68rem,1.25vw,1rem)/1.1 var(--f-mono);cursor:pointer;touch-action:pan-y}
+.playing-card+.playing-card{margin-top:-18px}.playing-card.red{color:var(--card-red)}
+.playing-card.back{background:repeating-linear-gradient(45deg,#347b59 0 4px,#70ad82 4px 7px);border:2px solid #fbfbf7;color:transparent}
+.playing-card.selected{outline:3px solid var(--signal);outline-offset:-2px;z-index:2}.playing-card.hint{box-shadow:0 0 0 3px var(--signal)}
+.spider-col.drop-target{outline:3px dashed var(--signal)}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.level{display:flex;align-items:center;gap:8px;font-weight:600}
+.level select{min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)}
+.stock{white-space:nowrap}.message{min-height:1.4em;margin:0;color:var(--muted);font-weight:600}
+.overlay{position:absolute;inset:0;z-index:5;display:grid;place-content:center;justify-items:center;gap:10px;background:rgb(15 26 21 / .88);color:#f3efe2;border-radius:10px;text-align:center}
+.overlay-title{margin:0;font:800 3rem/1 var(--f-display);color:#f2a33a}
+/* En el móvil caben las 10 columnas: cartas estrechas que solo enseñan el valor y el palo arriba */
+@media(max-width:700px){.columns{min-width:0;gap:3px}.spider-col{min-height:120px;border-radius:5px}.playing-card{min-height:46px;padding:2px 0;border-radius:4px;font-size:.6rem;letter-spacing:-.04em}.playing-card+.playing-card{margin-top:-31px}.playing-card.back{border-width:1px}}
+@media(prefers-reduced-motion:reduce){.playing-card{transition:none}}

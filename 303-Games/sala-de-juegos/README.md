@@ -25,6 +25,15 @@ poker/
   index.html, style.css, engine.js, game.js, ranges.json
   tests/validate-ranges.mjs, tests/test-engine.mjs
   tools/build-ranges.mjs   (genera ranges.json a partir de rangos en notación de póker)
+spider/
+  index.html, style.css, rules.js, game.js
+  tests/test-rules.mjs
+parejas/
+  index.html, style.css, rules.js, game.js
+  tests/test-rules.mjs
+cuatro-en-raya/
+  index.html, style.css, rules.js, game.js, ai-worker.js
+  tests/test-rules.mjs
 aprende/
   index.html          Portada de los tutoriales
   aprende.css         Estilos de los tutoriales

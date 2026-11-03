@@ -1,0 +1,27 @@
+/* 4 en raya: tablero de fichas con colores fijos y alto contraste en ambos temas. */
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.controls label{display:flex;align-items:center;gap:7px;font-weight:600}
+.controls select{min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)}
+.message{min-height:1.5em;margin:0;color:var(--muted);font-weight:600}
+.board-wrap{position:relative;width:min(560px,100%);margin:0 auto}
+/* Panel con 4 marcadores en fila (2 × 2 en el móvil) */
+.panel{grid-template-columns:repeat(4,minmax(0,1fr))}
+.panel .readout:last-child{text-align:left}
+@media(max-width:480px){.panel{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* Tablero en el verde de la casa */
+.board{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:clamp(4px,1.2vw,9px);padding:clamp(8px,2vw,14px);border-radius:16px;background:#1F5C45;box-shadow:inset 0 0 0 2px #163F31}
+.column{display:grid;gap:clamp(4px,1.2vw,9px);padding:0;border:0;background:transparent;cursor:pointer;touch-action:manipulation}
+.cell{aspect-ratio:1;border-radius:50%;background:#e7e8df;box-shadow:inset 0 3px 6px rgb(0 0 0 / .18);display:grid;place-items:center}
+.cell.red{background:#e34d45;box-shadow:inset 0 -3px 0 #9d2f2b,0 1px 2px rgb(0 0 0 / .25)}
+.cell.yellow{background:#f2bd39;box-shadow:inset 0 -3px 0 #a87912,0 1px 2px rgb(0 0 0 / .25)}
+.cell.winning{outline:4px solid #fff;outline-offset:-2px;filter:brightness(1.16)}
+.column:focus-visible{outline:3px solid var(--signal);outline-offset:3px;border-radius:9px}
+.column:disabled{cursor:default}
+.cell.drop{animation:drop .22s cubic-bezier(.2,.7,.2,1)}
+@keyframes drop{from{transform:translateY(-28px);opacity:.3}to{transform:translateY(0);opacity:1}}
+/* El resultado aparece debajo del tablero para que se vean las 4 fichas ganadoras */
+.overlay{position:static;margin-top:12px;display:grid;justify-items:center;gap:8px;padding:16px;border-radius:12px;background:#163F31;color:#f3efe2;text-align:center}
+.overlay[hidden]{display:none}
+.overlay-title{margin:0;font:800 clamp(1.6rem,6vw,2.2rem)/1 var(--f-display);color:#f2a33a}
+.overlay p{margin:0}
+@media(max-width:420px){.board{gap:4px;padding:7px;border-radius:10px}.column{gap:4px}.cell{box-shadow:inset 0 2px 4px rgb(0 0 0 / .18)}}
+@media(prefers-reduced-motion:reduce){.cell.drop{animation:none}}
