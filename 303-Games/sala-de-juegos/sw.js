@@ -14,6 +14,10 @@ const PRECACHE_FILES = [
   'index.html',
   'manifest.webmanifest',
   'assets/icons/icon.svg',
+  'assets/icons/icon-192.png',
+  'assets/icons/icon-512.png',
+  'assets/icons/icon-maskable-512.png',
+  'assets/icons/apple-touch-icon.png',
   'assets/pwa.js',
   'assets/base.css',
   'buscaminas/index.html',
@@ -66,12 +70,13 @@ function isGoogleFont(url) {
 // Para una navegación a una carpeta, busca también su index.html guardado.
 async function findCachedPage(requestUrl) {
   const cache = await caches.open(APP_CACHE);
-  const cached = await cache.match(requestUrl.href);
+  // ignoreSearch: una URL con ?parámetros (por ejemplo, de un enlace compartido) usa la misma copia
+  const cached = await cache.match(requestUrl.href, { ignoreSearch: true });
   if (cached) return cached;
 
   if (requestUrl.pathname.endsWith('/')) {
     const indexUrl = new URL('index.html', requestUrl);
-    const folderPage = await cache.match(indexUrl.href);
+    const folderPage = await cache.match(indexUrl.href, { ignoreSearch: true });
     if (folderPage) return folderPage;
   }
 
@@ -129,7 +134,13 @@ self.addEventListener('fetch', (event) => {
       (request.destination === 'document' && request.headers.get('accept')?.includes('text/html'))) {
     event.respondWith((async () => {
       try {
-        return await fetch(request);
+        const response = await fetch(request);
+        // Guardamos la versión recién descargada: así la copia offline está siempre al día
+        if (response.ok) {
+          const copy = response.clone();
+          event.waitUntil(caches.open(APP_CACHE).then((cache) => cache.put(request, copy)));
+        }
+        return response;
       } catch (error) {
         const cachedPage = await findCachedPage(url);
         if (cachedPage) return cachedPage;
@@ -146,16 +157,21 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // CSS, JavaScript e imágenes propias: caché primero, red si aún no están guardados.
-  if (/\.(?:css|js|svg|png)$/i.test(url.pathname)) {
+  // CSS, JavaScript e imágenes propias: respondemos al instante desde la caché y la
+  // actualizamos en segundo plano (stale-while-revalidate). Así, tras subir cambios,
+  // la página y sus scripts no se quedan desincronizados aunque no cambie CACHE_VERSION.
+  if (/\.(?:css|js|svg|png|webmanifest)$/i.test(url.pathname)) {
     event.respondWith((async () => {
       const cache = await caches.open(APP_CACHE);
-      const cached = await cache.match(request);
-      if (cached) return cached;
+      const cached = await cache.match(request, { ignoreSearch: true });
 
-      const response = await fetch(request);
-      if (response.ok) cache.put(request, response.clone());
-      return response;
+      const refresh = fetch(request).then((response) => {
+        if (response.ok) cache.put(request, response.clone());
+        return response;
+      });
+      event.waitUntil(refresh.then(() => undefined).catch(() => {}));
+
+      return cached || refresh;
     })());
   }
 });
