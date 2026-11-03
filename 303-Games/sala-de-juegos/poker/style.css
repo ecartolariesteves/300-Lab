@@ -13,6 +13,8 @@
 .seat-0{grid-column:2;grid-row:3;border-color:var(--signal)}
 .seat-1{grid-column:1;grid-row:3}.seat-2{grid-column:1;grid-row:2}.seat-3{grid-column:2;grid-row:1}.seat-4{grid-column:3;grid-row:1}.seat-5{grid-column:3;grid-row:2}
 .seat.active{outline:3px solid var(--signal);outline-offset:2px}
+.seat-0{min-height:96px}
+.seat-0 .seat-cards .playing-card{width:36px;height:50px;font-size:.9rem}
 .seat.folded{opacity:.42}
 .seat strong{font:700 .8rem var(--f-mono);color:var(--signal)}
 .seat .seat-cards{display:flex;gap:3px}
@@ -26,8 +28,6 @@
 .playing-card .suit{font-size:1.1rem}
 .pot{color:var(--felt-soft);font:600 .76rem var(--f-mono)}
 .pot strong{color:var(--signal)}
-.hero-cards{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:6px;z-index:3}
-.hero-cards .playing-card{width:46px;height:64px;font-size:1.05rem}
 .table-status{padding:10px 14px;border-radius:8px;background:var(--paper);border:1px solid var(--line);color:var(--muted);font-size:.9rem}
 .action-area{display:grid;gap:10px}
 .action-area p{margin:0;font-weight:600}
@@ -83,7 +83,7 @@ select,textarea{font:500 .92rem var(--f-body);color:var(--ink);background:var(--
 @media(max-width:700px){
  .poker-panel{grid-template-columns:1fr 1fr;gap:9px}.poker-panel .reset{grid-column:1/-1;grid-row:2}
  .poker-table{min-height:440px;padding:9px;gap:5px;border-width:7px;border-radius:26px;grid-template-rows:1fr 1.1fr 1fr}
- .seat{min-height:70px;padding:4px;font-size:.68rem}.seat-0{grid-row:3}
+ .seat{min-height:70px;padding:4px;font-size:.68rem}.seat-0{min-height:84px}.seat-0 .seat-cards .playing-card{width:30px;height:42px;font-size:.78rem}.seat-0{grid-row:3}
  .playing-card{width:34px;height:48px;font-size:.82rem}.playing-card .suit{font-size:.95rem}
  .hero-cards .playing-card{width:40px;height:56px}.center-table{max-width:100%}.board{gap:2px;min-height:52px}
  .stats-grid{grid-template-columns:1fr 1fr}.stats-columns{grid-template-columns:1fr}

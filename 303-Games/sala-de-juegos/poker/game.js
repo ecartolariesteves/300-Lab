@@ -161,7 +161,7 @@ function cardSummary(cards){return cards.map(c=>c[0]+({s:'♠',h:'♥',d:'♦',c
 function renderSeat(p,active){
   const el=$('seat-'+p.id);el.className='seat seat-'+p.id+(p.folded?' folded':'')+(active?' active':'');
   const dealer=p.pos==='BTN'?'<span class="dealer">D</span>':'';
-  const cards=p.id===0?'<span class="seat-cards"></span>':p.folded?'':'<span class="seat-cards">'+(game.finished?p.cards.map(c=>'<span class="playing-card '+('hd'.includes(c[1])?'red':'black')+'">'+c[0]+({s:'♠',h:'♥',d:'♦',c:'♣'}[c[1]])+'</span>').join(''):'▧ ▧')+'</span>';
+  const cards=p.id===0?'<span class="seat-cards">'+p.cards.map(c=>'<span class="playing-card '+('hd'.includes(c[1])?'red':'black')+'">'+c[0]+({s:'♠',h:'♥',d:'♦',c:'♣'}[c[1]])+'</span>').join('')+'</span>':p.folded?'':'<span class="seat-cards">'+(game.finished?p.cards.map(c=>'<span class="playing-card '+('hd'.includes(c[1])?'red':'black')+'">'+c[0]+({s:'♠',h:'♥',d:'♦',c:'♣'}[c[1]])+'</span>').join(''):'▧ ▧')+'</span>';
   el.innerHTML=dealer+'<strong>'+(p.id===0?'TÚ':('Rival '+p.id))+' · '+p.pos+'</strong><span>'+ (p.folded?'Fold':p.allin?'All-in':p.stack.toFixed(1)+' bb')+'</span><span>En mesa '+p.bet.toFixed(1)+' bb</span>'+cards;
 }
 function renderTable(activeId=null){
@@ -170,7 +170,7 @@ function renderTable(activeId=null){
   const board=$('board');board.replaceChildren();
   if(game.board.length)game.board.forEach(c=>board.append(makeCard(c)));
   else{const empty=document.createElement('span');empty.className='board-empty';empty.textContent='Mesa';board.append(empty);}
-  const hero=$('hero-cards');hero.replaceChildren();game.players[0].cards.forEach(c=>hero.append(makeCard(c)));
+
   $('pot').textContent=game.pot.toFixed(1)+' bb';$('hand-number').textContent=game.handNo;
   $('hand-result').textContent=(game.lastResult>=0?'+':'')+game.lastResult.toFixed(1)+' bb';
 }
@@ -448,7 +448,7 @@ function startTraining(){
   $('training-cards').replaceChildren(...cards.map(makeCard));
   $('training-actions').replaceChildren();
   const options=spot==='rfi'?['fold','raise']:['fold','call',spot==='open'?'3bet':'4bet'];
-  const openSize=training.opener==='SB'||training.pos==='SB'?3:2.5;
+  const openSize=spot==='open'?(training.opener==='SB'?3:2.5):(training.pos==='SB'?3:2.5);
   const threeBetSize=spot==='open'?openSize*(['SB','BB'].includes(training.pos)?4:3):openSize*(['SB','BB'].includes(training.threeBettor)?4:3);
   const fourBetSize=threeBetSize*2.2;
   for(const a of options){const b=document.createElement('button');b.type='button';b.className='action-btn'+(a!=='fold'?' primary':'');b.textContent=({fold:'Fold',call:'Call',raise:training.pos==='SB'?'Raise 3 bb':'Raise 2,5 bb','3bet':'3-bet '+threeBetSize.toFixed(1)+' bb','4bet':'4-bet '+fourBetSize.toFixed(1)+' bb'})[a];b.addEventListener('click',()=>answerTraining(a));$('training-actions').append(b);}
