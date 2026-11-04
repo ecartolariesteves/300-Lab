@@ -11,6 +11,9 @@
 <link rel="stylesheet" href="../assets/base.css">
 <link rel="stylesheet" href="style.css">
 <script src="engine.js" defer></script>
+<script src="sizing.js" defer></script>
+<script src="betting.js" defer></script>
+<script src="evaluation.js" defer></script>
 <script src="game.js" defer></script>
 <link rel="manifest" href="../manifest.webmanifest">
 <meta name="theme-color" content="#1F5C45">
@@ -134,6 +137,21 @@
       <label for="feedback-mode">Cuándo mostrar la evaluación</label>
       <select id="feedback-mode"><option value="immediate">Inmediato</option><option value="end">Al final de la mano</option></select>
       <p class="muted">El veredicto postflop se basa en equity frente a pot odds; no es GTO.</p>
+    </div>
+    <div class="settings-card">
+      <h2>Tamaños de apuesta · bb</h2>
+      <p class="muted">Ajusta los tamaños de referencia. Las acciones siguen limitadas por el stack y la subida mínima legal.</p>
+      <div class="sizing-settings">
+        <label>Apertura<input id="size-open" type="number" min="1" max="10" step="0.1" value="2.5"></label>
+        <label>Apertura SB<input id="size-open-sb" type="number" min="1" max="10" step="0.1" value="3"></label>
+        <label>3-bet IP ×<input id="size-3bet-ip" type="number" min="1" max="10" step="0.1" value="3"></label>
+        <label>3-bet OOP ×<input id="size-3bet-oop" type="number" min="1" max="10" step="0.1" value="4"></label>
+        <label>4-bet ×<input id="size-4bet" type="number" min="1" max="10" step="0.1" value="2.2"></label>
+        <label>Bet pequeño · % bote<input id="size-bet-small" type="number" min="1" max="99" step="1" value="33"></label>
+        <label>Bet grande · % bote<input id="size-bet-large" type="number" min="1" max="200" step="1" value="75"></label>
+      </div>
+      <div class="settings-actions"><button type="button" class="reset primary" id="save-sizing">Guardar tamaños</button><button type="button" class="reset" id="reset-sizing">Restaurar tamaños</button></div>
+      <p id="sizing-message" class="settings-message" aria-live="polite"></p>
     </div>
   </section>
   <section class="notes">
