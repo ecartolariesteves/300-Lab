@@ -3,7 +3,7 @@
    Guarda las páginas y recursos propios para poder jugar sin conexión.
    ========================================================= */
 
-const CACHE_VERSION = 'v5';
+const CACHE_VERSION = 'v6';
 const APP_CACHE = `sala-juegos-${CACHE_VERSION}`;
 const FONT_CACHE = `sala-juegos-fonts-${CACHE_VERSION}`;
 const SITE_ROOT = new URL('./', self.location.href);
@@ -47,6 +47,9 @@ const PRECACHE_FILES = [
   'spider/index.html','spider/style.css','spider/rules.js','spider/game.js',
   'parejas/index.html','parejas/style.css','parejas/rules.js','parejas/game.js',
   'cuatro-en-raya/index.html','cuatro-en-raya/style.css','cuatro-en-raya/rules.js','cuatro-en-raya/game.js','cuatro-en-raya/ai-worker.js',
+  'blackjack/index.html','blackjack/style.css','blackjack/strategy.js','blackjack/rules.js','blackjack/game.js',
+  'damas/index.html','damas/style.css','damas/rules.js','damas/game.js','damas/ai-worker.js',
+  'hundir-la-flota/index.html','hundir-la-flota/style.css','hundir-la-flota/rules.js','hundir-la-flota/game.js','hundir-la-flota/ai-worker.js',
   'aprende/index.html',
   'aprende/aprende.css',
   'aprende/buscaminas/index.html',
