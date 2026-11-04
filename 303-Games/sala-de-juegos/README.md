@@ -22,8 +22,10 @@ serpiente/
 ultima-parada/
   index.html, style.css, levels.js, game.js, test-levels.mjs
 poker/
-  index.html, style.css, engine.js, game.js, ranges.json
-  tests/validate-ranges.mjs, tests/test-engine.mjs
+  index.html, style.css, engine.js, sizing.js, betting.js, evaluation.js
+  game.js, ranges.json
+  tests/validate-ranges.mjs, test-engine.mjs, test-sizing.mjs
+  tests/test-betting.mjs, tests/test-evaluation.mjs
   tools/build-ranges.mjs   (genera ranges.json a partir de rangos en notación de póker)
 spider/
   index.html, style.css, rules.js, game.js
