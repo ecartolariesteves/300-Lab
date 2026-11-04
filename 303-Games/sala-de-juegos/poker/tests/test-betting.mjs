@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const B = require('../betting.js');
@@ -15,4 +16,12 @@ assert.equal(B.validateAction({action:'check',player:hero,currentBet:2.5,street:
 assert.equal(B.classify('raise'),'raise');
 assert.equal(B.classify('3bet'),'3bet');
 assert.equal(B.classify('4bet'),'4bet');
+const locked = B.legalActions({player:hero,currentBet:5,lastRaiseSize:2.5,street:'preflop',canRaise:false});
+assert.ok(locked.includes('call'));
+assert.ok(!locked.includes('raise')&&!locked.includes('allin'));
+const charts=JSON.parse(fs.readFileSync(new URL('../ranges.json',import.meta.url),'utf8')).charts;
+for(const [name,chart] of Object.entries(charts)){
+  const allowed=name.startsWith('RFI_')?['raise']:name.startsWith('VS_OPEN_')?['call','3bet']:['call','4bet'];
+  for(const [hand,actions] of Object.entries(chart))for(const action of Object.keys(actions))assert.ok(allowed.includes(action),name+' '+hand+' has invalid action '+action);
+}
 console.log('✔ Betting: acciones legales, subida mínima, short all-in y tope del stack');
