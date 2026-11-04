@@ -3,7 +3,7 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const B = require('../betting.js');
 const hero = {bet:0,stack:100};
-assert.deepEqual(B.legalActions({player:hero,currentBet:0,street:'preflop'}),['fold','check','raise']);
+assert.deepEqual(B.legalActions({player:hero,currentBet:0,street:'preflop'}),['fold','check','raise','allin']);
 assert.ok(B.legalActions({player:hero,currentBet:2.5,lastRaiseSize:1.5,street:'preflop'}).includes('raise'));
 const short = B.legalActions({player:{bet:0,stack:3.5},currentBet:2.5,lastRaiseSize:1.5,street:'preflop'});
 assert.ok(!short.includes('raise'));
