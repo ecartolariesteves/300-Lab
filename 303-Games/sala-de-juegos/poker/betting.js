@@ -12,10 +12,8 @@
     else if(stack>0)actions.push('call');
     const maxTo=bet+stack;
     const minTo=currentBet<=EPS?(street==='preflop'?2:0.01):currentBet+Math.max(lastRaiseSize||currentBet,street==='preflop'?1:0.01);
-    if(stack>due+EPS){
-      if(maxTo+EPS>=minTo)actions.push(street==='preflop'?'raise':'raise');
-      else if(maxTo>currentBet+EPS)actions.push('allin');
-    }else if(stack>EPS&&maxTo>currentBet+EPS)actions.push('allin');
+    if(stack>due+EPS&&maxTo+EPS>=minTo)actions.push('raise');
+    if(stack>EPS&&maxTo>currentBet+EPS)actions.push('allin');
     if(due<=EPS&&stack>EPS&&street!=='preflop')actions.push('bet');
     return [...new Set(actions)];
   }
