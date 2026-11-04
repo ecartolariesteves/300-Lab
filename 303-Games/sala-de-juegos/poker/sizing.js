@@ -23,11 +23,15 @@
     return out;
   }
   function clampToStack(target,bet,stack){return Math.max(bet,Math.min(Number(target),Number(bet)+Number(stack)));}
-  function preflopTarget({position='CO',raises=0,currentBet=1,heroBet=0,stack=100,config:rawConfig={}}){
+  function preflopTarget({position='CO',opponentPosition=null,raises=0,currentBet=1,heroBet=0,stack=100,config:rawConfig={}}){
     const c=config(rawConfig);
     let target;
     if(raises<=0)target=position==='SB'?c.openSB:c.open;
-    else if(raises===1)target=currentBet*(['SB','BB'].includes(position)?c.threeBetOOP:c.threeBetIP);
+    else if(raises===1){
+      const order=['SB','BB','UTG','HJ','CO','BTN'];
+      const inPosition=opponentPosition?order.indexOf(position)>order.indexOf(opponentPosition):!['SB','BB'].includes(position);
+      target=currentBet*(inPosition?c.threeBetIP:c.threeBetOOP);
+    }
     else target=currentBet*c.fourBet;
     return clampToStack(target,heroBet,stack);
   }
