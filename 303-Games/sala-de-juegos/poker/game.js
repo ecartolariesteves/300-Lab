@@ -148,10 +148,8 @@ function chartAction(action,spot){
 function evaluatePreflop(action,chart,hand,spot){
   action=chartAction(action,spot);
   if(!chart)return {evaluated:false,score:null,verdict:'Sin evaluar · spot fuera de las tablas',freq:{fold:1}};
-  const freq=frequencies(chart,hand,spot),max=Math.max(...Object.values(freq));
-  const score=max?Math.round(100*(freq[action]||0)/max):0;
-  const verdict=score>=90?'Correcta':score>=50?'Aceptable (estrategia mixta)':score>0?'Imprecisa':'Error';
-  return {evaluated:true,score,verdict,freq};
+  const freq=frequencies(chart,hand,spot),result=EVALUATION.actionScore(action,freq);
+  return {evaluated:true,score:result.score,verdict:result.verdict,freq};
 }
 function verdictClass(verdict){return verdict==='Correcta'?'':verdict==='Error'?'error':'warn';}
 function renderRangeGrid(container,chart,cards){
@@ -212,22 +210,32 @@ function addActionButton(label,action,target,primary=false){
 function renderActions(){
   $('actions').replaceChildren();$('action-prompt').textContent='Tu decisión · '+game.players[0].pos+' · '+game.street.toUpperCase();
   const p=game.players[0],facing=game.currentBet>p.bet+0.0001;
+  const legal=BETTING.legalActions({player:p,currentBet:game.currentBet,lastRaiseSize:game.lastRaiseSize,street:game.street});
   if(game.street==='preflop'){
-    if(facing&&game.raiseCount>0){addActionButton('Fold','fold');addActionButton('Call '+Math.min(p.stack,game.currentBet-p.bet).toFixed(1)+' bb','call',null,true);
-      const t=preflopTarget(p);addActionButton((game.raiseCount===1?'3-bet ':game.raiseCount===2?'4-bet ':'All-in ')+t.toFixed(1)+' bb',game.raiseCount>=3?'allin':'raise',t,true);
-    }else if(game.raiseCount===0){
-      if(p.pos==='BB'&&!facing)addActionButton('Check','check',null,true);
+    if(facing){
+      addActionButton('Fold','fold');
+      if(legal.includes('call'))addActionButton('Call '+Math.min(p.stack,game.currentBet-p.bet).toFixed(1)+' bb','call',null,true);
+      if(game.raiseCount>=3){if(legal.includes('allin'))addActionButton('All-in · '+(p.stack+p.bet).toFixed(1)+' bb','allin',null,true);}
+      else if(legal.includes('raise')){const t=preflopTarget(p);addActionButton((game.raiseCount===1?'3-bet ':game.raiseCount===2?'4-bet ':'Raise ')+t.toFixed(1)+' bb','raise',t,true);}
+      else if(legal.includes('allin'))addActionButton('All-in · '+(p.stack+p.bet).toFixed(1)+' bb','allin',null,true);
+    }else{
+      if(legal.includes('check'))addActionButton('Check','check',null,true);
       else addActionButton('Fold','fold');
-      const t=preflopTarget(p);addActionButton('Raise '+t.toFixed(1)+' bb','raise',t,true);
-    }else{addActionButton('Fold','fold');addActionButton('Call','call',null,true);addActionButton('All-in','allin',null,true);}
+      if(legal.includes('raise')){const t=preflopTarget(p);addActionButton('Raise '+t.toFixed(1)+' bb','raise',t,true);}
+      else if(legal.includes('allin'))addActionButton('All-in · '+(p.stack+p.bet).toFixed(1)+' bb','allin',null,true);
+    }
   }else if(facing){
-    addActionButton('Fold','fold');addActionButton('Call '+Math.min(p.stack,game.currentBet-p.bet).toFixed(1)+' bb','call',null,true);
-    const t=game.currentBet+(game.currentBet-p.bet)*3;addActionButton('Raise 3×','raise',t,true);
+    addActionButton('Fold','fold');
+    if(legal.includes('call'))addActionButton('Call '+Math.min(p.stack,game.currentBet-p.bet).toFixed(1)+' bb','call',null,true);
+    if(legal.includes('raise')){const t=game.currentBet+(game.currentBet-p.bet)*3;addActionButton('Raise 3× · '+t.toFixed(1)+' bb','raise',t,true);}
+    else if(legal.includes('allin'))addActionButton('All-in · '+(p.stack+p.bet).toFixed(1)+' bb','allin',null,true);
   }else{
     addActionButton('Check','check',null,true);
-    const targets=SIZING.postflopTargets({pot:game.pot,heroBet:p.bet,stack:p.stack,config:sizingConfig});
-    for(let i=0;i<targets.length;i++){const pct=i===0?sizingConfig.betSmall:sizingConfig.betLarge;addActionButton('Bet '+Math.round(pct*100)+'% · '+(targets[i]-p.bet).toFixed(1)+' bb','bet',targets[i],true);}
-    addActionButton('All-in','allin',null);
+    if(legal.includes('bet')){
+      const targets=SIZING.postflopTargets({pot:game.pot,heroBet:p.bet,stack:p.stack,config:sizingConfig});
+      for(let i=0;i<targets.length;i++){const pct=i===0?sizingConfig.betSmall:sizingConfig.betLarge;addActionButton('Bet '+Math.round(pct*100)+'% · '+(targets[i]-p.bet).toFixed(1)+' bb','bet',targets[i],true);}
+    }
+    if(legal.includes('allin'))addActionButton('All-in','allin',null);
   }
 }
 function getPending(){
@@ -398,7 +406,7 @@ async function heroAction(action,target){
     const result=await evaluatePostflop(action,target);
     if(feedbackMode==='immediate')showPostFeedback(result,action);
     else $('feedback').hidden=true;
-    if(result.scored||result.sizing?.evaluated){const d={type:'postflop',pos:hero.pos,spot:game.street,hand:handKey(hero.cards),category:categoryOf(handKey(hero.cards)),action,score:result.scored?result.score:result.sizing.score,actionScore:result.scored?result.score:null,sizingScore:result.sizing?.score??null,verdict:result.verdict||result.sizing.verdict};game.decisions.push(d);if(feedbackMode==='immediate')saveDecision(d);}
+    if(result.scored||result.sizing?.evaluated){const d={type:'postflop',pos:hero.pos,spot:game.street,hand:handKey(hero.cards),category:categoryOf(handKey(hero.cards)),action,score:result.scored?result.score:null,actionScore:result.scored?result.score:null,sizingScore:result.sizing?.score??null,verdict:result.verdict||result.sizing.verdict};game.decisions.push(d);if(feedbackMode==='immediate')saveDecision(d);}
   }
   game.busy=false;$('new-hand').disabled=false;
   $('actions').replaceChildren();$('action-prompt').textContent='Decisión registrada · los rivales continúan…';
@@ -524,6 +532,8 @@ function renderStats(){
   $('stat-decisions').textContent=stats.decisions.length;$('stat-session').textContent=sessionDecisions;
   $('stat-pre').textContent=avg(pre)==null?'—':avg(pre).toFixed(1)+'/100';
   $('stat-post').textContent=avg(post)==null?'—':avg(post).toFixed(1)+'/100';
+  const sizing=stats.decisions.filter(d=>d.sizingScore!=null).map(d=>({score:d.sizingScore}));
+  $('stat-sizing').textContent=avg(sizing)==null?'—':avg(sizing).toFixed(1)+'/100';
   $('stat-result').textContent=(stats.result>=0?'+':'')+stats.result.toFixed(1)+' bb';
   const byPos=POS.map(p=>[p,avg(pre.filter(d=>d.pos===p))]).filter(x=>x[1]!=null).map(([p,v])=>[p,v.toFixed(1)+'/100']);
   const bySpot=['Apertura','Contra apertura','Contra 3-bet'].map(s=>[s,avg(pre.filter(d=>d.spot===s||d.spot===s.toLowerCase()))]).filter(x=>x[1]!=null).map(([s,v])=>[s,v.toFixed(1)+'/100']);
