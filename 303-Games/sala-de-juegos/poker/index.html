@@ -77,18 +77,22 @@
     <div class="training-controls">
       <label>Tipo de spot
         <select id="training-spot">
-          <option value="rfi">Apertura por posición</option>
-          <option value="open">Contra apertura</option>
-          <option value="3bet">Contra 3-bet</option>
+          <option value="rfi">Apertura (con tamaño)</option>
+          <option value="3bet" selected>3-bet: decisión y tamaño</option>
+          <option value="def">Defensa contra 3-bet</option>
+          <option value="leaks">Repasar mis fugas</option>
         </select>
       </label>
-      <label>Posición
-        <select id="training-position">
-          <option value="random">Aleatoria</option><option>UTG</option><option>HJ</option><option>CO</option><option>BTN</option><option>SB</option><option>BB</option>
-        </select>
+      <label>Tu posición
+        <select id="training-position"><option value="random">Aleatoria</option></select>
       </label>
+      <label>Rival
+        <select id="training-rival"><option value="random">Aleatorio</option></select>
+      </label>
+      <label class="check"><input type="checkbox" id="training-doubtful"> Solo manos dudosas</label>
       <button type="button" class="reset primary" id="deal-training">Repartir spot</button>
     </div>
+    <p class="training-score" id="training-score" aria-live="polite"></p>
     <div class="training-spot" id="training-spot-label">Elige un spot y reparte para empezar.</div>
     <div class="training-cards" id="training-cards"></div>
     <div class="actions training-actions" id="training-actions"></div>
@@ -98,7 +102,7 @@
       <div class="range-grid" id="training-range-grid"></div>
       <p class="range-legend"><span class="legend-call">Call</span><span class="legend-raise">Subida</span><span class="legend-fold">Fold</span><span class="legend-hero">Tu mano</span></p>
     </div>
-    <button type="button" class="reset primary" id="next-training" hidden>Siguiente spot</button>
+    <button type="button" class="reset primary" id="next-training" hidden>Siguiente spot <kbd>↵</kbd></button>
   </section>
 
   <section id="view-estadisticas" class="view" role="tabpanel" hidden>
@@ -113,9 +117,10 @@
     <div class="stats-columns">
       <section><h2>Por posición</h2><div id="stats-position"></div></section>
       <section><h2>Por tipo de spot</h2><div id="stats-spot"></div></section>
+      <section><h2>Tamaños por subida</h2><div id="stats-sizing"></div></section>
     </div>
     <section class="leaks"><h2>Tus fugas</h2><p class="muted">Los cinco spots con peor puntuación media (mínimo 5 decisiones).</p><div id="stats-leaks"></div></section>
-    <section class="history"><h2>Últimas manos</h2><ol id="stats-history"></ol></section>
+    <section class="history"><h2>Últimas 50 manos</h2><p class="muted">Abre una mano para ver la acción calle a calle, las cartas del showdown, las tablas de los bots y tus notas.</p><div id="stats-history"></div></section>
     <button type="button" class="reset" id="clear-stats">Borrar estadísticas</button>
   </section>
 
@@ -140,19 +145,8 @@
       <p class="muted">El veredicto postflop se basa en equity frente a pot odds; no es GTO.</p>
     </div>
     <div class="settings-card">
-      <h2>Tamaños de apuesta · bb</h2>
-      <p class="muted">Ajusta los tamaños de referencia. Las acciones siguen limitadas por el stack y la subida mínima legal.</p>
-      <div class="sizing-settings">
-        <label>Apertura<input id="size-open" type="number" min="1" max="10" step="0.1" value="2.5"></label>
-        <label>Apertura SB<input id="size-open-sb" type="number" min="1" max="10" step="0.1" value="3"></label>
-        <label>3-bet IP ×<input id="size-3bet-ip" type="number" min="1" max="10" step="0.1" value="3"></label>
-        <label>3-bet OOP ×<input id="size-3bet-oop" type="number" min="1" max="10" step="0.1" value="4"></label>
-        <label>4-bet ×<input id="size-4bet" type="number" min="1" max="10" step="0.1" value="2.2"></label>
-        <label>Bet pequeño · % bote<input id="size-bet-small" type="number" min="1" max="99" step="1" value="33"></label>
-        <label>Bet grande · % bote<input id="size-bet-large" type="number" min="1" max="200" step="1" value="75"></label>
-      </div>
-      <div class="settings-actions"><button type="button" class="reset primary" id="save-sizing">Guardar tamaños</button><button type="button" class="reset" id="reset-sizing">Restaurar tamaños</button></div>
-      <p id="sizing-message" class="settings-message" aria-live="polite"></p>
+      <h2>Tamaños de referencia</h2>
+      <p class="muted">Apertura 2,5 bb (3 bb desde la SB). 3-bet 3× la apertura en posición y 4× sin posición. 4-bet 2,2× en posición y 2,5× sin posición. Las tablas están pensadas para estos tamaños; una subida puntúa su acción × su tamaño (1 si es el de referencia, 0,85 si es aceptable, 0,6 si no).</p>
     </div>
   </section>
   <section class="notes">
@@ -161,7 +155,9 @@
       <li>En Entrenamiento recibes decisiones del spot elegido, sin jugar toda la mano.</li>
       <li>La puntuación preflop compara tu acción con frecuencias de referencia aproximadas, no con un solver exacto.</li>
       <li>Postflop se estima equity por Monte Carlo y se compara con las pot odds; este cálculo no es GTO.</li>
-      <li>Los bots usan las mismas tablas preflop y una estrategia postflop sencilla.</li>
+      <li>Cada subida preflop se puntúa por la acción y por el tamaño: nota = acción × factor del tamaño.</li>
+      <li>Los bots usan las mismas tablas preflop, continúan con menos manos contra subidas grandes y postflop juegan contra tu rango, nunca contra tus cartas.</li>
+      <li>Atajos: <kbd>F</kbd> fold · <kbd>C</kbd> check o call · <kbd>R</kbd> subida de referencia · <kbd>←</kbd> <kbd>→</kbd> tamaño · <kbd>Enter</kbd> confirmar o siguiente spot · <kbd>N</kbd> nueva mano.</li>
     </ul></div>
     <div><h2>Privacidad y dinero</h2><ul>
       <li>Es una herramienta de estudio sin apuestas ni dinero real.</li>

@@ -1,51 +1,63 @@
-/* Tamaños de referencia configurables. Todos los importes son el total de la apuesta en bb. */
-(function(root,factory){
-  const api=factory();
-  if(typeof module!=='undefined'&&module.exports)module.exports=api;
-  root.PokerSizing=api;
-})(typeof globalThis!=='undefined'?globalThis:this,function(){
-  const DEFAULTS={open:2.5,openSB:3,threeBetIP:3,threeBetOOP:4,fourBet:2.2,betSmall:0.33,betLarge:0.75};
-  const PRESETS={
-    balanced:{...DEFAULTS},
-    small:{...DEFAULTS,open:2.2,openSB:2.5,threeBetIP:2.8,threeBetOOP:3.5,fourBet:2,betSmall:0.25,betLarge:0.66},
-    large:{...DEFAULTS,open:3,openSB:3.5,threeBetIP:3.5,threeBetOOP:4.5,fourBet:2.5,betSmall:0.5,betLarge:1}
-  };
-  function config(value={}){
-    const out={...DEFAULTS};
-    for(const key of Object.keys(DEFAULTS)){
-      if(value[key]!==undefined){
-        const n=Number(value[key]);
-        if(!Number.isFinite(n)||n<=0)throw new Error('Tamaño no válido: '+key);
-        out[key]=n;
-      }
+/* Tamaños de referencia preflop (6-max, 100 bb, sin rake) y su evaluación.
+   Son las convenciones habituales de las estrategias de solver para este formato;
+   las tablas de ranges.json están pensadas para estos tamaños.
+   - Apertura: 2,5 bb desde UTG, HJ, CO y BTN; 3 bb desde la SB.
+   - 3-bet: 3× la apertura en posición; 4× sin posición (SB, y BB contra UTG-BTN).
+     La BB contra la SB sí tiene posición: 3×.
+   - 4-bet: 2,2× el 3-bet en posición; 2,5× sin posición. */
+(function (root, factory) {
+  const api = factory();
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  root.PokerSizing = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  const ORDER = ['UTG', 'HJ', 'CO', 'BTN', 'SB', 'BB'];
+  // Postflop, la SB actúa primero, luego la BB y después el resto en orden
+  const POSTFLOP = ['SB', 'BB', 'UTG', 'HJ', 'CO', 'BTN'];
+  // ¿hero tiene posición sobre villano después del flop?
+  const inPosition = (hero, villain) => POSTFLOP.indexOf(hero) > POSTFLOP.indexOf(villain);
+
+  /* Devuelve el tamaño de referencia (en bb, "subir a") y la banda aceptable.
+     spot: 'open' (apertura), '3bet' o '4bet'.
+     raiseTo: a cuánto se ha subido antes (la apertura para un 3-bet, el 3-bet para un 4-bet). */
+  function reference(spot, heroPos, villainPos, raiseTo) {
+    if (spot === 'open') {
+      const ref = heroPos === 'SB' ? 3 : 2.5;
+      return { ref, low: ref - 0.5, high: ref + 0.5, unit: 'bb', note: heroPos === 'SB' ? 'Desde la SB se abre algo más grande (3 bb) porque jugarás sin posición contra la BB.' : 'La apertura estándar en 6-max a 100 bb es 2,5 bb.' };
     }
-    if(out.betSmall>=out.betLarge)throw new Error('La apuesta pequeña debe ser menor que la grande.');
-    return out;
-  }
-  function clampToStack(target,bet,stack){return Math.max(bet,Math.min(Number(target),Number(bet)+Number(stack)));}
-  function preflopTarget({position='CO',opponentPosition=null,raises=0,currentBet=1,heroBet=0,stack=100,config:rawConfig={}}){
-    const c=config(rawConfig);
-    let target;
-    if(raises<=0)target=position==='SB'?c.openSB:c.open;
-    else if(raises===1){
-      const order=['SB','BB','UTG','HJ','CO','BTN'];
-      const inPosition=opponentPosition?order.indexOf(position)>order.indexOf(opponentPosition):!['SB','BB'].includes(position);
-      target=currentBet*(inPosition?c.threeBetIP:c.threeBetOOP);
+    const ip = inPosition(heroPos, villainPos);
+    if (spot === '3bet') {
+      const mult = ip ? 3 : 4;
+      return { ref: raiseTo * mult, low: raiseTo * (mult - 0.5), high: raiseTo * (mult + 0.5), mult, unit: 'x', note: ip ? 'En posición, el 3-bet estándar es 3× la apertura.' : 'Sin posición se resube más grande (4×) para compensar la desventaja de jugar primero.' };
     }
-    else target=currentBet*c.fourBet;
-    return clampToStack(target,heroBet,stack);
+    if (spot === '4bet') {
+      const mult = ip ? 2.2 : 2.5;
+      return { ref: raiseTo * mult, low: raiseTo * (mult - 0.2), high: raiseTo * (mult + 0.3), mult, unit: 'x', note: ip ? 'En posición, el 4-bet suele ser unas 2,2× el 3-bet.' : 'Sin posición, el 4-bet suele ser unas 2,5× el 3-bet.' };
+    }
+    throw new Error('Spot desconocido: ' + spot);
   }
-  function minRaiseTo({currentBet=0,lastRaiseSize=0,street='preflop'}){
-    if(currentBet<=0)return street==='preflop'?2:0;
-    return currentBet+Math.max(lastRaiseSize||currentBet,street==='preflop'?1:0.01);
+
+  /* Puntúa el tamaño elegido: 1 si coincide con la referencia (±0,05 bb de redondeo),
+     0,85 si está dentro de la banda aceptable y 0,6 si está fuera. */
+  function sizingFactor(spot, heroPos, villainPos, raiseTo, sizeTo) {
+    const r = reference(spot, heroPos, villainPos, raiseTo);
+    let factor, verdict;
+    if (Math.abs(sizeTo - r.ref) <= 0.05) { factor = 1; verdict = 'Tamaño correcto'; }
+    else if (sizeTo >= r.low - 1e-9 && sizeTo <= r.high + 1e-9) { factor = 0.85; verdict = 'Tamaño aceptable'; }
+    else { factor = 0.6; verdict = sizeTo > r.ref ? 'Tamaño demasiado grande' : 'Tamaño demasiado pequeño'; }
+    return { factor, verdict, ...r };
   }
-  function postflopTarget({pot,heroBet=0,stack=100,pct=0.33}){
-    if(!Number.isFinite(pot)||pot<0||!Number.isFinite(pct)||pct<=0)throw new Error('Bote o porcentaje no válido.');
-    return clampToStack(heroBet+Math.max(0.01,pot*pct),heroBet,stack);
+
+  /* Nota final de una subida = nota de la acción (frecuencia GTO) × factor del tamaño.
+     Las demás acciones (fold, call, check) no tienen tamaño y conservan su nota. */
+  const combinedScore = (actionScore, factor) => Math.round(actionScore * factor);
+
+  // Botones de tamaño que debe ofrecer la interfaz en cada spot (en bb, "subir a")
+  function presets(spot, heroPos, villainPos, raiseTo, stackPlusBet = 100) {
+    const cap = (v) => Math.min(Math.round(v * 10) / 10, stackPlusBet);
+    if (spot === 'open') return (heroPos === 'SB' ? [2.5, 3, 3.5] : [2, 2.5, 3]).map(cap);
+    if (spot === '3bet') return [2.5, 3, 3.5, 4, 4.5].map((m) => cap(raiseTo * m));
+    if (spot === '4bet') return [2.2, 2.5].map((m) => cap(raiseTo * m)).concat([stackPlusBet]);
+    return [];
   }
-  function postflopTargets({pot,heroBet=0,stack=100,config:rawConfig={}}){
-    const c=config(rawConfig);
-    return [postflopTarget({pot,heroBet,stack,pct:c.betSmall}),postflopTarget({pot,heroBet,stack,pct:c.betLarge})];
-  }
-  return {DEFAULTS,PRESETS,config,clampToStack,preflopTarget,minRaiseTo,postflopTarget,postflopTargets};
+  return { ORDER, inPosition, reference, sizingFactor, combinedScore, presets };
 });

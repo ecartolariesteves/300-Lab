@@ -89,3 +89,13 @@ Después se regenera el JSON y se valida:
 node tools/build-ranges.mjs ranges.json
 node tests/validate-ranges.mjs ranges.json
 ```
+
+### Módulos del póker (Mesa de Estudio)
+
+La lógica no depende de la página, así que se prueba con Node desde `poker/`:
+
+- `engine.js`: baraja, evaluador de 7 cartas y equity Monte Carlo.
+- `sizing.js`: tamaños de referencia preflop (apertura 2,5 bb, 3 bb desde la SB; 3-bet 3× en posición y 4× sin posición; 4-bet 2,2× y 2,5×) y su factor (1 de referencia, 0,85 aceptable, 0,6 fuera de banda).
+- `betting.js`: acciones legales (fold, check, call/limp, bet/raise, all-in), subida mínima (apuesta actual + último incremento) y botones de tamaño postflop.
+- `evaluation.js`: frecuencias de la tabla, nota de la acción × factor del tamaño, limp, manos dudosas, pot odds, SPR y fold necesario para un farol.
+- `game.js`: mesa, bots, entrenamiento, estadísticas e interfaz.
