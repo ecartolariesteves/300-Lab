@@ -210,7 +210,7 @@ function addActionButton(label,action,target,primary=false){
 function renderActions(){
   $('actions').replaceChildren();$('action-prompt').textContent='Tu decisión · '+game.players[0].pos+' · '+game.street.toUpperCase();
   const p=game.players[0],facing=game.currentBet>p.bet+0.0001;
-  const legal=BETTING.legalActions({player:p,currentBet:game.currentBet,lastRaiseSize:game.lastRaiseSize,street:game.street});
+  const legal=BETTING.legalActions({player:p,currentBet:game.currentBet,lastRaiseSize:game.lastRaiseSize,street:game.street,canRaise:!game.acted.has(p.id)});
   if(game.street==='preflop'){
     if(facing){
       addActionButton('Fold','fold');
@@ -248,7 +248,7 @@ function pay(p,amount){
   if(p.stack<0.0001){p.stack=0;p.allin=true;}
 }
 function applyAction(p,action,target){
-  const check=BETTING.validateAction({action,target,player:p,currentBet:game.currentBet,lastRaiseSize:game.lastRaiseSize,street:game.street});
+  const check=BETTING.validateAction({action,target,player:p,currentBet:game.currentBet,lastRaiseSize:game.lastRaiseSize,street:game.street,canRaise:!game.acted.has(p.id)});
   if(!check.ok){if(p.id===0)$('table-status').textContent=check.reason;return false;}
   if(action==='fold'){p.folded=true;p.lastAction='Fold';}
   else if(action==='check'){p.lastAction='Check';game.acted.add(p.id);}
@@ -385,7 +385,7 @@ function showPostFeedback(result,action){
 }
 async function heroAction(action,target){
   if(!game||game.finished||game.busy)return;
-  const legal=BETTING.validateAction({action,target,player:game.players[0],currentBet:game.currentBet,lastRaiseSize:game.lastRaiseSize,street:game.street});
+  const legal=BETTING.validateAction({action,target,player:game.players[0],currentBet:game.currentBet,lastRaiseSize:game.lastRaiseSize,street:game.street,canRaise:!game.acted.has(game.players[0].id)});
   if(!legal.ok){$('table-status').textContent=legal.reason;return;}
   game.busy=true;$('new-hand').disabled=true;
   const hero=game.players[0];
