@@ -6,6 +6,7 @@ assert.equal(S.preflopTarget({position:'CO',raises:0,currentBet:1,heroBet:0,stac
 assert.equal(S.preflopTarget({position:'SB',raises:0,currentBet:1,heroBet:0,stack:100}),3);
 assert.equal(S.preflopTarget({position:'BTN',raises:1,currentBet:2.5,heroBet:0,stack:100}),7.5);
 assert.equal(S.preflopTarget({position:'BB',raises:1,currentBet:2.5,heroBet:1,stack:99}),10);
+assert.equal(S.preflopTarget({position:'BB',opponentPosition:'SB',raises:1,currentBet:2.5,heroBet:1,stack:99}),7.5);
 assert.equal(S.preflopTarget({position:'BTN',raises:2,currentBet:10,heroBet:2.5,stack:12}),14.5);
 const targets=S.postflopTargets({pot:10,heroBet:0,stack:100});
 assert.ok(Math.abs(targets[0]-3.3)<1e-9&&Math.abs(targets[1]-7.5)<1e-9);
