@@ -1,0 +1,19 @@
+/* Hundir la flota: tableros adaptables sin scroll horizontal a 360 px. */
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.controls label{display:flex;gap:6px;align-items:center;font-weight:600}
+.controls button,.controls select,.ship-picker button{min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)}
+.controls .primary{background:var(--felt);color:#F3EFE2;border-color:var(--felt)}
+.message{min-height:1.5em;color:var(--muted);font-weight:600}
+.boards{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+.board-panel{min-width:0}.board-panel h2{display:flex;justify-content:space-between;gap:8px;font:700 1rem var(--f-display)}.board-panel small{font:500 .7rem var(--f-mono);color:var(--muted)}
+.grid{width:100%;max-width:460px;aspect-ratio:1;display:grid;grid-template-columns:repeat(10,minmax(0,1fr));border:2px solid #28566c;background:#28566c;gap:1px;touch-action:manipulation}
+.cell{min-width:0;min-height:0;padding:0;border:0;background:#c8e0e5;position:relative}
+.cell.ship{background:#526c79}.cell.hit{background:#df6b4f}.cell.sunk{background:#a92e2e}.cell.miss{background:#f2f0e7}
+.cell.hit::after,.cell.sunk::after{content:"×";position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-weight:900;font-size:clamp(10px,2vw,20px)}
+.cell.miss::after{content:"·";position:absolute;inset:0;display:grid;place-items:center;color:#416678;font-size:1.4rem}
+.cell.preview{outline:2px solid #f2bd39;outline-offset:-2px}.cell:focus-visible{outline:3px solid #f2bd39;z-index:1}
+.enemy-panel .cell{cursor:crosshair}.enemy-panel .cell:disabled{cursor:default}
+.ship-picker{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.ship-picker button[aria-pressed=true]{background:var(--felt);color:#fff}
+.result{min-height:1.5em;text-align:center;font-weight:700;color:var(--signal)}
+@media(max-width:640px){.boards{grid-template-columns:1fr;gap:12px}.board-panel{display:grid;grid-template-columns:minmax(0,1fr);justify-items:center}.board-panel h2{width:100%;max-width:360px}.grid{width:min(100%,360px)}.enemy-panel .grid{width:min(100%,360px)}
+#own-board{width:min(100%,310px)}}
+@media(max-width:380px){.grid{gap:1px;border-width:1px}.controls button,.controls select{padding:7px 9px;font-size:.85rem}}
