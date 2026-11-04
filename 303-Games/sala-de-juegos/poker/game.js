@@ -515,7 +515,8 @@ function startTraining(){
   const threeBetPosition=spot==='open'?training.pos:training.threeBettor;
   const threeBetSize=openSize*(['SB','BB'].includes(threeBetPosition)?sizingConfig.threeBetOOP:sizingConfig.threeBetIP);
   const fourBetSize=threeBetSize*sizingConfig.fourBet;
-  for(const a of options){const b=document.createElement('button');b.type='button';b.className='action-btn'+(a!=='fold'?' primary':'');b.textContent=({fold:'Fold',call:'Call',raise:training.pos==='SB'?'Raise 3 bb':'Raise 2,5 bb','3bet':'3-bet '+threeBetSize.toFixed(1)+' bb','4bet':'4-bet '+fourBetSize.toFixed(1)+' bb'})[a];b.addEventListener('click',()=>answerTraining(a));$('training-actions').append(b);}
+  training.sizingTargets={raise:openSize,'3bet':threeBetSize,'4bet':fourBetSize};
+  for(const a of options){const b=document.createElement('button');b.type='button';b.className='action-btn'+(a!=='fold'?' primary':'');b.textContent=({fold:'Fold',call:'Call',raise:'Raise '+openSize.toFixed(1)+' bb','3bet':'3-bet '+threeBetSize.toFixed(1)+' bb','4bet':'4-bet '+fourBetSize.toFixed(1)+' bb'})[a];b.addEventListener('click',()=>answerTraining(a));$('training-actions').append(b);}
   $('training-feedback').hidden=true;$('training-range-panel').hidden=true;$('next-training').hidden=true;
 }
 function answerTraining(action){
@@ -523,12 +524,14 @@ function answerTraining(action){
   const result=evaluatePreflop(action,training.chart,training.hand,training.spot==='rfi'?'Apertura':training.spot==='open'?'Contra apertura':'Contra 3-bet');
   const box=$('training-feedback');box.hidden=false;
   const ref=Object.entries(result.freq).filter(([,v])=>v>0).map(([a,v])=>a.toUpperCase()+' '+Math.round(v*100)+'%').join(' · ');
+  const target=training.sizingTargets[action];
+  const sizing=Number.isFinite(target)?EVALUATION.sizingScore(target,target):null;
   box.className='feedback '+verdictClass(result.verdict);
-  box.innerHTML='<p><strong>'+training.pos+' con '+training.hand+' · Referencia: '+(ref||'Fold 100%')+' · Tu acción: '+action.toUpperCase()+' → '+result.verdict+' ('+(result.score??0)+'/100)</strong></p><p>'+explainHand(training.hand,training.pos)+'</p><p class="source">Rangos de referencia aproximados (6-max, 100 bb). No son la salida exacta de un solver.</p>';
+  box.innerHTML='<p><strong>'+training.pos+' con '+training.hand+' · Referencia: '+(ref||'Fold 100%')+' · Tu acción: '+action.toUpperCase()+' → '+result.verdict+' ('+(result.score??0)+'/100)</strong></p>'+(sizing?'<p>Tamaño de referencia: '+target.toFixed(1)+' bb · '+sizing.verdict+' ('+sizing.score+'/100).</p>':'')+'<p>'+explainHand(training.hand,training.pos)+'</p><p class="source">Rangos de referencia aproximados (6-max, 100 bb). No son la salida exacta de un solver.</p>';
   renderRangeGrid($('training-range-grid'),training.chart,training.cards);
   $('training-range-label').textContent=training.label;$('training-range-panel').hidden=false;
   $('training-actions').replaceChildren();$('next-training').hidden=false;
-  saveDecision({type:'preflop',pos:training.pos,spot:training.spot==='rfi'?'Apertura':training.spot==='open'?'Contra apertura':'Contra 3-bet',hand:training.hand,category:categoryOf(training.hand),action,score:result.score,verdict:result.verdict});
+  saveDecision({type:'preflop',pos:training.pos,spot:training.spot==='rfi'?'Apertura':training.spot==='open'?'Contra apertura':'Contra 3-bet',hand:training.hand,category:categoryOf(training.hand),action,score:result.score,sizingScore:sizing?.score??null,verdict:result.verdict});
 }
 function avg(items){return items.length?items.reduce((s,x)=>s+x.score,0)/items.length:null;}
 function tableRows(el,rows){
