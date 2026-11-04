@@ -326,7 +326,10 @@ function botAction(p){
       action=target>=p.bet+p.stack-0.0001?'allin':'bet';
     }
   }
-  if(!applyAction(p,action,target))applyAction(p,game.currentBet>p.bet?'fold':'check');
+  if(!applyAction(p,action,target)){
+    const legal=BETTING.legalActions({player:p,currentBet:game.currentBet,lastRaiseSize:game.lastRaiseSize,street:game.street,canRaise:!game.acted.has(p.id)});
+    applyAction(p,legal.includes('call')?'call':legal.includes('check')?'check':'fold');
+  }
 }
 function heroChartContext(){
   const hero=game.players[0],pos=hero.pos,spot=getSpotName(pos),chart=getSpotChart(pos);
