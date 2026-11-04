@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+const S = require('../sizing.js');
+assert.equal(S.preflopTarget({position:'CO',raises:0,currentBet:1,heroBet:0,stack:100}),2.5);
+assert.equal(S.preflopTarget({position:'SB',raises:0,currentBet:1,heroBet:0,stack:100}),3);
+assert.equal(S.preflopTarget({position:'BTN',raises:1,currentBet:2.5,heroBet:0,stack:100}),7.5);
+assert.equal(S.preflopTarget({position:'BB',raises:1,currentBet:2.5,heroBet:1,stack:99}),11);
+assert.equal(S.preflopTarget({position:'BTN',raises:2,currentBet:10,heroBet:2.5,stack:12}),14.5);
+assert.deepEqual(S.postflopTargets({pot:10,heroBet:0,stack:100}),[3.3,7.5]);
+assert.equal(S.postflopTarget({pot:20,heroBet:0,stack:4,pct:0.75}),4);
+assert.equal(S.minRaiseTo({currentBet:2.5,lastRaiseSize:1.5,street:'preflop'}),4);
+assert.throws(()=>S.config({betSmall:0.8,betLarge:0.5}));
+assert.throws(()=>S.config({open:0}));
+console.log('✔ Sizing: aperturas, 3-bet IP/OOP, 4-bet, apuestas postflop y límites de stack');
