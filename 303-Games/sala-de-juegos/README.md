@@ -51,9 +51,14 @@ Desde la carpeta del juego:
 ```
 node tests/validate-ranges.mjs ranges.json
 node tests/test-engine.mjs
+node tests/test-sizing.mjs
+node tests/test-betting.mjs
+node tests/test-evaluation.mjs
 ```
 
 Los rangos son una referencia aproximada 6-max a 100 bb; no representan la salida exacta de un solver.
+
+Mesa de Estudio v2 añade tamaños configurables (apertura, 3-bet IP/OOP, 4-bet y apuestas postflop), validación de acciones NLHE (subida mínima, short all-in y límite de stack) y puntuaciones separadas para acción y tamaño. Los tamaños personalizados se guardan localmente en el dispositivo.
 
 ## Probar en local
 
