@@ -249,9 +249,12 @@ function applyAction(p,action,target){
     const to=action==='allin'?p.bet+p.stack:target;
     const before=game.currentBet;pay(p,Math.max(0,to-p.bet));
     if(p.bet>before+0.0001){
-      game.lastRaiseSize=p.bet-before;game.currentBet=p.bet;game.raiseCount++;
+      const raiseSize=p.bet-before,fullRaise=raiseSize+0.0001>=Math.max(game.lastRaiseSize,0.01);
+      game.currentBet=p.bet;game.raiseCount++;
       if(game.raiseCount===1)game.firstRaiserPos=p.pos;
-      game.lastRaiserPos=p.pos;game.lastRaiseTo=p.bet;game.acted=new Set([p.id]);
+      game.lastRaiserPos=p.pos;game.lastRaiseTo=p.bet;
+      if(fullRaise){game.lastRaiseSize=raiseSize;game.acted=new Set([p.id]);}
+      else game.acted.add(p.id);
     }else game.acted.add(p.id);
     p.lastAction=action==='allin'?'All-in':(game.street==='preflop'?(game.raiseCount===1?'Open':game.raiseCount===2?'3-bet':game.raiseCount===3?'4-bet':'Subida'):'Bet/Raise');
   }
@@ -491,9 +494,11 @@ function startTraining(){
   $('training-cards').replaceChildren(...cards.map(makeCard));
   $('training-actions').replaceChildren();
   const options=spot==='rfi'?['fold','raise']:['fold','call',spot==='open'?'3bet':'4bet'];
-  const openSize=spot==='open'?(training.opener==='SB'?3:2.5):(training.pos==='SB'?3:2.5);
-  const threeBetSize=spot==='open'?openSize*(['SB','BB'].includes(training.pos)?4:3):openSize*(['SB','BB'].includes(training.threeBettor)?4:3);
-  const fourBetSize=threeBetSize*sizingConfig.fourBet/3;
+  const openPosition=spot==='open'?training.opener:training.pos;
+  const openSize=openPosition==='SB'?sizingConfig.openSB:sizingConfig.open;
+  const threeBetPosition=spot==='open'?training.pos:training.threeBettor;
+  const threeBetSize=openSize*(['SB','BB'].includes(threeBetPosition)?sizingConfig.threeBetOOP:sizingConfig.threeBetIP);
+  const fourBetSize=threeBetSize*sizingConfig.fourBet;
   for(const a of options){const b=document.createElement('button');b.type='button';b.className='action-btn'+(a!=='fold'?' primary':'');b.textContent=({fold:'Fold',call:'Call',raise:training.pos==='SB'?'Raise 3 bb':'Raise 2,5 bb','3bet':'3-bet '+threeBetSize.toFixed(1)+' bb','4bet':'4-bet '+fourBetSize.toFixed(1)+' bb'})[a];b.addEventListener('click',()=>answerTraining(a));$('training-actions').append(b);}
   $('training-feedback').hidden=true;$('training-range-panel').hidden=true;$('next-training').hidden=true;
 }
