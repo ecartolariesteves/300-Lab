@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+const B = require('../betting.js');
+const hero = {bet:0,stack:100};
+assert.deepEqual(B.legalActions({player:hero,currentBet:0,street:'preflop'}),['fold','check','raise','bet']);
+assert.ok(B.legalActions({player:hero,currentBet:2.5,lastRaiseSize:1.5,street:'preflop'}).includes('raise'));
+assert.ok(!B.legalActions({player:{bet:0,stack:2},currentBet:2.5,lastRaiseSize:1.5,street:'preflop'}).includes('raise'));
+assert.ok(B.legalActions({player:{bet:0,stack:2},currentBet:2.5,lastRaiseSize:1.5,street:'preflop'}).includes('allin'));
+assert.equal(B.validateAction({action:'raise',target:7.5,player:hero,currentBet:2.5,lastRaiseSize:1.5,street:'preflop'}).ok,true);
+assert.equal(B.validateAction({action:'raise',target:3,player:hero,currentBet:2.5,lastRaiseSize:1.5,street:'preflop'}).ok,false);
+assert.equal(B.validateAction({action:'raise',target:120,player:hero,currentBet:2.5,lastRaiseSize:1.5,street:'preflop'}).ok,false);
+assert.equal(B.validateAction({action:'check',player:hero,currentBet:2.5,street:'preflop'}).ok,false);
+assert.equal(B.classify('raise'),'raise');
+assert.equal(B.classify('3bet'),'3bet');
+assert.equal(B.classify('4bet'),'4bet');
+console.log('✔ Betting: acciones legales, subida mínima, short all-in y tope del stack');
