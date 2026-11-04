@@ -11,12 +11,12 @@
     if(due<=EPS)actions.push('check');
     else if(stack>0)actions.push('call');
     const maxTo=bet+stack;
+    const minTo=currentBet<=EPS?(street==='preflop'?2:0.01):currentBet+Math.max(lastRaiseSize||currentBet,street==='preflop'?1:0.01);
     if(stack>due+EPS){
-      const minTo=currentBet<=EPS?(street==='preflop'?2:0.01):currentBet+Math.max(lastRaiseSize||currentBet,street==='preflop'?1:0.01);
-      if(maxTo+EPS>=minTo)actions.push('raise');
+      if(maxTo+EPS>=minTo)actions.push(street==='preflop'?'raise':'raise');
       else if(maxTo>currentBet+EPS)actions.push('allin');
     }else if(stack>EPS&&maxTo>currentBet+EPS)actions.push('allin');
-    if(due<=EPS&&stack>EPS)actions.push('bet');
+    if(due<=EPS&&stack>EPS&&street!=='preflop')actions.push('bet');
     return [...new Set(actions)];
   }
   function validateAction({action,target,player,currentBet=0,lastRaiseSize=0,street='preflop'}){
@@ -26,7 +26,7 @@
     const bet=Number(player.bet)||0,stack=Number(player.stack)||0,maxTo=bet+stack;
     if(!Number.isFinite(target))return {ok:false,reason:'Falta un tamaño numérico.',legal};
     if(target>maxTo+EPS)return {ok:false,reason:'La apuesta supera el stack disponible.',legal};
-    if(action==='bet'&&currentBet>bet+EPS)return {ok:false,reason:'No puedes apostar si ya hay una apuesta que igualar.',legal};
+    if(action==='bet'&&(street==='preflop'||currentBet>bet+EPS))return {ok:false,reason:'No puedes apostar en esta situación.',legal};
     const minTo=currentBet<=EPS?(street==='preflop'?2:0.01):currentBet+Math.max(lastRaiseSize||currentBet,street==='preflop'?1:0.01);
     if(target+EPS<minTo)return {ok:false,reason:'La subida no alcanza el mínimo legal.',legal};
     if(target<=currentBet+EPS)return {ok:false,reason:'El tamaño debe superar la apuesta actual.',legal};
