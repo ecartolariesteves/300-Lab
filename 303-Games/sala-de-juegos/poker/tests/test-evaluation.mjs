@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+const E = require('../evaluation.js');
+const mixed = {fold:0.2,call:0.5,3bet:0.3};
+assert.deepEqual(E.actionScore('call',mixed).score,100);
+assert.equal(E.actionScore('3bet',mixed).score,60);
+assert.equal(E.actionScore('fold',mixed).score,40);
+assert.equal(E.sizingScore(2.5,2.5).score,100);
+assert.equal(E.sizingScore(2.5,3).score,0);
+assert.equal(E.sizingScore(3,2.5,{tolerance:0.25}).score,20);
+assert.equal(E.sizingScore(0,2.5).evaluated,false);
+const both = E.evaluateDecision({action:'3bet',frequencies:mixed,actualSize:7.5,referenceSize:7.5});
+assert.equal(both.action.score,60);
+assert.equal(both.sizing.score,100);
+assert.equal(both.overallScore,80);
+console.log('✔ Evaluation: acción y tamaño se puntúan de forma independiente');
