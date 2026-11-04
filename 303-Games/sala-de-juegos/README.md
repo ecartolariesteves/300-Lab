@@ -34,6 +34,15 @@ parejas/
 cuatro-en-raya/
   index.html, style.css, rules.js, game.js, ai-worker.js
   tests/test-rules.mjs
+blackjack/
+  index.html, style.css, strategy.js, rules.js, game.js
+  tests/test-strategy.mjs, tests/test-rules.mjs
+damas/
+  index.html, style.css, rules.js, game.js, ai-worker.js
+  tests/test-rules.mjs
+hundir-la-flota/
+  index.html, style.css, rules.js, game.js, ai-worker.js
+  tests/test-rules.mjs
 aprende/
   index.html          Portada de los tutoriales
   aprende.css         Estilos de los tutoriales
