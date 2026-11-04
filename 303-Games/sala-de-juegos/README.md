@@ -22,8 +22,10 @@ serpiente/
 ultima-parada/
   index.html, style.css, levels.js, game.js, test-levels.mjs
 poker/
-  index.html, style.css, engine.js, game.js, ranges.json
-  tests/validate-ranges.mjs, tests/test-engine.mjs
+  index.html, style.css, engine.js, sizing.js, betting.js, evaluation.js
+  game.js, ranges.json
+  tests/validate-ranges.mjs, tests/test-engine.mjs, tests/test-sizing.mjs
+  tests/test-betting.mjs, tests/test-evaluation.mjs
   tools/build-ranges.mjs   (genera ranges.json a partir de rangos en notación de póker)
 spider/
   index.html, style.css, rules.js, game.js
@@ -51,9 +53,14 @@ Desde la carpeta del juego:
 ```
 node tests/validate-ranges.mjs ranges.json
 node tests/test-engine.mjs
+node tests/test-sizing.mjs
+node tests/test-betting.mjs
+node tests/test-evaluation.mjs
 ```
 
 Los rangos son una referencia aproximada 6-max a 100 bb; no representan la salida exacta de un solver.
+
+Mesa de Estudio v2 añade tamaños configurables (apertura, 3-bet IP/OOP, 4-bet y apuestas postflop), validación de acciones NLHE (subida mínima, short all-in y límite de stack) y puntuaciones separadas para acción y tamaño. Los tamaños personalizados se guardan localmente en el dispositivo.
 
 ## Probar en local
 
@@ -82,3 +89,13 @@ Después se regenera el JSON y se valida:
 node tools/build-ranges.mjs ranges.json
 node tests/validate-ranges.mjs ranges.json
 ```
+
+### Módulos del póker (Mesa de Estudio)
+
+La lógica no depende de la página, así que se prueba con Node desde `poker/`:
+
+- `engine.js`: baraja, evaluador de 7 cartas y equity Monte Carlo.
+- `sizing.js`: tamaños de referencia preflop (apertura 2,5 bb, 3 bb desde la SB; 3-bet 3× en posición y 4× sin posición; 4-bet 2,2× y 2,5×) y su factor (1 de referencia, 0,85 aceptable, 0,6 fuera de banda).
+- `betting.js`: acciones legales (fold, check, call/limp, bet/raise, all-in), subida mínima (apuesta actual + último incremento) y botones de tamaño postflop.
+- `evaluation.js`: frecuencias de la tabla, nota de la acción × factor del tamaño, limp, manos dudosas, pot odds, SPR y fold necesario para un farol.
+- `game.js`: mesa, bots, entrenamiento, estadísticas e interfaz.
