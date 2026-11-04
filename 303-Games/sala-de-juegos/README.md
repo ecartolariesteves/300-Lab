@@ -24,7 +24,7 @@ ultima-parada/
 poker/
   index.html, style.css, engine.js, sizing.js, betting.js, evaluation.js
   game.js, ranges.json
-  tests/validate-ranges.mjs, test-engine.mjs, test-sizing.mjs
+  tests/validate-ranges.mjs, tests/test-engine.mjs, tests/test-sizing.mjs
   tests/test-betting.mjs, tests/test-evaluation.mjs
   tools/build-ranges.mjs   (genera ranges.json a partir de rangos en notación de póker)
 spider/
