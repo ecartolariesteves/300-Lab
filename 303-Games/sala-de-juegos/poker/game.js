@@ -201,7 +201,7 @@ function renderTable(activeId=null){
   $('hand-result').textContent=(game.lastResult>=0?'+':'')+game.lastResult.toFixed(1)+' bb';
 }
 function preflopTarget(p){
-  return SIZING.preflopTarget({position:p.pos,raises:game.raiseCount,currentBet:game.currentBet,heroBet:p.bet,stack:p.stack,config:sizingConfig});
+  return SIZING.preflopTarget({position:p.pos,opponentPosition:game.lastRaiserPos,raises:game.raiseCount,currentBet:game.currentBet,heroBet:p.bet,stack:p.stack,config:sizingConfig});
 }
 function addActionButton(label,action,target,primary=false){
   const b=document.createElement('button');b.type='button';b.className='action-btn'+(primary?' primary':'');b.textContent=label;
@@ -396,7 +396,7 @@ async function heroAction(action,target){
     const ctx=heroChartContext();
     if(ctx.chart){
       const result=evaluatePreflop(action,ctx.chart,ctx.hand,ctx.spot);
-      const expected=action==='raise'&&Number.isFinite(target)?SIZING.preflopTarget({position:hero.pos,raises:game.raiseCount,currentBet:game.currentBet,heroBet:hero.bet,stack:hero.stack,config:sizingConfig}):null;
+      const expected=action==='raise'&&Number.isFinite(target)?SIZING.preflopTarget({position:hero.pos,opponentPosition:game.lastRaiserPos,raises:game.raiseCount,currentBet:game.currentBet,heroBet:hero.bet,stack:hero.stack,config:sizingConfig}):null;
       const sized=expected==null?null:EVALUATION.sizingScore(target,expected);
       if(feedbackMode==='immediate'){
         showPreflopFeedback($('feedback'),ctx.chart,ctx.hand,ctx.pos,ctx.spot,action);
@@ -520,7 +520,8 @@ function startTraining(){
   const openPosition=spot==='open'?training.opener:training.pos;
   const openSize=openPosition==='SB'?sizingConfig.openSB:sizingConfig.open;
   const threeBetPosition=spot==='open'?training.pos:training.threeBettor;
-  const threeBetSize=openSize*(['SB','BB'].includes(threeBetPosition)?sizingConfig.threeBetOOP:sizingConfig.threeBetIP);
+  const threeBetOpponent=spot==='open'?training.opener:training.pos;
+  const threeBetSize=SIZING.preflopTarget({position:threeBetPosition,opponentPosition:threeBetOpponent,raises:1,currentBet:openSize,heroBet:0,stack:100,config:sizingConfig});
   const fourBetSize=threeBetSize*sizingConfig.fourBet;
   training.sizingTargets={raise:openSize,'3bet':threeBetSize,'4bet':fourBetSize};
   for(const a of options){const b=document.createElement('button');b.type='button';b.className='action-btn'+(a!=='fold'?' primary':'');b.textContent=({fold:'Fold',call:'Call',raise:'Raise '+openSize.toFixed(1)+' bb','3bet':'3-bet '+threeBetSize.toFixed(1)+' bb','4bet':'4-bet '+fourBetSize.toFixed(1)+' bb'})[a];b.addEventListener('click',()=>answerTraining(a));$('training-actions').append(b);}
