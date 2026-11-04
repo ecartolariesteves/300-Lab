@@ -5,20 +5,20 @@
   root.PokerBetting=api;
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
   const EPS=1e-9;
-  function legalActions({player,currentBet=0,lastRaiseSize=0,street='preflop'}){
+  function legalActions({player,currentBet=0,lastRaiseSize=0,street='preflop',canRaise=true}){
     const bet=Number(player.bet)||0,stack=Number(player.stack)||0,due=Math.max(0,currentBet-bet);
     const actions=['fold'];
     if(due<=EPS)actions.push('check');
     else if(stack>0)actions.push('call');
     const maxTo=bet+stack;
     const minTo=currentBet<=EPS?(street==='preflop'?2:0.01):currentBet+Math.max(lastRaiseSize||currentBet,street==='preflop'?1:0.01);
-    if(stack>due+EPS&&maxTo+EPS>=minTo)actions.push('raise');
-    if(stack>EPS&&maxTo>currentBet+EPS)actions.push('allin');
+    if(canRaise&&stack>due+EPS&&maxTo+EPS>=minTo)actions.push('raise');
+    if(canRaise&&stack>EPS&&maxTo>currentBet+EPS)actions.push('allin');
     if(due<=EPS&&stack>EPS&&street!=='preflop')actions.push('bet');
     return [...new Set(actions)];
   }
-  function validateAction({action,target,player,currentBet=0,lastRaiseSize=0,street='preflop'}){
-    const legal=legalActions({player,currentBet,lastRaiseSize,street});
+  function validateAction({action,target,player,currentBet=0,lastRaiseSize=0,street='preflop',canRaise=true}){
+    const legal=legalActions({player,currentBet,lastRaiseSize,street,canRaise});
     if(!legal.includes(action))return {ok:false,reason:'Acción no legal en esta situación.',legal};
     if(action!=='raise'&&action!=='bet')return {ok:true,legal};
     const bet=Number(player.bet)||0,stack=Number(player.stack)||0,maxTo=bet+stack;
