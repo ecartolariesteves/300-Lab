@@ -7,6 +7,11 @@ const FROM_BUTTON = ['BTN','SB','BB','UTG','HJ','CO'];
 const RANKS = 'AKQJT98765432';
 const STORAGE_RANGES = 'poker-ranges-custom';
 const STORAGE_STATS = 'poker-stats';
+const STORAGE_SIZING = 'poker-sizing';
+const SIZING = window.PokerSizing;
+const BETTING = window.PokerBetting;
+const EVALUATION = window.PokerEvaluation;
+let sizingConfig = SIZING.config();
 const REQUIRED = [];
 for(let a=0;a<5;a++)for(let b=a+1;b<6;b++){
   REQUIRED.push('VS_OPEN_'+POS[b]+'_vs_'+POS[a]);
@@ -25,6 +30,23 @@ const fullRangeChart = (() => { const chart={}; for(let i=0;i<13;i++)for(let j=0
 
 function safeGet(key){try{return localStorage.getItem(key);}catch(_){return null;}}
 function safeSet(key,value){try{localStorage.setItem(key,value);}catch(_){/* El juego sigue aunque el navegador bloquee el almacenamiento. */}}
+function loadSizingConfig(){
+  try{return SIZING.config(JSON.parse(safeGet(STORAGE_SIZING)||'{}'));}catch(_){return SIZING.config();}
+}
+function readSizingFields(){
+  const value={open:Number($('size-open').value),openSB:Number($('size-open-sb').value),threeBetIP:Number($('size-3bet-ip').value),threeBetOOP:Number($('size-3bet-oop').value),fourBet:Number($('size-4bet').value),betSmall:Number($('size-bet-small').value)/100,betLarge:Number($('size-bet-large').value)/100};
+  return SIZING.config(value);
+}
+function renderSizingFields(){
+  const ids={'size-open':'open','size-open-sb':'openSB','size-3bet-ip':'threeBetIP','size-3bet-oop':'threeBetOOP','size-4bet':'fourBet','size-bet-small':'betSmall','size-bet-large':'betLarge'};
+  for(const [id,key] of Object.entries(ids))$(id).value=key.startsWith('bet')?Math.round(sizingConfig[key]*100):sizingConfig[key];
+}
+function saveSizing(){
+  const message=$('sizing-message');
+  try{sizingConfig=readSizingFields();safeSet(STORAGE_SIZING,JSON.stringify(sizingConfig));message.className='settings-message';message.textContent='Tamaños guardados y aplicados a las próximas decisiones.';}
+  catch(error){message.className='settings-message error';message.textContent='No se han guardado: '+error.message;}
+}
+function resetSizing(){sizingConfig=SIZING.config();safeSet(STORAGE_SIZING,JSON.stringify(sizingConfig));renderSizingFields();$('sizing-message').textContent='Tamaños de referencia restaurados.';}
 function loadStats(){
   try{const s=JSON.parse(safeGet(STORAGE_STATS)||'null');if(s&&Array.isArray(s.decisions)&&Array.isArray(s.hands))return s;}catch(_){}
   return {decisions:[],hands:[],result:0};
@@ -181,10 +203,7 @@ function renderTable(activeId=null){
   $('hand-result').textContent=(game.lastResult>=0?'+':'')+game.lastResult.toFixed(1)+' bb';
 }
 function preflopTarget(p){
-  if(game.raiseCount===0)return p.pos==='SB'?3:2.5;
-  if(game.raiseCount===1){const oop=['SB','BB'].includes(p.pos);return game.currentBet*(oop?4:3);}
-  if(game.raiseCount===2)return game.currentBet*2.2;
-  return p.stack+p.bet;
+  return SIZING.preflopTarget({position:p.pos,raises:game.raiseCount,currentBet:game.currentBet,heroBet:p.bet,stack:p.stack,config:sizingConfig});
 }
 function addActionButton(label,action,target,primary=false){
   const b=document.createElement('button');b.type='button';b.className='action-btn'+(primary?' primary':'');b.textContent=label;
@@ -206,7 +225,8 @@ function renderActions(){
     const t=game.currentBet+(game.currentBet-p.bet)*3;addActionButton('Raise 3×','raise',t,true);
   }else{
     addActionButton('Check','check',null,true);
-    for(const pct of [0.33,0.75]){const amount=Math.max(0.1,game.pot*pct);addActionButton('Bet '+Math.round(pct*100)+'% · '+amount.toFixed(1)+' bb','bet',p.bet+amount,true);}
+    const targets=SIZING.postflopTargets({pot:game.pot,heroBet:p.bet,stack:p.stack,config:sizingConfig});
+    for(let i=0;i<targets.length;i++){const pct=i===0?sizingConfig.betSmall:sizingConfig.betLarge;addActionButton('Bet '+Math.round(pct*100)+'% · '+(targets[i]-p.bet).toFixed(1)+' bb','bet',targets[i],true);}
     addActionButton('All-in','allin',null);
   }
 }
@@ -220,6 +240,8 @@ function pay(p,amount){
   if(p.stack<0.0001){p.stack=0;p.allin=true;}
 }
 function applyAction(p,action,target){
+  const check=BETTING.validateAction({action,target,player:p,currentBet:game.currentBet,lastRaiseSize:game.lastRaiseSize,street:game.street});
+  if(!check.ok){if(p.id===0)$('table-status').textContent=check.reason;return false;}
   if(action==='fold'){p.folded=true;p.lastAction='Fold';}
   else if(action==='check'){p.lastAction='Check';game.acted.add(p.id);}
   else if(action==='call'){const due=Math.max(0,game.currentBet-p.bet);pay(p,due);p.lastAction=p.allin?'Call · all-in':'Call';if(game.street==='preflop')game.calls++;game.acted.add(p.id);}
@@ -227,13 +249,14 @@ function applyAction(p,action,target){
     const to=action==='allin'?p.bet+p.stack:target;
     const before=game.currentBet;pay(p,Math.max(0,to-p.bet));
     if(p.bet>before+0.0001){
-      game.currentBet=p.bet;game.raiseCount++;
+      game.lastRaiseSize=p.bet-before;game.currentBet=p.bet;game.raiseCount++;
       if(game.raiseCount===1)game.firstRaiserPos=p.pos;
       game.lastRaiserPos=p.pos;game.lastRaiseTo=p.bet;game.acted=new Set([p.id]);
     }else game.acted.add(p.id);
     p.lastAction=action==='allin'?'All-in':(game.street==='preflop'?(game.raiseCount===1?'Open':game.raiseCount===2?'3-bet':game.raiseCount===3?'4-bet':'Subida'):'Bet/Raise');
   }
   if(p.id===0)game.heroActions.push({street:game.street,action,hand:handKey(p.cards)});
+  return true;
 }
 function actionRange(chart,action){const out={};for(const [hand,actions] of Object.entries(chart||{})){if(actions[action]>0)out[hand]={[action]:actions[action]};}return out;}
 function pickAction(chart,hand,spot){
@@ -308,7 +331,7 @@ function equityAsync(hero,range,board,iterations,seed){
     }catch(_){fallback();}
   });
 }
-async function evaluatePostflop(action){
+async function evaluatePostflop(action,target){
   const hero=game.players[0],opponents=game.players.filter(p=>p.id!==0&&!p.folded);
   const rangePlayer=opponents.find(p=>p.rangeChart)||opponents[0];
   const chart=rangePlayer&&rangePlayer.rangeChart||fullRangeChart;
@@ -316,9 +339,16 @@ async function evaluatePostflop(action){
   const villainRange=PokerEngine.expandChart(chart,dead);
   const equity=await equityAsync(hero.cards,villainRange,game.board,4000,game.handNo*101+game.board.length);
   const due=Math.max(0,game.currentBet-hero.bet);
-  if(due<=0)return {equity,scored:false};
+  let sizing=null;
+  if(action==='bet'&&Number.isFinite(target)){
+    const increment=target-hero.bet;
+    const refs=[game.pot*sizingConfig.betSmall,game.pot*sizingConfig.betLarge];
+    const reference=refs.sort((a,b)=>Math.abs(a-increment)-Math.abs(b-increment))[0];
+    sizing=EVALUATION.sizingScore(increment,reference,{tolerance:0.35});
+  }
+  if(due<=0)return {equity,scored:false,sizing};
   const potOdds=due/(game.pot+due);
-  if(action==='raise'||action==='allin'||action==='bet')return {equity,potOdds,scored:false,due};
+  if(action==='raise'||action==='allin'||action==='bet')return {equity,potOdds,scored:false,due,sizing};
   let expected='Límite';
   if(equity>potOdds+.03)expected='Call';
   else if(equity<potOdds-.03)expected='Fold';
@@ -326,15 +356,15 @@ async function evaluatePostflop(action){
   if(expected==='Límite')score=50;
   else score=(action.toLowerCase()==='call'&&expected==='Call')||(action==='fold'&&expected==='Fold')?100:0;
   const verdict=score===100?'Correcta':score===50?'Límite':'Imprecisa';
-  return {equity,potOdds,expected,score,verdict,scored:true,due};
+  return {equity,potOdds,expected,score,verdict,scored:true,due,sizing};
 }
 function showPostFeedback(result,action){
   const box=$('feedback');box.hidden=false;
   if(!result.scored){
-    box.className='feedback';box.innerHTML='<p><strong>Equity estimada: '+(result.equity*100).toFixed(1)+'%</strong></p><p>'+(result.due?'La regla de referencia puntúa call o fold; las subidas no se puntúan.':'Información orientativa: al apostar tú no se puntúa esta decisión.')+'</p><p class="source">Cálculo de equity frente a pot odds (no es GTO).</p>';return;
+    box.className='feedback';box.innerHTML='<p><strong>Equity estimada: '+(result.equity*100).toFixed(1)+'%</strong></p><p>'+(result.due?'La regla de referencia puntúa call o fold; las subidas no se puntúan.':'Información orientativa: al apostar tú no se puntúa esta decisión.')+'</p>'+(result.sizing&&result.sizing.evaluated?'<p>Tamaño: '+result.sizing.verdict+' · '+result.sizing.score+'/100.</p>':'')+'<p class="source">Cálculo de equity frente a pot odds (no es GTO).</p>';return;
   }
   box.className='feedback '+(result.score===100?'':result.score===0?'error':'warn');
-  box.innerHTML='<p><strong>'+result.verdict+' · '+result.score+'/100</strong></p><p>Equity: '+(result.equity*100).toFixed(1)+'% · Pot odds: '+(result.potOdds*100).toFixed(1)+'% · Necesitas pagar '+result.due.toFixed(1)+' bb.</p><p>Referencia simplificada: '+result.expected+'.</p><p class="source">Cálculo de equity frente a pot odds (no es GTO).</p>';
+  box.innerHTML='<p><strong>'+result.verdict+' · '+result.score+'/100</strong></p><p>Equity: '+(result.equity*100).toFixed(1)+'% · Pot odds: '+(result.potOdds*100).toFixed(1)+'% · Necesitas pagar '+result.due.toFixed(1)+' bb.</p><p>Referencia simplificada: '+result.expected+'.</p>'+(result.sizing&&result.sizing.evaluated?'<p>Tamaño: '+result.sizing.verdict+' · '+result.sizing.score+'/100.</p>':'')+'<p class="source">Cálculo de equity frente a pot odds (no es GTO).</p>';
 }
 async function heroAction(action,target){
   if(!game||game.finished||game.busy)return;
@@ -349,6 +379,7 @@ async function heroAction(action,target){
       const d={type:'preflop',pos:ctx.pos,spot:ctx.spot,hand:ctx.hand,category:categoryOf(ctx.hand),action:chartAction(action,ctx.spot),score:result.score,verdict:result.verdict};
       // Rango con el que los bots te ponen postflop: las manos que juegan tu acción en esta tabla
       game.heroRange=actionRange(ctx.chart,chartAction(action,ctx.spot));
+      if(action==='raise'&&Number.isFinite(target)){const expected=SIZING.preflopTarget({position:hero.pos,raises:game.raiseCount,currentBet:game.currentBet,heroBet:hero.bet,stack:hero.stack,config:sizingConfig});const sized=EVALUATION.sizingScore(target,expected);d.sizingScore=sized.score;d.actionScore=result.score;}
       game.decisions.push(d);if(feedbackMode==='immediate')saveDecision(d);
       game.lastPreflop={chart:ctx.chart,hand:ctx.hand,pos:ctx.pos,spot:ctx.spot,cards:hero.cards};
       $('range-panel').hidden=feedbackMode!=='immediate';$('range-label').textContent=ctx.spot+' · '+ctx.pos;renderRangeGrid($('range-grid'),ctx.chart,hero.cards);
@@ -361,10 +392,10 @@ async function heroAction(action,target){
   }else{
     $('actions').querySelectorAll('button').forEach(b=>b.disabled=true);
     $('action-prompt').textContent='Calculando equity…';
-    const result=await evaluatePostflop(action);
+    const result=await evaluatePostflop(action,target);
     if(feedbackMode==='immediate')showPostFeedback(result,action);
     else $('feedback').hidden=true;
-    if(result.scored){const d={type:'postflop',pos:hero.pos,spot:game.street,hand:handKey(hero.cards),category:categoryOf(handKey(hero.cards)),action,score:result.score,verdict:result.verdict};game.decisions.push(d);if(feedbackMode==='immediate')saveDecision(d);}
+    if(result.scored||result.sizing?.evaluated){const d={type:'postflop',pos:hero.pos,spot:game.street,hand:handKey(hero.cards),category:categoryOf(handKey(hero.cards)),action,score:result.scored?result.score:result.sizing.score,actionScore:result.scored?result.score:null,sizingScore:result.sizing?.score??null,verdict:result.verdict||result.sizing.verdict};game.decisions.push(d);if(feedbackMode==='immediate')saveDecision(d);}
   }
   game.busy=false;$('new-hand').disabled=false;
   $('actions').replaceChildren();$('action-prompt').textContent='Decisión registrada · los rivales continúan…';
@@ -372,7 +403,7 @@ async function heroAction(action,target){
   renderTable();advance();
 }
 function startHand(){
-  game={button:game?((game.button+1)%6):0,handNo:game?game.handNo+1:1,lastResult:0,finished:false,street:'preflop',pot:0,currentBet:1,raiseCount:0,calls:0,firstRaiserPos:null,lastRaiserPos:null,lastRaiseTo:1,acted:new Set(),board:[],runout:[],players:[],decisions:[],heroActions:[],heroRange:null};
+  game={button:game?((game.button+1)%6):0,handNo:game?game.handNo+1:1,lastResult:0,finished:false,street:'preflop',pot:0,currentBet:1,lastRaiseSize:1,raiseCount:0,calls:0,firstRaiserPos:null,lastRaiserPos:null,lastRaiseTo:1,acted:new Set(),board:[],runout:[],players:[],decisions:[],heroActions:[],heroRange:null};
   const deal=PokerEngine.deal();
   game.players=Array.from({length:6},(_,id)=>({id,pos:FROM_BUTTON[(id-game.button+6)%6],cards:deal.hands[id],stack:100,bet:0,contribution:0,folded:false,allin:false,rangeChart:null,lastAction:''}));
   game.runout=deal.board;
@@ -416,7 +447,7 @@ function nextStreet(){
   if(game.street==='preflop'){game.street='flop';game.board=game.runout.slice(0,3);}
   else if(game.street==='flop'){game.street='turn';game.board=game.runout.slice(0,4);}
   else{game.street='river';game.board=game.runout.slice(0,5);}
-  game.players.forEach(p=>p.bet=0);game.currentBet=0;game.raiseCount=0;game.firstRaiserPos=null;game.lastRaiserPos=null;game.acted=new Set();
+  game.players.forEach(p=>p.bet=0);game.currentBet=0;game.lastRaiseSize=0;game.raiseCount=0;game.firstRaiserPos=null;game.lastRaiserPos=null;game.acted=new Set();
   $('feedback').hidden=true;$('range-panel').hidden=true;
   $('table-status').textContent=game.street.toUpperCase()+' · Bote '+game.pot.toFixed(1)+' bb';
   renderTable();advance();
@@ -462,7 +493,7 @@ function startTraining(){
   const options=spot==='rfi'?['fold','raise']:['fold','call',spot==='open'?'3bet':'4bet'];
   const openSize=spot==='open'?(training.opener==='SB'?3:2.5):(training.pos==='SB'?3:2.5);
   const threeBetSize=spot==='open'?openSize*(['SB','BB'].includes(training.pos)?4:3):openSize*(['SB','BB'].includes(training.threeBettor)?4:3);
-  const fourBetSize=threeBetSize*2.2;
+  const fourBetSize=threeBetSize*sizingConfig.fourBet/3;
   for(const a of options){const b=document.createElement('button');b.type='button';b.className='action-btn'+(a!=='fold'?' primary':'');b.textContent=({fold:'Fold',call:'Call',raise:training.pos==='SB'?'Raise 3 bb':'Raise 2,5 bb','3bet':'3-bet '+threeBetSize.toFixed(1)+' bb','4bet':'4-bet '+fourBetSize.toFixed(1)+' bb'})[a];b.addEventListener('click',()=>answerTraining(a));$('training-actions').append(b);}
   $('training-feedback').hidden=true;$('training-range-panel').hidden=true;$('next-training').hidden=true;
 }
@@ -516,6 +547,8 @@ function bind(){
   $('restore-ranges').addEventListener('click',restoreRanges);
   $('range-file').addEventListener('change',async e=>{const f=e.target.files[0];if(f)$('range-json').value=await f.text();});
   $('feedback-mode').addEventListener('change',e=>{feedbackMode=e.target.value;});
+  $('save-sizing').addEventListener('click',saveSizing);
+  $('reset-sizing').addEventListener('click',resetSizing);
   // Confirmación en dos pasos dentro de la página (sin confirm(), que algunos navegadores bloquean)
   let clearArmed=null;
   $('clear-stats').addEventListener('click',()=>{
@@ -537,7 +570,7 @@ function bind(){
 }
 addActionButton=function(label,action,target,primary=false){const b=document.createElement('button');b.type='button';b.className='action-btn'+(primary?' primary':'');b.textContent=label;b.dataset.action=action;b.addEventListener('click',()=>heroAction(action,target));$('actions').append(b);};
 async function boot(){
-  bind();await initRanges();renderStats();if(ranges){startHand();startTraining();}
+  sizingConfig=loadSizingConfig();renderSizingFields();bind();await initRanges();renderStats();if(ranges){startHand();startTraining();}
 }
 boot();
 })();
