@@ -396,12 +396,16 @@ async function heroAction(action,target){
     const ctx=heroChartContext();
     if(ctx.chart){
       const result=evaluatePreflop(action,ctx.chart,ctx.hand,ctx.spot);
-      if(feedbackMode==='immediate')showPreflopFeedback($('feedback'),ctx.chart,ctx.hand,ctx.pos,ctx.spot,action);
-      else $('feedback').hidden=true;
+      const expected=action==='raise'&&Number.isFinite(target)?SIZING.preflopTarget({position:hero.pos,raises:game.raiseCount,currentBet:game.currentBet,heroBet:hero.bet,stack:hero.stack,config:sizingConfig}):null;
+      const sized=expected==null?null:EVALUATION.sizingScore(target,expected);
+      if(feedbackMode==='immediate'){
+        showPreflopFeedback($('feedback'),ctx.chart,ctx.hand,ctx.pos,ctx.spot,action);
+        if(sized)$('feedback').innerHTML+='<p>Tamaño: '+sized.verdict+' · '+target.toFixed(1)+' bb / referencia '+expected.toFixed(1)+' bb ('+sized.score+'/100).</p>';
+      }else $('feedback').hidden=true;
       const d={type:'preflop',pos:ctx.pos,spot:ctx.spot,hand:ctx.hand,category:categoryOf(ctx.hand),action:chartAction(action,ctx.spot),score:result.score,verdict:result.verdict};
       // Rango con el que los bots te ponen postflop: las manos que juegan tu acción en esta tabla
       game.heroRange=actionRange(ctx.chart,chartAction(action,ctx.spot));
-      if(action==='raise'&&Number.isFinite(target)){const expected=SIZING.preflopTarget({position:hero.pos,raises:game.raiseCount,currentBet:game.currentBet,heroBet:hero.bet,stack:hero.stack,config:sizingConfig});const sized=EVALUATION.sizingScore(target,expected);d.sizingScore=sized.score;d.actionScore=result.score;}
+      if(sized){d.sizingScore=sized.score;d.actionScore=result.score;}
       game.decisions.push(d);if(feedbackMode==='immediate')saveDecision(d);
       game.lastPreflop={chart:ctx.chart,hand:ctx.hand,pos:ctx.pos,spot:ctx.spot,cards:hero.cards};
       $('range-panel').hidden=feedbackMode!=='immediate';$('range-label').textContent=ctx.spot+' · '+ctx.pos;renderRangeGrid($('range-grid'),ctx.chart,hero.cards);
