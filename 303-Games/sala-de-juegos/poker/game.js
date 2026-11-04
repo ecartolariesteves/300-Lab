@@ -314,13 +314,19 @@ function botAction(p){
   let action,target=null;
   if(game.street==='preflop'){
     action=botPreflop(p);
-    if(action==='raise')target=preflopTarget(p);
+    if(action==='raise'){
+      target=preflopTarget(p);
+      if(target>=p.bet+p.stack-0.0001)action='allin';
+    }
   }else{
     action=botPostflop(p);
-    if(action==='bet33') {action='bet';target=p.bet+Math.max(.1,game.pot*.33);}
-    if(action==='bet75') {action='bet';target=p.bet+Math.max(.1,game.pot*.75);}
+    if(action==='bet33'||action==='bet75'){
+      const pct=action==='bet33'?sizingConfig.betSmall:sizingConfig.betLarge;
+      target=Math.min(p.bet+p.stack,p.bet+Math.max(.1,game.pot*pct));
+      action=target>=p.bet+p.stack-0.0001?'allin':'bet';
+    }
   }
-  applyAction(p,action,target);
+  if(!applyAction(p,action,target))applyAction(p,game.currentBet>p.bet?'fold':'check');
 }
 function heroChartContext(){
   const hero=game.players[0],pos=hero.pos,spot=getSpotName(pos),chart=getSpotChart(pos);
@@ -379,6 +385,8 @@ function showPostFeedback(result,action){
 }
 async function heroAction(action,target){
   if(!game||game.finished||game.busy)return;
+  const legal=BETTING.validateAction({action,target,player:game.players[0],currentBet:game.currentBet,lastRaiseSize:game.lastRaiseSize,street:game.street});
+  if(!legal.ok){$('table-status').textContent=legal.reason;return;}
   game.busy=true;$('new-hand').disabled=true;
   const hero=game.players[0];
   if(game.street==='preflop'){
