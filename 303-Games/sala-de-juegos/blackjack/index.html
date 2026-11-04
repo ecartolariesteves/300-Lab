@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Blackjack · Sala de Juegos</title>
+<meta name="description" content="Blackjack con evaluación de estrategia básica, fichas ficticias y entrenamiento.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="../assets/base.css"><link rel="stylesheet" href="style.css">
+<script src="strategy.js" defer></script><script src="rules.js" defer></script><script src="game.js" defer></script>
+<link rel="manifest" href="../manifest.webmanifest"><meta name="theme-color" content="#1F5C45"><link rel="icon" href="../assets/icons/icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Sala de Juegos"><script src="../assets/pwa.js" defer></script>
+</head>
+<body>
+<header class="site-header"><div class="inner"><a class="logo" href="../">Sala de Juegos</a><nav class="site-nav" aria-label="Principal"><a href="../">Juegos</a><a href="../aprende/index.html">Aprende</a></nav></div></header>
+<main class="page blackjack-page">
+<header class="game-head"><p class="crumbs"><a href="../">Juegos</a> › Cartas › Blackjack</p><h1>Blackjack</h1><p class="brief">Aprende la estrategia básica · 6 barajas · crupier S17 · sin dinero real</p></header>
+<nav class="tabs" aria-label="Modo de juego"><button class="active" data-mode="mesa">Mesa</button><button data-mode="entrenamiento">Entrenamiento</button><button data-mode="estadisticas">Estadísticas</button></nav>
+<section class="panel readouts"><div class="readout"><label>Saldo</label><output id="bankroll">1.000</output></div><div class="readout"><label>Apuesta</label><output id="wager">25</output></div><div class="readout"><label>Zapato</label><output id="shoe-count">312</output></div><div class="readout"><label>Acierto</label><output id="accuracy">—</output></div></section>
+<section id="table-view" class="view">
+<div class="table-area"><div class="dealer"><h2>Crupier</h2><div class="cards" id="dealer-cards"></div><p id="dealer-total"></p></div><div class="player"><h2>Tu mano <span id="hand-index"></span></h2><div class="cards" id="player-cards"></div><p id="player-total"></p></div></div>
+<div class="feedback" id="feedback" role="status" aria-live="polite">Elige la apuesta y reparte para comenzar.</div>
+<div class="actions"><label>Apuesta <select id="bet"><option>10</option><option selected>25</option><option>50</option><option>100</option></select></label><button id="deal" class="primary">Repartir</button><button id="hit">Pedir</button><button id="stand">Plantarse</button><button id="double">Doblar</button><button id="split">Separar</button><button id="insurance">Seguro</button><button id="skip-insurance" hidden>Continuar sin seguro</button></div>
+</section>
+<section id="training-view" class="view" hidden><div class="training-setup"><label>Situación <select id="hand-type"><option value="dura">Mano dura</option><option value="blanda">Mano blanda</option><option value="pareja">Pareja</option></select></label><label>Carta crupier <select id="training-up"><option value="aleatoria">Aleatoria</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>A</option></select></label><button id="next-spot" class="primary">Nueva situación</button></div><div class="training-cards" id="training-cards"></div><div class="feedback" id="training-feedback" role="status" aria-live="polite">Elige una acción para recibir la corrección.</div><div class="actions" id="training-actions"><button data-action="H">Pedir</button><button data-action="S">Plantarse</button><button data-action="D">Doblar</button><button data-action="P">Separar</button></div><div class="strategy-box" id="strategy-box"></div></section>
+<section id="stats-view" class="view" hidden><h2>Estadísticas de entrenamiento</h2><div id="stats-summary"></div><h3>Tus fugas</h3><ol id="leaks"></ol><button id="reset-stats">Reiniciar estadísticas</button></section>
+<section class="notes"><div><h2>Reglas de esta mesa</h2><ul><li>Seis barajas; se baraja al llegar al 75 % del sabot.</li><li>El crupier se planta con 17 blando y comprueba blackjack con As o 10 visible.</li><li>Blackjack paga 3:2. Se puede doblar con las dos primeras cartas, también después de separar.</li><li>Hasta cuatro manos. Los Ases separados reciben una sola carta y no se vuelven a separar.</li><li>No hay rendición. El seguro se ofrece frente a un As; en estrategia básica no se recomienda.</li><li>Fichas ficticias: empieza con 1.000 y recarga si te quedas sin saldo.</li></ul><button id="recharge">Recargar 1.000 fichas</button></div><div><h2>Cómo se juega</h2><p>En Mesa, juega una mano completa. En Entrenamiento, elige la mejor acción para cada situación. La nota compara tu decisión con la tabla de estrategia básica, sin contar cartas.</p><p class="disclaimer">Juego de práctica con fichas ficticias. No hay dinero real ni apuestas con valor monetario.</p></div></section>
+</main><footer class="site-footer"><div class="inner"><a class="logo" href="../">Sala de Juegos</a><span>Juego de práctica. Fichas sin valor monetario.</span></div></footer>
+</body></html>
