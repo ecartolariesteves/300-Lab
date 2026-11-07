@@ -12,6 +12,7 @@
   const BETTING = window.PokerBetting;
   const EVAL = window.PokerEvaluation;
   const ENGINE = window.PokerEngine;
+  const COACH = window.PokerCoach;
 
   // Orden de actuación preflop. El héroe siempre ocupa el asiento 0 y el botón va rotando.
   const POS = ['UTG', 'HJ', 'CO', 'BTN', 'SB', 'BB'];
@@ -21,6 +22,7 @@
   const SUIT_NAME = { s: 'picas', h: 'corazones', d: 'diamantes', c: 'tréboles' };
   const STORAGE_RANGES = 'poker-ranges-custom';
   const STORAGE_STATS = 'poker-stats';
+  const STORAGE_HINTS = 'poker-hints';
   const HISTORY_SIZE = 50;
   const EPS = 1e-6;
 
@@ -46,6 +48,8 @@
   let game = null;
   let training = null;
   let feedbackMode = 'immediate';
+  // Pistas antes de decidir postflop: qué mano tienes y tus outs (se puede apagar en Ajustes)
+  let showHints = safeGet(STORAGE_HINTS) !== 'off';
   let sessionDecisions = 0;
   // Barra de acciones activa (la de la mesa o la del entrenamiento), para los atajos de teclado
   const bars = { mesa: null, entrenamiento: null };
@@ -57,8 +61,8 @@
 
   // Números en formato español: 2,5 · 8,75 · 100
   const fmt = (v) => (Math.round(v * 100) / 100).toLocaleString('es-ES', { maximumFractionDigits: 2 });
-  const pct = (v) => Math.round(v * 100) + ' %';
-  const pct1 = (v) => (v * 100).toLocaleString('es-ES', { maximumFractionDigits: 1 }) + ' %';
+  const pct = (v) => Math.round(v * 100) + '\u00a0%';
+  const pct1 = (v) => (v * 100).toLocaleString('es-ES', { maximumFractionDigits: 1 }) + '\u00a0%';
   const random = (list) => list[Math.floor(Math.random() * list.length)];
   const escapeHtml = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
@@ -147,18 +151,6 @@
     return 'offsuit débil';
   }
 
-  function explainHand(hand, pos) {
-    const lines = {
-      'pareja': 'Las parejas conservan valor por sus opciones de ligar trío; cuanto más alta, más cómoda es la continuación.',
-      'As suited': 'Las manos suited con As tienen bloqueador y buena jugabilidad; por eso son candidatas habituales a 3-bet de farol.',
-      'broadways': 'Las broadways conectan bien con muchas mesas y dominan parte del rango rival cuando ligan pareja alta.',
-      'suited connectors': 'Los conectores suited ganan valor por su jugabilidad y posibilidades de escalera y color, sobre todo en posición.',
-      'suited': 'El palo común añade proyectos de color y mejora la jugabilidad postflop.',
-      'offsuit débil': 'Las manos offsuit débiles realizan peor su equity y necesitan una razón posicional para entrar.'
-    };
-    return lines[categoryOf(hand)] + ' Desde ' + pos + ', el rango de referencia tiene en cuenta la posición y los jugadores que quedan por hablar.';
-  }
-
   /* ---------- Spots preflop de la mesa ---------- */
 
   // Qué tabla corresponde al jugador que actúa ahora. Fuera de las tablas (limps, multibote, 5-bet…) → null
@@ -240,9 +232,36 @@
       if (s.factor < 1) html += '<p class="source">Las tablas de referencia están calculadas para ' + (s.unit === 'x' ? fmt(s.mult) + '×' : 'aperturas de ' + fmt(s.ref) + ' bb') + '; con otro tamaño la acción se evalúa con la misma tabla.</p>';
     }
     html += '<p class="score-line">→ <strong>' + result.score + '/100</strong>' + (s ? ' (acción ' + result.actionScore + ' × tamaño ' + fmt(s.factor) + ')' : '') + '</p>';
-    html += '<p>' + explainHand(hand, pos) + '</p>';
     html += '<p class="source">Rangos de referencia aproximados (6-max, 100 bb). No son la salida exacta de un solver.</p>';
     return html;
+  }
+
+  /* ---------- El porqué (coach.js) ---------- */
+
+  // Equity de tu mano contra el rango con el que ha subido el rival, y qué parte de las manos es ese rango
+  async function rangeEquity(cards, spotName, heroPos, villainPos) {
+    let chart, action, villainSpot;
+    if (spotName === 'Contra apertura') { chart = ranges.charts['RFI_' + villainPos]; action = 'raise'; villainSpot = 'Apertura'; }
+    else if (spotName === 'Contra 3-bet') { chart = ranges.charts['VS_OPEN_' + villainPos + '_vs_' + heroPos]; action = '3bet'; villainSpot = 'Contra apertura'; }
+    else return { equity: null, share: null };
+    if (!chart) return { equity: null, share: null };
+    const range = ENGINE.expandChart(actionRange(chart, action) || FULL_RANGE, cards);
+    const equity = await equityAsync(cards, range, [], 3000, 7);
+    return { equity, share: COACH.rangeStats(chart, villainSpot)[action] };
+  }
+
+  async function whyPreflopHtml({ cards, hand, spotName, heroPos, villainPos, chart, result, due, pot }) {
+    const re = await rangeEquity(cards, spotName, heroPos, villainPos);
+    const lines = COACH.whyPreflop({ spot: spotName, hand, heroPos, villainPos, chart, freq: result.freq, chosen: result.action, due, pot, equity: re.equity, villainRange: re.share });
+    return whyHtml(lines);
+  }
+  const whyHtml = (lines) => '<div class="why"><p><strong>Por qué</strong></p><ul>' + lines.map((l) => '<li>' + escapeHtml(l) + '</li>').join('') + '</ul></div>';
+
+  // Lectura de tu mano postflop: "Top pair, kicker Rey · proyecto de color (9 outs)"
+  function handReadText(read) {
+    let t = read.label;
+    if (read.draws.length) t += ' · ' + read.draws.map((d) => d.name + ' (' + d.outs + ' outs)').join(' + ');
+    return t;
   }
 
   /* ---------- Barra de acciones (mesa y entrenamiento) ---------- */
@@ -554,7 +573,8 @@
     const hero = game.players[0];
     const due = Math.max(0, game.currentBet - hero.bet);
     $('action-prompt').innerHTML = 'Te toca · <strong>' + hero.pos + '</strong> · ' + STREET[game.street] +
-      ' · bote <strong>' + fmt(game.pot) + ' bb</strong>' + (due > 0 ? ' · a pagar <strong class="due">' + fmt(Math.min(due, hero.stack)) + ' bb</strong>' : '');
+      ' · bote <strong>' + fmt(game.pot) + ' bb</strong>' + (due > 0 ? ' · a pagar <strong class="due">' + fmt(Math.min(due, hero.stack)) + ' bb</strong>' + ' (necesitas ' + pct(EVAL.potOdds(Math.min(due, hero.stack), game.pot)) + ' de equity)' : '') +
+      (showHints && game.street !== 'preflop' ? '<span class="hint">Tu mano: ' + escapeHtml(handReadText(COACH.readHand(hero.cards, game.board))) + '</span>' : '');
     let presets, refTo = null, multBase = game.currentBet, raiseWord = 'Raise';
     const legal = BETTING.legalActions(legalContext(hero));
     if (game.street === 'preflop') {
@@ -620,8 +640,12 @@
     return out;
   }
 
-  function postflopFeedbackHtml(r, action) {
-    let html = '';
+  function postflopFeedbackHtml(r, action, read) {
+    let html = '<p><strong>' + STREET[game.street] + ' · Tu mano: ' + escapeHtml(read.label) + '</strong></p>';
+    if (read.draws.length) {
+      html += '<p>Proyectos: ' + escapeHtml(read.draws.map((d) => d.name + ' (' + d.outs + ' outs)').join(' + ')) + '. Con ' + read.outs + ' outs ligas ≈ ' + pct(read.hit) +
+        (game.board.length === 3 ? ' hasta el river (regla del 4: ' + read.outs + ' × 4 ≈ ' + read.rule + '\u00a0%).' : ' en la siguiente carta (regla del 2: ' + read.outs + ' × 2 ≈ ' + read.rule + '\u00a0%).') + '</p>';
+    }
     if (r.scored) {
       const verdict = r.score === 100 ? 'Correcta' : r.score === 50 ? 'Decisión límite' : 'Imprecisa';
       html += '<p><strong>' + verdict + ' · ' + r.score + '/100</strong></p>';
@@ -634,6 +658,7 @@
       html += '<p>Para que un farol de ' + fmt(r.risk) + ' bb sea rentable, el rival tiene que foldear más del ' + pct1(r.breakeven) + '. ' +
         (r.equity > 0.6 ? 'Con tu equity, esta apuesta es sobre todo de valor.' : r.equity < 0.35 ? 'Con tan poca equity, la apuesta funciona como farol.' : 'Tu mano está en medio: apuesta de protección o semifarol.') + '</p>';
     }
+    html += '<p><strong>Plan:</strong> ' + escapeHtml(read.plan) + '</p>';
     if (game.spr != null) html += '<p class="source">SPR al empezar el flop: ' + fmt(Math.round(game.spr * 10) / 10) + ' · ' + sprNote(game.spr) + '</p>';
     html += '<p class="source">Postflop: equity Monte Carlo frente a pot odds. El tamaño no se puntúa (no es GTO).</p>';
     return html;
@@ -671,7 +696,9 @@
         if (feedbackMode === 'immediate') {
           box.hidden = false;
           box.className = 'feedback ' + verdictClass(result.score);
-          box.innerHTML = preflopFeedbackHtml({ hand, pos: hero.pos, villain: spot.villain, spot: spot.name, raiseTo: spot.raiseTo, sizeTo: target, result });
+          $('action-prompt').textContent = 'Analizando la decisión…';
+          const why = await whyPreflopHtml({ cards: hero.cards, hand, spotName: spot.name, heroPos: hero.pos, villainPos: spot.villain, chart: spot.chart, result, due: Math.max(0, game.currentBet - hero.bet), pot: game.pot });
+          box.innerHTML = preflopFeedbackHtml({ hand, pos: hero.pos, villain: spot.villain, spot: spot.name, raiseTo: spot.raiseTo, sizeTo: target, result }) + why;
           $('range-panel').hidden = false;
           $('range-label').textContent = spot.name + ' · ' + hero.pos + (spot.villain ? ' vs ' + spot.villain : '');
           renderRangeGrid($('range-grid'), spot.chart, hero.cards);
@@ -690,7 +717,9 @@
       $('actions').querySelectorAll('button,input').forEach((b) => { b.disabled = true; });
       $('action-prompt').textContent = 'Calculando equity…';
       const r = await evaluatePostflop(action, target);
-      if (feedbackMode === 'immediate') { box.hidden = false; box.className = 'feedback ' + (r.scored ? verdictClass(r.score) : ''); box.innerHTML = postflopFeedbackHtml(r, action); }
+      const opponents = game.players.filter((p) => p.id !== 0 && !p.folded).length;
+      const read = COACH.readHand(hero.cards, game.board, { facingBet: game.currentBet > hero.bet, opponents });
+      if (feedbackMode === 'immediate') { box.hidden = false; box.className = 'feedback ' + (r.scored ? verdictClass(r.score) : ''); box.innerHTML = postflopFeedbackHtml(r, action, read); }
       const label = action === 'allin' ? 'All-in' : ACTION_LABEL[action] || (action === 'bet' ? 'Bet' : 'Raise');
       const d = { type: 'postflop', source: 'mesa', pos: hero.pos, spot: game.street, hand, category: categoryOf(hand), action, score: r.scored ? r.score : null,
         note: STREET[game.street] + ': ' + label + (target ? ' a ' + fmt(target) + ' bb' : '') + ' · equity ' + pct(r.equity) + (r.scored ? ' · pot odds ' + pct(r.potOdds) + ' → ' + r.score + '/100' : r.breakeven != null ? ' · el farol necesita ' + pct(r.breakeven) + ' de fold' : '') };
@@ -963,7 +992,7 @@
     const heroBet = bets[hero] || 0;
     const pot = Object.values(bets).reduce((a, b) => a + b, 0);
     const label = spotName + ' · ' + hero + (villain ? ' vs ' + villain : '') + (category ? ' · repaso de fuga: ' + category : '') + (doubtful ? ' · mano dudosa' : '');
-    training = { type, hero, villain, chart, chartName, spotName, sizing: t.sizing, raiseTo, cards, hand, label, done: false };
+    training = { type, hero, villain, chart, chartName, spotName, sizing: t.sizing, raiseTo, cards, hand, label, done: false, pot, due: currentBet - heroBet };
 
     message.innerHTML = '<strong>' + escapeHtml(label) + '</strong><br>' + escapeHtml(story) + ' Bote: ' + fmt(pot) + ' bb.';
     $('training-cards').replaceChildren(...cards.map(makeCard));
@@ -981,7 +1010,7 @@
     $('next-training').hidden = true;
   }
 
-  function answerTraining(action, to) {
+  async function answerTraining(action, to) {
     if (!training || training.done) return;
     training.done = true;
     const tr = training;
@@ -990,7 +1019,12 @@
     const box = $('training-feedback');
     box.hidden = false;
     box.className = 'feedback ' + verdictClass(result.score);
-    box.innerHTML = preflopFeedbackHtml({ hand: tr.hand, pos: tr.hero, villain: tr.villain, spot: tr.spotName, raiseTo: tr.raiseTo, sizeTo: to, result });
+    box.innerHTML = preflopFeedbackHtml({ hand: tr.hand, pos: tr.hero, villain: tr.villain, spot: tr.spotName, raiseTo: tr.raiseTo, sizeTo: to, result }) + '<p class="source why-loading">Calculando el porqué…</p>';
+    whyPreflopHtml({ cards: tr.cards, hand: tr.hand, spotName: tr.spotName, heroPos: tr.hero, villainPos: tr.villain, chart: tr.chart, result, due: tr.due, pot: tr.pot }).then((html) => {
+      if (training !== tr) return; // ya se ha repartido otro spot
+      const loading = box.querySelector('.why-loading');
+      if (loading) loading.outerHTML = html;
+    });
     renderRangeGrid($('training-range-grid'), tr.chart, tr.cards);
     $('training-range-label').textContent = tr.label;
     $('training-range-panel').hidden = false;
@@ -1074,6 +1108,77 @@
     }).join('');
   }
 
+  /* ---------- Exportar estadísticas ---------- */
+
+  // Resumen en texto, pensado para pegarlo en un chat y analizarlo
+  function buildSummary() {
+    const pre = stats.decisions.filter((d) => d.type === 'preflop' && d.score != null);
+    const post = stats.decisions.filter((d) => d.type === 'postflop' && d.score != null);
+    const show = (v) => (v == null ? '—' : Math.round(v));
+    const lines = [];
+    lines.push('Mesa de Estudio (Sala de Juegos) · estadísticas exportadas el ' + new Date().toLocaleString('es-ES'));
+    lines.push('Formato: NLHE cash 6-max, 100 bb, ciegas 0,5/1. Rangos: ' + rangeSource + '. Nota = 100 × frecuencia de tu acción / frecuencia de la acción más usada, × factor del tamaño en las subidas.');
+    lines.push('Decisiones guardadas: ' + stats.decisions.length + ' · preflop evaluadas: ' + pre.length + ' (media ' + show(avg(pre)) + '/100) · postflop evaluadas: ' + post.length + ' (media ' + show(avg(post)) + '/100) · resultado acumulado: ' + fmt(stats.result) + ' bb');
+    lines.push('');
+    lines.push('Por posición (preflop): ' + POS.map((p) => [p, pre.filter((d) => d.pos === p)]).filter(([, g]) => g.length).map(([p, g]) => p + ' ' + show(avg(g)) + ' (' + g.length + ')').join(' · '));
+    // Por posición y spot, con los tipos de error
+    lines.push('Por posición y spot (nota media · decisiones · % de folds con manos que la referencia juega · % de jugadas con manos que la referencia foldea):');
+    for (const p of POS) for (const sp of ['Apertura', 'Contra apertura', 'Contra 3-bet']) {
+      const g = pre.filter((d) => d.pos === p && d.spot === sp);
+      if (!g.length) continue;
+      const overFold = g.filter((d) => d.action === 'fold' && d.score < 50).length;
+      const overPlay = g.filter((d) => d.action !== 'fold' && d.actionScore === 0).length;
+      lines.push('  ' + p + ' · ' + sp + ': ' + show(avg(g)) + ' · ' + g.length + ' · foldea de más ' + pct(overFold / g.length) + ' · juega de más ' + pct(overPlay / g.length));
+    }
+    const sized = stats.decisions.filter((d) => d.sizingScore != null);
+    const sizingLine = [['open', 'Apertura'], ['3bet', '3-bet'], ['4bet', '4-bet']].map(([k, n]) => [n, sized.filter((d) => d.sizingSpot === k)]).filter(([, g]) => g.length).map(([n, g]) => n + ' ' + show(avg(g.filter((d) => d.actionScore != null), 'actionScore')) + '/' + show(avg(g, 'sizingScore')) + ' (' + g.length + ')').join(' · ');
+    if (sizingLine) lines.push('Tamaños (nota de la acción / del tamaño): ' + sizingLine);
+    const leaks = computeLeaks();
+    if (leaks.length) lines.push('Fugas (peores grupos con 5+ decisiones): ' + leaks.map((l) => l.key + ' ' + show(l.avg) + ' (' + l.items.length + ')').join(' · '));
+    lines.push('');
+    lines.push('Últimas decisiones preflop con nota < 50 (posición · spot · rival · mano · acción · tamaño → nota):');
+    pre.filter((d) => d.score < 50).slice(-40).forEach((d) => lines.push('  ' + d.pos + ' · ' + d.spot + ' · ' + (d.rival || '—') + ' · ' + d.hand + ' · ' + d.action + (d.sizeTo ? ' a ' + fmt(d.sizeTo) + ' bb' : '') + ' → ' + d.score));
+    lines.push('');
+    lines.push('Últimas decisiones postflop:');
+    stats.decisions.filter((d) => d.type === 'postflop').slice(-20).forEach((d) => lines.push('  ' + d.pos + ' · ' + d.hand + ' · ' + (d.note || d.action)));
+    lines.push('');
+    lines.push('Últimas 10 manos:');
+    stats.hands.slice(0, 10).forEach((h) => {
+      lines.push('  Mano ' + h.number + ' · ' + h.position + ' · ' + h.hand + ' · ' + (h.result >= 0 ? '+' : '') + fmt(h.result) + ' bb · board ' + (h.board || '—') + ' · ' + h.message);
+      (h.log || []).forEach((x) => lines.push('    ' + x.street + ': ' + x.who + ' ' + x.text));
+    });
+    return lines.join('\n');
+  }
+
+  function exportJson() {
+    const data = { app: 'Mesa de Estudio', exportedAt: new Date().toISOString(), rangeSource, summary: buildSummary(), stats };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'mesa-de-estudio-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    $('export-message').textContent = 'Descargado. Adjunta el archivo en un chat para analizarlo.';
+  }
+
+  async function copySummary() {
+    const text = buildSummary();
+    const msg = $('export-message');
+    try {
+      await navigator.clipboard.writeText(text);
+      msg.textContent = 'Resumen copiado (' + text.split('\n').length + ' líneas). Pégalo en un chat.';
+    } catch (_) {
+      // Sin permiso para el portapapeles: mostramos el texto para copiarlo a mano
+      const area = $('export-text');
+      area.hidden = false;
+      area.value = text;
+      area.select();
+      msg.textContent = 'No se pudo copiar automáticamente: selecciona el texto y cópialo.';
+    }
+  }
+
   /* ---------- Pestañas, ajustes y teclado ---------- */
 
   function setTab(name) {
@@ -1118,6 +1223,10 @@
     $('restore-ranges').addEventListener('click', restoreRanges);
     $('range-file').addEventListener('change', async (e) => { const f = e.target.files[0]; if (f) $('range-json').value = await f.text(); });
     $('feedback-mode').addEventListener('change', (e) => { feedbackMode = e.target.value; });
+    $('show-hints').checked = showHints;
+    $('show-hints').addEventListener('change', (e) => { showHints = e.target.checked; safeSet(STORAGE_HINTS, showHints ? 'on' : 'off'); if (bars.mesa && game && !game.finished) renderHeroActions(); });
+    $('export-json').addEventListener('click', exportJson);
+    $('copy-summary').addEventListener('click', copySummary);
     // Confirmación en dos pasos dentro de la página (sin confirm(), que algunos navegadores bloquean)
     let clearArmed = null;
     $('clear-stats').addEventListener('click', () => {

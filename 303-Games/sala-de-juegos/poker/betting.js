@@ -60,7 +60,7 @@
   function postflopPresets({ pot, currentBet, heroBet, minTo, maxTo }) {
     const raw = currentBet > EPS
       ? [2.5, 3, 4].map((m) => ({ label: m.toString().replace('.', ',') + '×', to: round1(currentBet * m) }))
-      : [0.25, 0.33, 0.5, 0.75, 1, 1.25].map((p) => ({ label: Math.round(p * 100) + ' %', to: round1(heroBet + pot * p) }));
+      : [0.25, 0.33, 0.5, 0.75, 1, 1.25].map((p) => ({ label: Math.round(p * 100) + '\u00a0%', to: round1(heroBet + pot * p) }));
     const seen = new Set();
     return raw.filter((x) => x.to + EPS >= minTo && x.to <= maxTo + EPS && !seen.has(x.to) && seen.add(x.to));
   }
