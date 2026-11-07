@@ -14,6 +14,7 @@
 <script src="sizing.js" defer></script>
 <script src="betting.js" defer></script>
 <script src="evaluation.js" defer></script>
+<script src="coach.js" defer></script>
 <script src="game.js" defer></script>
 <link rel="manifest" href="../manifest.webmanifest">
 <meta name="theme-color" content="#1F5C45">
@@ -121,6 +122,16 @@
     </div>
     <section class="leaks"><h2>Tus fugas</h2><p class="muted">Los cinco spots con peor puntuación media (mínimo 5 decisiones).</p><div id="stats-leaks"></div></section>
     <section class="history"><h2>Últimas 50 manos</h2><p class="muted">Abre una mano para ver la acción calle a calle, las cartas del showdown, las tablas de los bots y tus notas.</p><div id="stats-history"></div></section>
+    <section class="export-box">
+      <h2>Exportar</h2>
+      <p class="muted">Descarga tus datos o copia un resumen (posiciones, spots, fugas, errores y últimas manos) para analizarlos en un chat.</p>
+      <div class="export-actions">
+        <button type="button" class="reset primary" id="copy-summary">Copiar resumen</button>
+        <button type="button" class="reset" id="export-json">Descargar estadísticas (JSON)</button>
+      </div>
+      <p class="settings-message" id="export-message" aria-live="polite"></p>
+      <textarea id="export-text" rows="8" hidden aria-label="Resumen de estadísticas"></textarea>
+    </section>
     <button type="button" class="reset" id="clear-stats">Borrar estadísticas</button>
   </section>
 
@@ -142,6 +153,7 @@
       <h2>Feedback</h2>
       <label for="feedback-mode">Cuándo mostrar la evaluación</label>
       <select id="feedback-mode"><option value="immediate">Inmediato</option><option value="end">Al final de la mano</option></select>
+      <label class="check"><input type="checkbox" id="show-hints" checked> Pistas postflop antes de decidir (tu mano, proyectos y outs)</label>
       <p class="muted">El veredicto postflop se basa en equity frente a pot odds; no es GTO.</p>
     </div>
     <div class="settings-card">

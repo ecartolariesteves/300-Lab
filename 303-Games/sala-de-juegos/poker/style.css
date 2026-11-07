@@ -132,3 +132,13 @@ select,textarea{font:500 .92rem var(--f-body);color:var(--ink);background:var(--
 .hand-log p{margin:6px 0 0;font-size:.82rem}
 .leaks .reset{margin-top:10px}
 @media(max-width:390px){.size-btn{padding:6px 8px;font-size:.78rem}.size-slider input[type=number]{width:72px}}
+
+/* El porqué del feedback, pistas y exportación */
+.feedback .why{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.feedback .why ul{margin:6px 0 0;padding-left:18px;display:grid;gap:6px}
+.feedback .why li{line-height:1.45}
+#action-prompt .hint{display:block;margin-top:4px;font-size:.84rem;font-weight:500;color:var(--muted)}
+.export-box{margin:18px 0}
+.export-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+#export-text{width:100%;margin-top:8px;font:.78rem var(--f-mono);background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px}
+.settings-card .check{display:flex;align-items:center;gap:8px;margin-top:12px}
