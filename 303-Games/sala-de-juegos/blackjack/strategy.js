@@ -65,7 +65,8 @@
     }
     const { total, soft } = handTotal(ranks);
     let code;
-    if (soft && total >= 13 && total <= 20) code = SOFT[total][col];
+    if (soft && total <= 12) code = 'H';
+    else if (soft && total >= 13 && total <= 20) code = SOFT[total][col];
     else if (soft && total === 21) code = 'S';
     else code = total <= 8 ? 'H' : total >= 17 ? 'S' : HARD[total][col];
     if (code === 'D') return canDouble ? 'D' : 'H';
