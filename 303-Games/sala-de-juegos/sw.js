@@ -3,7 +3,7 @@
    Guarda las páginas y recursos propios para poder jugar sin conexión.
    ========================================================= */
 
-const CACHE_VERSION = 'v9';
+const CACHE_VERSION = 'v10';
 const APP_CACHE = `sala-juegos-${CACHE_VERSION}`;
 const FONT_CACHE = `sala-juegos-fonts-${CACHE_VERSION}`;
 const SITE_ROOT = new URL('./', self.location.href);
@@ -48,6 +48,10 @@ const PRECACHE_FILES = [
   'poker/coach.js',
   'poker/game.js',
   'poker/ranges.json',
+  'blackjack/index.html','blackjack/style.css','blackjack/rules.js','blackjack/strategy.js',
+  'blackjack/ev.js','blackjack/evaluation.js','blackjack/coach.js','blackjack/count.js','blackjack/game.js',
+  'blackjack/tests/test-rules.mjs','blackjack/tests/test-strategy.mjs','blackjack/tests/test-ev.mjs',
+  'blackjack/tests/test-evaluation.mjs','blackjack/tests/test-count.mjs',
   'spider/index.html','spider/style.css','spider/rules.js','spider/game.js',
   'parejas/index.html','parejas/style.css','parejas/rules.js','parejas/game.js',
   'cuatro-en-raya/index.html','cuatro-en-raya/style.css','cuatro-en-raya/rules.js','cuatro-en-raya/game.js','cuatro-en-raya/ai-worker.js',
