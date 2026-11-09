@@ -41,6 +41,7 @@ test('los Ases separados reciben una carta y quedan plantados', () => {
 test('un 21 de dos cartas tras separar no es blackjack natural', () => {
   const splitAceHand = { cards: [c('A'), c('K')], stood: true, splitAces: true };
   assert.equal(R.isBlackjack(splitAceHand.cards), true);
+  assert.equal(R.isBlackjack(splitAceHand.cards, false), false);
   assert.deepEqual(R.settle(splitAceHand.cards, [c('10'), c('7')], 10, { blackjackEligible: false }),
     { outcome: 'win', profit: 10 });
 });
