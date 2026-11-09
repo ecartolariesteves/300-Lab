@@ -48,7 +48,7 @@
     while (value > 21 && aces > 0) { value -= 10; aces--; }
     return { value, soft: aces > 0 };
   }
-  const isBlackjack = (hand) => hand.length === 2 && total(hand).value === 21;
+  const isBlackjack = (hand, blackjackEligible = true) => blackjackEligible && hand.length === 2 && total(hand).value === 21;
   const isBust = (hand) => total(hand).value > 21;
   const dealerShouldHit = (hand) => total(hand).value < 17;
   function playDealer(hand, shoe) {
