@@ -43,11 +43,11 @@
   </nav>
 
   <section id="view-mesa" class="view active" role="tabpanel">
+    <!-- Marcador compacto: una sola fila para que la mesa y los botones quepan en la pantalla del móvil -->
     <div class="panel poker-panel">
       <div class="readout"><label>Mano</label><output id="hand-number">1</output></div>
-      <div class="readout"><label>Ciegas</label><output>0,5 / 1 bb</output></div>
-      <button type="button" class="reset" id="new-hand">Nueva mano</button>
-      <div class="readout"><label>Tu resultado</label><output id="hand-result">0,0 bb</output></div>
+      <div class="readout"><label>Ciegas</label><output>0,5/1 bb</output></div>
+      <div class="readout"><label>Última mano</label><output id="hand-result">0,0 bb</output></div>
     </div>
     <div class="table-wrap">
       <div class="poker-table" id="poker-table">
@@ -57,13 +57,16 @@
         <div class="center-table">
           <div class="board" id="board"><span class="board-empty">Mesa</span></div>
           <div class="pot">Bote <strong id="pot">0 bb</strong></div>
+          <!-- El estado de la mano va en el centro del tapete, que antes quedaba vacío -->
+          <div class="table-status" id="table-status" aria-live="polite">Preparando la mesa…</div>
         </div>
       </div>
     </div>
-    <div class="table-status" id="table-status" aria-live="polite">Preparando la mesa…</div>
+    <!-- Zona de acción: en el móvil se queda fija abajo, al alcance del pulgar -->
     <div class="action-area" id="action-area">
       <p id="action-prompt">Tu turno aparecerá aquí.</p>
       <div class="actions" id="actions"></div>
+      <button type="button" class="reset primary new-hand" id="new-hand" hidden>Nueva mano <kbd>N</kbd></button>
     </div>
     <div class="feedback" id="feedback" aria-live="polite" hidden></div>
     <div class="range-panel" id="range-panel" hidden>

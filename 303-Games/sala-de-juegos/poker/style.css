@@ -142,3 +142,45 @@ select,textarea{font:500 .92rem var(--f-body);color:var(--ink);background:var(--
 .export-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 #export-text{width:100%;margin-top:8px;font:.78rem var(--f-mono);background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px}
 .settings-card .check{display:flex;align-items:center;gap:8px;margin-top:12px}
+
+/* Layout más compacto: marcador en una fila, estado dentro del tapete y zona de acción al alcance del pulgar */
+.poker-panel{grid-template-columns:repeat(3,1fr);padding:10px 16px}
+.poker-panel .readout{text-align:left}
+.poker-panel .readout:last-child{text-align:right}
+.poker-panel .readout output{font-size:1.05rem}
+/* El estado de la mano ocupa el hueco del centro de la mesa: texto claro porque el tapete es verde en los dos temas */
+.center-table .table-status{max-width:min(320px,90%);padding:0;border:0;background:none;color:var(--felt-soft);font:500 .78rem var(--f-body);text-align:center;line-height:1.35}
+/* Fila principal: Fold · Call · Subir, del mismo alto y repartidas a lo ancho */
+.action-area #actions,#training-actions{grid-template-columns:1fr}
+.action-area #actions>.actions,#training-actions>.actions{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px}
+.action-area #actions>.actions .action-btn,#training-actions>.actions .action-btn{min-width:0;min-height:48px;padding:10px 8px;white-space:nowrap}
+.confirm-size{justify-self:stretch}
+/* Botones de tamaño en una sola fila */
+.size-presets{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:6px}
+.size-btn{min-width:0;min-height:40px;padding:6px 4px;white-space:nowrap}
+.bet-box{padding:10px;gap:8px}
+.size-info{font-size:.76rem}
+.new-hand{width:100%;min-height:52px;font-size:1rem}
+#action-prompt{font-size:.92rem;line-height:1.4}
+
+@media(max-width:700px){
+  .poker-panel{grid-template-columns:repeat(3,1fr);gap:6px;padding:8px 12px}
+  .poker-panel .readout label{font-size:.62rem}
+  .poker-panel .readout output{font-size:.95rem}
+  /* Mesa más baja: el centro solo necesita sitio para el board, el bote y el estado */
+  .poker-table{min-height:0;padding:10px 6px;grid-template-rows:auto minmax(96px,auto) auto}
+  .seat{min-height:0;padding:6px 3px;gap:2px}
+  .seat-0{min-height:0}
+  /* Zona de acción fija abajo mientras te toca: no hay que bajar para encontrar los botones */
+  .action-area{position:sticky;bottom:0;z-index:5;margin:0 -16px;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:var(--bg);border-top:1px solid var(--line);box-shadow:0 -6px 14px #0002}
+  .action-area:has(#actions:empty):has(.new-hand[hidden]){position:static;box-shadow:none;border-top:0}
+}
+@media(max-width:390px){
+  .action-area #actions>.actions .action-btn,#training-actions>.actions .action-btn{font-size:.84rem;padding:10px 4px}
+  .action-area #actions>.actions .action-btn kbd,#training-actions>.actions .action-btn kbd{display:none}
+  .size-btn{font-size:.74rem}
+}
+.center-table{width:100%;gap:4px}
+@media(max-width:700px){.board{min-height:44px}.center-table .playing-card{width:30px;height:42px}}
+/* Pestaña activa: texto claro fijo, porque --bg es oscuro en modo oscuro y no se leía sobre el verde */
+.tab.active{color:#F3EFE2}

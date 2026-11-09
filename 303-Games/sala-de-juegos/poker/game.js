@@ -335,11 +335,14 @@
       sliderRow.append(slider, number);
       const info = document.createElement('p');
       info.className = 'size-info';
+      // El botón de subir va en la fila principal, al lado de Fold y Call:
+      // así las tres decisiones quedan juntas y arriba, sin tener que bajar hasta el final de la caja.
       const confirm = document.createElement('button');
       confirm.type = 'button';
       confirm.className = 'action-btn primary confirm-size';
       confirm.addEventListener('click', () => bar.act(bar.value >= legal.maxTo - EPS ? 'allin' : (legal.actions.includes('bet') ? 'bet' : 'raise'), bar.value));
-      box.append(presets, sliderRow, info, confirm);
+      row.append(confirm);
+      box.append(presets, sliderRow, info);
       el.append(box);
 
       // Cambia el importe elegido y actualiza el texto "Raise a X bb · …"
@@ -350,17 +353,18 @@
         if (document.activeElement !== number) number.value = v;
         const put = v - player.bet;
         const allin = v >= legal.maxTo - EPS;
-        confirm.innerHTML = (allin ? 'All-in a ' : word + ' a ') + fmt(v) + ' bb <kbd>↵</kbd>';
-        const parts = ['Pones ' + fmt(put) + ' bb más', pct(put / pot) + ' del bote (' + fmt(pot) + ' bb)'];
+        confirm.innerHTML = (allin ? 'All-in ' : word + ' ') + fmt(v) + ' bb <kbd>↵</kbd>';
+        const parts = ['Pones ' + fmt(put) + ' bb', pct(put / pot) + ' del bote'];
         if (currentBet > EPS && opts.multBase) parts.push(multText(v, opts.multBase) + ' ' + (street === 'preflop' ? (raiseCount === 1 ? 'la apertura' : 'la subida') : 'la apuesta'));
-        parts.push('mínimo ' + fmt(legal.minTo) + ' · máximo ' + fmt(legal.maxTo));
+        parts.push('mín. ' + fmt(legal.minTo) + ' · máx. ' + fmt(legal.maxTo));
         info.textContent = parts.join(' · ');
         presets.querySelectorAll('.size-btn').forEach((b) => b.classList.toggle('selected', Math.abs(Number(b.dataset.to) - v) < 0.01));
       }
       slider.addEventListener('input', () => set(slider.value));
       number.addEventListener('change', () => set(number.value));
       number.addEventListener('keydown', (e) => { if (e.key === 'Enter') { set(number.value); confirm.click(); } });
-      set(legal.minTo);
+      const firstPreset = presets.querySelector('.size-btn');
+      set(firstPreset ? Number(firstPreset.dataset.to) : legal.minTo);
       bar.set = set;
       // Flechas: medio bb preflop, 1 bb postflop
       bar.nudge = (dir) => set(bar.value + dir * (street === 'preflop' ? 0.5 : 1));
@@ -375,12 +379,15 @@
     return bar;
   }
 
-  // Botones de tamaño preflop según el spot
+  /* Botones de tamaño preflop según el spot.
+     Para el 3-bet se muestran solo 3×, 3,5× y 4× (de los cinco de PokerSizing.presets): cubren los dos tamaños
+     de referencia (3× en posición, 4× sin posición) y uno intermedio. 2,5× y 4,5× casi nunca se usan,
+     y el deslizante sigue permitiendo cualquier importe. Las tablas y los tamaños de referencia no cambian. */
   function preflopPresets(pos, spot, raiseCount, calls, currentBet, stackPlusBet) {
     const label = (to, base) => (base ? fmt(Math.round((to / base) * 10) / 10) + '× · ' : '') + fmt(to) + (base ? '' : ' bb');
     if (raiseCount === 0 && calls === 0) return SIZING.presets('open', pos, null, 1, stackPlusBet).map((to) => ({ label: label(to), to }));
     if (raiseCount === 0) return [3, 4, 5].map((to) => ({ label: fmt(to + calls - 1) + ' bb', to: to + calls - 1 })); // subir contra limpers
-    if (raiseCount === 1) return SIZING.presets('3bet', pos, spot.villain, currentBet, stackPlusBet).map((to) => ({ label: label(to, currentBet), to }));
+    if (raiseCount === 1) return SIZING.presets('3bet', pos, spot.villain, currentBet, stackPlusBet).slice(1, 4).map((to) => ({ label: label(to, currentBet), to }));
     if (raiseCount === 2) return SIZING.presets('4bet', pos, spot.villain, currentBet, stackPlusBet).map((to) => ({ label: label(to, currentBet), to }));
     return [];
   }
@@ -564,7 +571,9 @@
     else { const empty = document.createElement('span'); empty.className = 'board-empty'; empty.textContent = 'Preflop'; board.append(empty); }
     $('pot').textContent = fmt(game.pot) + ' bb';
     $('hand-number').textContent = game.handNo;
-    $('hand-result').textContent = (game.lastResult >= 0 ? '+' : '') + fmt(game.lastResult) + ' bb';
+    // Se redondea antes del signo para no mostrar "+-0" cuando el resultado es -0 o -0,001
+    const last = Math.round(game.lastResult * 100) / 100 || 0;
+    $('hand-result').textContent = (last >= 0 ? '+' : '') + fmt(last) + ' bb';
   }
 
   const STREET = { preflop: 'Preflop', flop: 'Flop', turn: 'Turn', river: 'River' };
@@ -584,7 +593,8 @@
       raiseWord = game.raiseCount === 0 ? 'Raise' : game.raiseCount === 1 ? '3-bet' : game.raiseCount === 2 ? '4-bet' : 'Raise';
       if (game.raiseCount === 0) multBase = null;
     } else {
-      presets = BETTING.postflopPresets({ pot: game.pot, currentBet: game.currentBet, heroBet: hero.bet, minTo: legal.minTo, maxTo: legal.maxTo });
+      presets = BETTING.postflopPresets({ pot: game.pot, currentBet: game.currentBet, heroBet: hero.bet, minTo: legal.minTo, maxTo: legal.maxTo })
+        .filter((x) => x.label !== '25\u00a0%' && x.label !== '125\u00a0%'); // 25 % y 125 % quedan en el deslizante
       refTo = game.currentBet > EPS ? game.currentBet * 3 : hero.bet + game.pot * 0.5;
     }
     if (refTo != null) refTo = Math.min(Math.max(refTo, legal.minTo), legal.maxTo);
@@ -767,7 +777,8 @@
     $('feedback').hidden = true;
     $('range-panel').hidden = true;
     $('hand-summary').hidden = true;
-    $('table-status').textContent = 'Preflop · estás en ' + game.players[0].pos + ' · ciegas 0,5/1 bb';
+    $('table-status').textContent = 'Estás en ' + game.players[0].pos;
+    $('new-hand').hidden = true;
     renderTable();
     advance();
   }
@@ -821,6 +832,8 @@
     $('actions').replaceChildren();
     bars.mesa = null;
     $('action-prompt').textContent = 'Mano terminada.';
+    $('new-hand').hidden = false;
+    $('new-hand').focus({ preventScroll: true });
     if (feedbackMode === 'end' && game.decisions.length) {
       const box = $('feedback');
       box.hidden = false;
@@ -873,6 +886,7 @@
     }
     $('table-status').textContent = 'La mano se ha detenido para evitar un bucle. Inicia otra mano.';
     $('actions').replaceChildren();
+    $('new-hand').hidden = false;
   }
 
   function nextStreetSilently() {
