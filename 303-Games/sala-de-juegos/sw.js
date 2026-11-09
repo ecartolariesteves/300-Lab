@@ -3,7 +3,7 @@
    Guarda las páginas y recursos propios para poder jugar sin conexión.
    ========================================================= */
 
-const CACHE_VERSION = 'v8';
+const CACHE_VERSION = 'v9';
 const APP_CACHE = `sala-juegos-${CACHE_VERSION}`;
 const FONT_CACHE = `sala-juegos-fonts-${CACHE_VERSION}`;
 const SITE_ROOT = new URL('./', self.location.href);
@@ -61,7 +61,9 @@ const PRECACHE_FILES = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(APP_CACHE)
-      .then((cache) => cache.addAll(PRECACHE_FILES))
+      // cache: 'reload' pide cada archivo al servidor y no a la caché HTTP del navegador.
+      // Sin esto, una versión nueva podía guardar un index.html nuevo junto a un game.js antiguo.
+      .then((cache) => cache.addAll(PRECACHE_FILES.map((url) => new Request(url, { cache: 'reload' }))))
       .then(() => self.skipWaiting())
   );
 });
