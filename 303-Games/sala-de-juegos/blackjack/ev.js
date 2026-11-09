@@ -97,7 +97,7 @@
       for (const r of RANKS) {
         const next = [rank, r];
         const t = total(next);
-        const continuation = rank === 'A' ? standEV(next, up, peek) : Math.max(standEV(next, up, peek), hitEV(next, up, peek));
+        const continuation = rank === 'A' ? standEV(next, up, peek) : Math.max(standEV(next, up, peek), hitEV(next, up, peek), actionEV(next, up, 'double', { peek }));
         one += PROB[r] * (t.value > 21 ? -1 : continuation);
       }
       return 2 * one;
