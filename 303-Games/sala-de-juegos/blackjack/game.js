@@ -132,7 +132,7 @@
     if (action === 'insurance') evs.insurance = V.actionEV(ranks, game.dealer[0].rank, 'insurance');
     const doubtful = E.isDoubtful(evs);
     const result = E.score({ chosen: action, correct, evs, doubtful });
-    const item = { ranks, dealer: game.dealer[0].rank, action, correct, score: result.score, loss: result.loss,
+    const item = { ranks, dealer: dealerUp, action, correct, score: result.score, loss: result.loss,
       evs, doubtful, category: S.category(ranks), hand: handNumber };
     h.decisions.push(item); game.decisions.push(item); stats.decisions.push(item);
     if (Number.isFinite(result.loss)) stats.evLost = (stats.evLost || 0) + result.loss * h.wager;
