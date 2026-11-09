@@ -175,7 +175,7 @@
       const a = { cards: [first, dealCard()], wager: h.wager, stood: first.rank === 'A', splitAces: first.rank === 'A', doubled: false, decisions: [] };
       const b = { cards: [second, dealCard()], wager: h.wager, stood: second.rank === 'A', splitAces: second.rank === 'A', doubled: false, decisions: [] };
       game.hands.splice(game.active, 1, a, b); game.splitCount++;
-      if (a.splitAces && b.splitAces) advanceHand();
+      advanceHand();
     }
     if (item && settings.feedback === 'end') $('feedback').hidden = true;
     renderTable();
@@ -230,6 +230,11 @@
     if (types === 'parejas') { const r = random(['2','3','4','5','6','7','8','9','10','A']); ranks = [r, r]; }
     else if (types === 'blandas') ranks = ['A', random(['2','3','4','5','6','7','8','9'])];
     else ranks = [random(['2','3','4','5','6','7','8','9','10']), random(['2','3','4','5','6','7','8','9','10'])];
+    if (types === 'doblar') {
+      let tries = 0;
+      do { ranks = random([['5','6'],['5','5'],['4','6'],['A','6'],['A','7'],['2','8'],['3','7'],['6','4']]); tries++; }
+      while (!['D','Ds'].includes(S.bestAction(ranks, dealer, { canDouble: true })) && tries < 30);
+    }
     const dealer = $('training-dealer').value === 'all' ? random(S.DEALER) : $('training-dealer').value;
     const legal = ['hit', 'stand'];
     if (ranks.length === 2) legal.push('double');
