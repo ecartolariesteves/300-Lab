@@ -5,7 +5,7 @@
   root.BlackjackCoach = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   const EVAL = typeof module !== 'undefined' && module.exports ? require('./ev.js') : root.BlackjackEV;
-  const LABEL = { hit: 'Pedir', stand: 'Plantarse', double: 'Doblar', split: 'Separar' };
+  const LABEL = { hit: 'Pedir', stand: 'Plantarse', double: 'Doblar', split: 'Separar', insurance: 'Seguro' };
   function why({ ranks, dealerUp, legal, chosen, correct, evs, peek = true }) {
     const total = EVAL ? EVAL.total(ranks) : { value: 0, soft: false };
     const lines = [];
