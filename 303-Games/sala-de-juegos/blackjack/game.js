@@ -171,6 +171,7 @@
     if (action === 'hit') {
       h.cards.push(dealCard());
       if (R.isBust(h.cards)) { h.stood = true; h.result = 'Pasada'; advanceHand(); }
+      else if (R.total(h.cards).value === 21) { h.stood = true; advanceHand(); }
     } else if (action === 'stand') {
       h.stood = true; advanceHand();
     } else if (action === 'double') {
@@ -179,8 +180,9 @@
     } else if (action === 'split') {
       balance -= h.wager;
       const first = h.cards[0], second = h.cards[1];
-      const a = { cards: [first, dealCard()], wager: h.wager, stood: first.rank === 'A', splitAces: first.rank === 'A', doubled: false, decisions: [] };
-      const b = { cards: [second, dealCard()], wager: h.wager, stood: second.rank === 'A', splitAces: second.rank === 'A', doubled: false, decisions: [] };
+      const aCards = [first, dealCard()], bCards = [second, dealCard()];
+      const a = { cards: aCards, wager: h.wager, stood: first.rank === 'A' || R.total(aCards).value === 21, splitAces: first.rank === 'A', doubled: false, decisions: [] };
+      const b = { cards: bCards, wager: h.wager, stood: second.rank === 'A' || R.total(bCards).value === 21, splitAces: second.rank === 'A', doubled: false, decisions: [] };
       game.hands.splice(game.active, 1, a, b); game.splitCount++;
       advanceHand();
     }
@@ -373,12 +375,13 @@
   $('deal-button').addEventListener('click', startHand);
   $('bet-input').addEventListener('change', () => { $('bet-input').value = Math.max(1, Number($('bet-input').value) || 10); });
   document.querySelectorAll('[data-bet]').forEach((b)=>b.addEventListener('click',()=>{$('bet-input').value=b.dataset.bet;}));
+  document.documentElement.style.setProperty('--deal-speed', settings.dealSpeed + 'ms');
   $('feedback-mode').value = settings.feedback;
   $('feedback-mode').addEventListener('change', (e)=>{settings.feedback=e.target.value;safeSave();});
   $('show-count').checked = settings.count;
   $('show-count').addEventListener('change',(e)=>{settings.count=e.target.checked;renderTable();safeSave();});
   $('deal-speed').value = settings.dealSpeed;
-  $('deal-speed').addEventListener('change',(e)=>{settings.dealSpeed=Number(e.target.value);safeSave();});
+  $('deal-speed').addEventListener('change',(e)=>{settings.dealSpeed=Number(e.target.value);document.documentElement.style.setProperty('--deal-speed',settings.dealSpeed+'ms');safeSave();});
   $('count-speed').value = settings.countSpeed;
   $('count-speed').addEventListener('change',(e)=>{settings.countSpeed=Number(e.target.value);safeSave();});
   $('reset-balance').addEventListener('click',()=>{confirmMode='balance';$('confirm-area').hidden=false;$('confirm-text').textContent='¿Reiniciar saldo a 1.000 fichas?';});
