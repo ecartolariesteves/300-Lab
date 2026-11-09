@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Blackjack de Estudio · Sala de Juegos</title>
+<meta name="description" content="Entrenador de blackjack con estrategia básica, EV explicado y fichas ficticias.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="style.css">
+<script src="rules.js" defer></script><script src="strategy.js" defer></script><script src="ev.js" defer></script>
+<script src="evaluation.js" defer></script><script src="coach.js" defer></script><script src="count.js" defer></script><script src="game.js" defer></script>
+<link rel="manifest" href="../manifest.webmanifest"><meta name="theme-color" content="#1F5C45">
+<link rel="icon" href="../assets/icons/icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png">
+<script src="../assets/pwa.js" defer></script>
+</head>
+<body>
+<header class="site-header"><div class="inner"><a class="logo" href="../">Sala de Juegos</a><nav class="site-nav"><a href="../">Juegos</a><a href="../aprende/index.html">Aprende</a></nav></div></header>
+<main class="page blackjack-page">
+<header class="game-head"><p class="crumbs"><a href="../">Juegos</a> › Cartas › Blackjack de Estudio</p><h1>Blackjack de Estudio</h1>
+<p class="brief">6 barajas · S17 · DAS · BJ 3:2 · sin dinero real</p></header>
+<nav class="tabs" role="tablist" aria-label="Secciones">
+<button class="tab active" data-tab="mesa" role="tab" aria-selected="true">Mesa</button><button class="tab" data-tab="entrenamiento" role="tab" aria-selected="false">Entrenamiento</button><button class="tab" data-tab="estadisticas" role="tab" aria-selected="false">Estadísticas</button><button class="tab" data-tab="ajustes" role="tab" aria-selected="false">Ajustes</button></nav>
+<section class="view active" id="view-mesa" role="tabpanel">
+<div class="panel score-panel"><div class="readout"><label>Saldo</label><output id="balance">1.000</output></div><div class="readout"><label>Apuesta</label><output id="wager-label">10</output></div><div class="readout"><label>Última mano</label><output id="last-result">—</output></div></div>
+<div class="table-wrap"><div class="blackjack-table"><div class="dealer-area"><span class="seat-label">Crupier</span><div class="cards" id="dealer-cards"></div><strong id="dealer-total">—</strong></div><div class="table-divider"></div><div class="player-area"><span class="seat-label">Tus manos</span><div class="hands" id="player-hands"></div></div><p id="table-status" aria-live="polite">Prepara tu apuesta.</p></div></div>
+<div class="count-readout" id="count-readout" hidden></div>
+<div class="action-area" id="action-area"><div class="bet-controls" id="deal-controls"><label for="bet-input">Apuesta</label><div class="chips"><button data-bet="5">5</button><button data-bet="10">10</button><button data-bet="25">25</button><button data-bet="50">50</button><button data-bet="100">100</button><input id="bet-input" type="number" min="1" value="10" aria-label="Apuesta en fichas"></div><button class="action-btn primary deal-button" id="deal-button">Repartir <kbd>Enter</kbd></button></div><div class="actions" id="actions"></div><button class="action-btn primary" id="new-hand" hidden>Nueva mano <kbd>N</kbd></button></div>
+<div class="feedback" id="feedback" hidden aria-live="polite"></div><div class="hand-summary" id="hand-summary" hidden></div>
+</section>
+<section class="view" id="view-entrenamiento" role="tabpanel" hidden>
+<div class="training-controls"><label>Tipo <select id="training-type"><option value="duras">Duras</option><option value="blandas">Blandas</option><option value="parejas">Parejas</option><option value="doblar">Doblar</option><option value="mixed">Todo mezclado</option><option value="repasar">Repasar fugas</option></select></label><label>Crupier <select id="training-dealer"><option value="all">Todas</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>A</option></select></label><label class="check"><input type="checkbox" id="training-doubtful"> Solo manos dudosas</label><button class="reset primary" id="training-deal">Nuevo spot</button></div>
+<div class="training-score" id="training-streak">Racha 0 · mejor 0 · media últimas 20: —</div><div class="training-spot"><strong id="training-hand">Elige un spot</strong><span id="training-total"></span></div><div class="actions" id="training-actions"></div><div class="feedback" id="training-feedback" hidden></div><button class="reset primary" id="training-next" hidden>Siguiente spot</button>
+<div class="count-training"><h2>Entrenamiento Hi-Lo</h2><p id="count-cards">Pulsa para mostrar 30 cartas una a una.</p><button class="reset" id="count-start">Mostrar cartas</button><div id="count-answer" hidden><label>Conteo corrido <input id="count-running-input" type="number"></label><label>Barajas restantes <input id="count-decks-input" type="number" value="3" step="0.5"></label><button class="reset" id="count-check">Comprobar</button></div><p id="count-result"></p></div>
+</section>
+<section class="view" id="view-estadisticas" role="tabpanel" hidden>
+<div class="stats-grid"><article class="stat-card"><span>Decisiones</span><strong id="stat-decisions">0</strong></article><article class="stat-card"><span>Precisión media</span><strong id="stat-accuracy">—</strong></article><article class="stat-card"><span>Resultado (fichas)</span><strong id="stat-result">0</strong></article><article class="stat-card"><span>EV perdido</span><strong id="stat-ev">0</strong></article></div>
+<div class="stats-columns"><section><h2>Por tipo</h2><div id="stats-types"></div></section><section><h2>Por carta del crupier</h2><div id="stats-dealer"></div></section><section><h2>Por acción</h2><div id="stats-actions"></div></section></div>
+<section class="leaks"><h2>Fugas · 10 peores decisiones</h2><div id="stats-leaks"></div></section><section class="history"><h2>Últimas 50 manos</h2><div id="stats-history"></div></section>
+<div class="export-box"><h2>Exportar</h2><button class="reset primary" id="copy-summary">Copiar resumen</button><button class="reset" id="export-json">Descargar JSON</button><p id="export-message"></p><textarea id="export-text" hidden></textarea></div><button class="reset" id="clear-stats">Borrar estadísticas</button>
+</section>
+<section class="view" id="view-ajustes" role="tabpanel" hidden>
+<div class="settings-card"><h2>Feedback</h2><label>Mostrar evaluación <select id="feedback-mode"><option value="immediate">Inmediato</option><option value="end">Al final de la mano</option></select></label><label class="check"><input type="checkbox" id="show-count"> Mostrar conteo Hi-Lo en mesa</label></div>
+<div class="settings-card"><h2>Velocidad</h2><label>Reparto <select id="deal-speed"><option value="100">Rápido</option><option value="250">Normal</option><option value="500">Lento</option></select></label><label>Entrenamiento de conteo <select id="count-speed"><option value="300">Rápido</option><option value="650">Normal</option><option value="1000">Lento</option></select></label></div>
+<div class="settings-card"><h2>Saldo y datos</h2><button class="reset" id="reset-balance">Reiniciar saldo a 1.000</button><div id="confirm-area" hidden><p id="confirm-text"></p><button class="reset primary" id="confirm-yes">Confirmar</button><button class="reset" id="confirm-no">Cancelar</button></div></div>
+</section>
+<section class="notes"><h2>Reglas de esta mesa</h2><p>6 barajas · corte aproximado al 75 % · crupier S17 con peek · blackjack 3:2 · doblar cualquier pareja inicial · DAS · hasta 4 manos · Ases separados reciben una carta · sin rendición. Seguro disponible como decisión de estudio, siempre incorrecta. Fichas ficticias.</p><p>La estrategia básica de 6 barajas S17 es la referencia de puntuación. El EV de baraja infinita solo aproxima el coste de los errores y alimenta las explicaciones; nunca reemplaza la tabla.</p></section>
+</main><footer class="site-footer"><div class="inner"><a class="logo" href="../">Sala de Juegos</a><span>Entrenador de estrategia. Sin dinero real.</span></div></footer>
+</body></html>
