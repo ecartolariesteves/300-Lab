@@ -7,6 +7,7 @@
   // En Node se carga con require; en el navegador, ev.js ya ha dejado BlackjackEV en globalThis
   const EVAL = typeof module !== 'undefined' && module.exports ? require('./ev.js') : globalThis.BlackjackEV;
   const LABEL = { hit: 'Pedir', stand: 'Plantarse', double: 'Doblar', split: 'Separar', insurance: 'Seguro', 'no-insurance': 'Sin seguro' };
+  const pct = (p) => (Math.round(p * 1000) / 10).toString().replace('.', ',') + ' %';
   function why({ ranks, dealerUp, legal, chosen, correct, evs, peek = true }) {
     const total = EVAL ? EVAL.total(ranks) : { value: 0, soft: false };
     const lines = [];
@@ -14,10 +15,10 @@
       (total.soft ? ': el As puede bajar de 11 a 1 si hace falta.' : ': el total ya no puede reducirse.'));
     const bust = EVAL ? EVAL.dealerBustProbability(dealerUp, peek) : 0;
     lines.push('Con un ' + dealerUp + ' visible, el crupier se pasa aproximadamente un ' +
-      Math.round(bust * 1000) / 10 + ' % de las veces' + (peek && ['A', '10', 'J', 'Q', 'K'].includes(dealerUp) ? ', condicionado a que no tenga blackjack.' : '.') +
+      pct(bust) + ' de las veces' + (peek && ['A', '10', 'J', 'Q', 'K'].includes(dealerUp) ? ', condicionado a que no tenga blackjack.' : '.') +
       ' ' + (bust >= 0.35 ? 'Deja que se arriesgue él.' : 'Su carta no le pone tanta presión.'));
     const playerBust = EVAL ? EVAL.bustProbability(ranks) : 0;
-    lines.push('Si pides una carta, te pasas aproximadamente un ' + Math.round(playerBust * 1000) / 10 + ' % de las veces.');
+    lines.push('Si pides una carta, te pasas aproximadamente un ' + pct(playerBust) + ' de las veces.');
     const sorted = Object.entries(evs || {}).sort((a, b) => b[1] - a[1]);
     if (sorted.length) {
       lines.push('EV por acción: ' + sorted.map(([a, v]) => LABEL[a] + ' ' +
