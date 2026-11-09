@@ -94,19 +94,21 @@
     return handState.cards.length === 2 && handState.cards[0].rank === handState.cards[1].rank &&
       splitCount < 3 && bankroll >= handState.wager;
   }
-  function legalActions(handState, splitCount, bankroll = Infinity) {
+  function legalActions(handState, splitCount, bankroll = Infinity, options = {}) {
     const actions = [];
     if (canHit(handState)) actions.push('hit');
     if (!handState.stood && !isBust(handState.cards)) actions.push('stand');
     if (canDouble(handState) && bankroll >= handState.wager) actions.push('double');
     if (canSplit(handState, splitCount, bankroll)) actions.push('split');
+    if (options.dealerUp === 'A' && !options.insuranceTaken) actions.push('insurance');
     return actions;
   }
+  function canInsurance(dealerUp, insuranceTaken = false) { return dealerUp === 'A' && !insuranceTaken; }
   function dealerHasBlackjack(up, hole) {
     return (up.rank === 'A' && rankValue(hole.rank) === 10) ||
       (rankValue(up.rank) === 10 && hole.rank === 'A');
   }
   return { SUITS, RANKS, SHOE_SIZE, CUT_CARD, rankValue, shuffle, createShoe, remaining,
     shouldReshuffle, draw, prepareShoe, total, isBlackjack, isBust, dealerShouldHit,
-    playDealer, settle, splitHand, canHit, canDouble, canSplit, legalActions, dealerHasBlackjack };
+    playDealer, settle, splitHand, canHit, canDouble, canSplit, canInsurance, legalActions, dealerHasBlackjack };
 });
