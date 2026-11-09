@@ -15,6 +15,23 @@
     return { value: n, soft: aces > 0 };
   }
   const cache = new Map();
+  const dealerStateCache = new Map();
+  const hitCache = new Map();
+  function dealerFinal(valueNow, softAces) {
+    const stateKey = valueNow + ':' + softAces;
+    if (dealerStateCache.has(stateKey)) return dealerStateCache.get(stateKey);
+    const out = { 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, bust: 0 };
+    if (valueNow > 21) out.bust = 1;
+    else if (valueNow >= 17) out[valueNow] = 1;
+    else for (const r of RANKS) {
+      let next = valueNow + value(r), aces = softAces + (r === 'A' ? 1 : 0);
+      while (next > 21 && aces > 0) { next -= 10; aces--; }
+      const branch = dealerFinal(next, aces);
+      for (const k of Object.keys(out)) out[k] += PROB[r] * branch[k];
+    }
+    dealerStateCache.set(stateKey, out);
+    return out;
+  }
   function dealerDistribution(up, peek = true) {
     up = key(up);
     const cacheKey = up + ':' + (peek ? 'peek' : 'nopeek');
@@ -27,15 +44,11 @@
     }
     let norm = 0;
     for (const hole of allowed) norm += PROB[hole];
-    const visit = (ranks, probability) => {
-      const t = total(ranks);
-      if (t.value >= 17) {
-        out[t.value > 21 ? 'bust' : t.value] += probability;
-        return;
-      }
-      for (const r of RANKS) visit(ranks.concat(r), probability * PROB[r]);
-    };
-    for (const hole of allowed) visit([up, hole], PROB[hole] / norm);
+    for (const hole of allowed) {
+      const t = total([up, hole]);
+      const branch = dealerFinal(t.value, t.soft ? 1 : 0);
+      for (const k of Object.keys(out)) out[k] += (PROB[hole] / norm) * branch[k];
+    }
     cache.set(cacheKey, out);
     return { ...out };
   }
@@ -52,12 +65,16 @@
     return ev;
   }
   function hitEV(ranks, up, peek = true) {
+    const t0 = total(ranks);
+    const cacheKey = t0.value + ':' + (t0.soft ? 1 : 0) + ':' + key(up) + ':' + peek;
+    if (hitCache.has(cacheKey)) return hitCache.get(cacheKey);
     let ev = 0;
     for (const r of RANKS) {
       const next = ranks.concat(r);
       const p = total(next);
       ev += PROB[r] * (p.value > 21 ? -1 : Math.max(standEV(next, up, peek), hitEV(next, up, peek)));
     }
+    hitCache.set(cacheKey, ev);
     return ev;
   }
   function actionEV(ranks, up, action, options = {}) {
@@ -100,7 +117,7 @@
     return p;
   }
   function dealerBustProbability(up, peek = true) { return dealerDistribution(up, peek).bust; }
-  function clearCache() { cache.clear(); }
+  function clearCache() { cache.clear(); dealerStateCache.clear(); hitCache.clear(); }
   return { RANKS, PROB, total, dealerDistribution, standEV, hitEV, actionEV, evaluate, best,
     bustProbability, dealerBustProbability, clearCache };
 });
