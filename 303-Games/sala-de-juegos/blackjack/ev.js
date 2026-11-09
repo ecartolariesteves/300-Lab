@@ -6,7 +6,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
   const PROB = { A: 1/13, 2: 1/13, 3: 1/13, 4: 1/13, 5: 1/13, 6: 1/13, 7: 1/13, 8: 1/13, 9: 1/13, 10: 4/13 };
-  const value = (r) => r === 'A' ? 11 : r === '10' ? 10 : Number(r);
+  const value = (r) => r === 'A' ? 11 : ['10', 'J', 'Q', 'K'].includes(r) ? 10 : Number(r);
   const key = (r) => ['J', 'Q', 'K'].includes(r) ? '10' : r;
   function total(ranks) {
     let n = 0, aces = 0;
