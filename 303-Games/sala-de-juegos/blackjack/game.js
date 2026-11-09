@@ -7,6 +7,7 @@
   const STORAGE = 'blackjack-estudio-v1';
   const fmt = (n) => (Math.round(n * 100) / 100).toLocaleString('es-ES', { maximumFractionDigits: 2 });
   const labels = { hit: 'Pedir', stand: 'Plantarse', double: 'Doblar', split: 'Separar', insurance: 'Seguro' };
+  const strategyAction = (code) => ({ H: 'hit', S: 'stand', D: 'double', Ds: 'double', P: 'split' }[code] || 'stand');
   const rank = (card) => card.rank;
   const cardValue = (card) => R.rankValue(card.rank);
   const random = (list) => list[Math.floor(Math.random() * list.length)];
@@ -14,7 +15,7 @@
   const safeSave = () => { try { localStorage.setItem(STORAGE, JSON.stringify({ balance, stats, settings })); } catch (_) { /* El juego sigue sin persistencia. */ } };
   const saved = safeGet();
   let balance = Number.isFinite(saved && saved.balance) ? saved.balance : 1000;
-  let stats = saved && saved.stats && Array.isArray(saved.stats.decisions) ? saved.stats : { decisions: [], hands: [], result: 0, evLost: 0 };
+  let stats = saved && saved.stats && Array.isArray(saved.stats.decisions) && Array.isArray(saved.stats.hands) ? saved.stats : { decisions: [], hands: [], result: 0, evLost: 0 };
   let settings = Object.assign({ feedback: 'immediate', count: false, dealSpeed: 250, countSpeed: 650 }, saved && saved.settings);
   let shoe = R.createShoe(), game = null, handNumber = stats.hands.length + 1;
   let tab = 'mesa', training = null, trainingStreak = { current: 0, best: 0, recent: [] };
@@ -126,7 +127,7 @@
   function decision(action) {
     const h = active(), ranks = h.cards.map(rank);
     const legal = R.legalActions(h, game.splitCount, balance);
-    const correct = S.bestAction(ranks, game.dealer[0].rank, { canDouble: legal.includes('double'), canSplit: legal.includes('split') });
+    const correct = strategyAction(S.bestAction(ranks, game.dealer[0].rank, { canDouble: legal.includes('double'), canSplit: legal.includes('split') }));
     const evs = V.evaluate(ranks, game.dealer[0].rank, legal);
     if (action === 'insurance') evs.insurance = V.actionEV(ranks, game.dealer[0].rank, 'insurance');
     const doubtful = E.isDoubtful(evs);
@@ -219,7 +220,12 @@
     if (settings.feedback === 'end') {
       $('feedback').hidden = false;
       $('feedback').innerHTML = '<strong>Resumen de decisiones · ' + fmt(score) + '/100</strong>' +
-        game.decisions.map((d) => '<p>' + labels[d.action] + ': ' + d.score + '/100 · correcta: ' + labels[d.correct] + '</p>').join('');
+        game.decisions.map((d, i) => '<div class="decision-review"><p>' + labels[d.action] + ': ' + d.score + '/100 · correcta: ' + labels[d.correct] + '</p><button type="button" class="why-toggle" data-why="' + i + '">Por qué</button><div class="why-content" data-why-content="' + i + '" hidden></div></div>').join('');
+      $('feedback').querySelectorAll('[data-why]').forEach((button) => button.addEventListener('click', () => {
+        const i = Number(button.dataset.why), content = $('feedback').querySelector('[data-why-content="' + i + '"]');
+        content.hidden = !content.hidden;
+        if (!content.dataset.ready) { const d = game.decisions[i]; content.innerHTML = '<ul>' + C.why({ ranks:d.ranks, dealerUp:d.dealer, chosen:d.action, correct:d.correct, evs:d.evs }).map((line)=>'<li>'+line+'</li>').join('') + '</ul>'; content.dataset.ready='1'; }
+      }));
     }
   }
   function renderTraining() {
@@ -253,7 +259,7 @@
     const legal = ['hit', 'stand'];
     if (ranks.length === 2) legal.push('double');
     if (ranks.length === 2 && ranks[0] === ranks[1]) legal.push('split');
-    const correct = S.bestAction(ranks, dealer, { canDouble: legal.includes('double'), canSplit: legal.includes('split') });
+    const correct = strategyAction(S.bestAction(ranks, dealer, { canDouble: legal.includes('double'), canSplit: legal.includes('split') }));
     const evs = V.evaluate(ranks, dealer, legal);
     return { ranks, dealer, legal, correct, evs, doubtful: E.isDoubtful(evs) };
   }
@@ -264,7 +270,7 @@
         const d = random(leaks), legal = ['hit','stand'];
         if (d.ranks.length === 2) legal.push('double');
         if (d.ranks.length === 2 && d.ranks[0] === d.ranks[1]) legal.push('split');
-        training = { ranks: d.ranks.slice(), dealer: d.dealer, legal, correct: S.bestAction(d.ranks, d.dealer, { canDouble: legal.includes('double'), canSplit: legal.includes('split') }), evs: V.evaluate(d.ranks, d.dealer, legal), doubtful: E.isDoubtful(V.evaluate(d.ranks, d.dealer, legal)) };
+        training = { ranks: d.ranks.slice(), dealer: d.dealer, legal, correct: strategyAction(S.bestAction(d.ranks, d.dealer, { canDouble: legal.includes('double'), canSplit: legal.includes('split') })), evs: V.evaluate(d.ranks, d.dealer, legal), doubtful: E.isDoubtful(V.evaluate(d.ranks, d.dealer, legal)) };
         renderTraining(); return;
       }
     }
@@ -282,6 +288,7 @@
     const item = { ranks: training.ranks, dealer: training.dealer, action, correct: training.correct, score: result.score,
       loss: result.loss, evs: training.evs, doubtful: training.doubtful, category: S.category(training.ranks), hand: 'training' };
     stats.decisions.push(item);
+    if (Number.isFinite(result.loss)) stats.evLost = (stats.evLost || 0) + result.loss;
     trainingStreak.current = result.score === 100 ? trainingStreak.current + 1 : 0;
     trainingStreak.best = Math.max(trainingStreak.best, trainingStreak.current);
     trainingStreak.recent.push(result.score); trainingStreak.recent = trainingStreak.recent.slice(-20);
