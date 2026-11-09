@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import E from '../evaluation.js';
+import EV from '../ev.js';
 
 test('la acción de la tabla puntúa 100 aunque EV prefiera otra acción', () => {
   assert.equal(E.score({ chosen:'hit', correct:'hit', evs:{ hit:-0.5, stand:-0.2 } }).score, 100);
@@ -16,8 +17,9 @@ test('plantarse con 11 contra 6 es un error caro y puntúa cero', () => {
   assert.ok(result.loss >= 0.15);
 });
 
-test('16 contra 10 se marca como mano dudosa si los EV difieren menos de 0,02', () => {
-  assert.equal(E.isDoubtful({ hit:-0.53, stand:-0.54 }), true);
+test('16 contra 10 se marca como mano dudosa con el EV calculado', () => {
+  const values = EV.evaluate(['10','6'], '10', ['hit','stand']);
+  assert.equal(E.isDoubtful(values), true);
   assert.equal(E.isDoubtful({ hit:-0.2, stand:-0.24 }), false);
 });
 
