@@ -108,9 +108,9 @@
     game = { wager, dealer: [], hands: [{ cards: [], wager, stood: false, splitAces: false, doubled: false, decisions: [], profit: 0 }],
       active: 0, splitCount: 0, phase: 'deal', done: false, revealed: false, insuranceOffered: false,
       runningCount: shoeCount, holeCounted: false, decisions: [], startedBalance: balance, summary: '' };
-    game.dealer.push(dealCard(false));
-    game.hands[0].cards.push(dealCard());
     game.dealer.push(dealCard());
+    game.hands[0].cards.push(dealCard());
+    game.dealer.push(dealCard(false));
     game.hands[0].cards.push(dealCard());
     game.phase = 'player';
     if (['A', '10', 'J', 'Q', 'K'].includes(game.dealer[0].rank) && R.isBlackjack(game.dealer)) {
@@ -127,6 +127,7 @@
     const legal = R.legalActions(h, game.splitCount, balance);
     const correct = S.bestAction(ranks, game.dealer[0].rank, { canDouble: legal.includes('double'), canSplit: legal.includes('split') });
     const evs = V.evaluate(ranks, game.dealer[0].rank, legal);
+    if (action === 'insurance') evs.insurance = V.actionEV(ranks, game.dealer[0].rank, 'insurance');
     const doubtful = E.isDoubtful(evs);
     const result = E.score({ chosen: action, correct, evs, doubtful });
     const item = { ranks, dealer: game.dealer[0].rank, action, correct, score: result.score, loss: result.loss,
@@ -254,6 +255,16 @@
     return { ranks, dealer, legal, correct, evs, doubtful: E.isDoubtful(evs) };
   }
   function nextTraining() {
+    if ($('training-type').value === 'repasar') {
+      const leaks = stats.decisions.filter((d) => d.score < 100);
+      if (leaks.length) {
+        const d = random(leaks), legal = ['hit','stand'];
+        if (d.ranks.length === 2) legal.push('double');
+        if (d.ranks.length === 2 && d.ranks[0] === d.ranks[1]) legal.push('split');
+        training = { ranks: d.ranks.slice(), dealer: d.dealer, legal, correct: S.bestAction(d.ranks, d.dealer, { canDouble: legal.includes('double'), canSplit: legal.includes('split') }), evs: V.evaluate(d.ranks, d.dealer, legal), doubtful: E.isDoubtful(V.evaluate(d.ranks, d.dealer, legal)) };
+        renderTraining(); return;
+      }
+    }
     let spot, attempts = 0;
     do { spot = randomSpot(); attempts++; }
     while ((($('training-doubtful').checked && !spot.doubtful) ||
