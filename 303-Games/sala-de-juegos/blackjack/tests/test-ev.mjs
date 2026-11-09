@@ -30,7 +30,7 @@ test('diagnóstico exhaustivo: imprime cada celda donde EV y tabla discrepan', (
   const mismatches = [];
   for (let total = 8; total <= 20; total++) {
     for (const up of S.DEALER) {
-      const hardRanks = total <= 10 ? ['2', String(total - 2)] : ['10', String(total - 10)];
+      const hardRanks = total <= 10 ? ['2', String(total - 2)] : total === 11 ? ['5', '6'] : ['10', String(total - 10)];
       const hard = hardRanks.map((r)=>r==='10'?'10':r);
       if (hard.some((r)=>!Number.isFinite(S.value(r)))) continue;
       const hardLegal = ['hit','stand'];
