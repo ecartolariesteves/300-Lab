@@ -74,7 +74,7 @@
     return { outcome: 'push', profit: 0 };
   }
   function splitHand(hand, nextCards, splitCount = 1, wager = 1) {
-    if (hand.length !== 2 || hand[0].rank !== hand[1].rank || splitCount > 3) {
+    if (hand.length !== 2 || hand[0].rank !== hand[1].rank || splitCount >= 3) {
       throw new Error('No se puede separar esta mano');
     }
     if (!nextCards || nextCards.length !== 2) throw new Error('Faltan cartas para separar');
