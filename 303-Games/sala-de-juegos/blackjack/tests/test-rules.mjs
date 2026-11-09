@@ -13,7 +13,10 @@ test('el sabot contiene exactamente 312 cartas de seis barajas', () => {
 
 test('un blackjack natural paga 3:2 y no confunde un 21 de tres cartas', () => {
   assert.deepEqual(R.settle([c('A'), c('K')], [c('9'), c('7'), c('5')], 10), { outcome: 'blackjack', profit: 15 });
-  assert.deepEqual(R.settle([c('7'), c('7'), c('7')], [c('9'), c('7'), c('5')], 10), { outcome: 'win', profit: 10 });
+  // 21 de tres cartas contra 20 del crupier: gana 1:1, no 3:2
+  assert.deepEqual(R.settle([c('7'), c('7'), c('7')], [c('K'), c('Q')], 10), { outcome: 'win', profit: 10 });
+  // 21 de tres cartas contra 21 de tres cartas del crupier: empate
+  assert.deepEqual(R.settle([c('7'), c('7'), c('7')], [c('9'), c('7'), c('5')], 10), { outcome: 'push', profit: 0 });
 });
 
 test('un empate devuelve apuesta sin beneficio ni pérdida', () => {

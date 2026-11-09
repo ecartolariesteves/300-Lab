@@ -4,8 +4,9 @@
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.BlackjackCoach = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
-  const EVAL = typeof module !== 'undefined' && module.exports ? require('./ev.js') : root.BlackjackEV;
-  const LABEL = { hit: 'Pedir', stand: 'Plantarse', double: 'Doblar', split: 'Separar', insurance: 'Seguro' };
+  // En Node se carga con require; en el navegador, ev.js ya ha dejado BlackjackEV en globalThis
+  const EVAL = typeof module !== 'undefined' && module.exports ? require('./ev.js') : globalThis.BlackjackEV;
+  const LABEL = { hit: 'Pedir', stand: 'Plantarse', double: 'Doblar', split: 'Separar', insurance: 'Seguro', 'no-insurance': 'Sin seguro' };
   function why({ ranks, dealerUp, legal, chosen, correct, evs, peek = true }) {
     const total = EVAL ? EVAL.total(ranks) : { value: 0, soft: false };
     const lines = [];
@@ -30,7 +31,7 @@
     if (ranks[0] === ranks[1] && ranks.length === 2 && ['10', 'J', 'Q', 'K'].includes(ranks[0])) lines.push('No se separan dieces: una mano de 20 ya es muy fuerte.');
     if (ranks.length === 2 && ranks[0] === '5' && ranks[1] === '5') lines.push('Nunca se separan cincos: se juegan como 10 y se busca doblar.');
     if (total.value === 11) lines.push('Con 11 normalmente se dobla; contra As la tabla indica pedir.');
-    if (chosen === 'insurance') lines.push('El seguro tiene esperanza negativa: cuesta media apuesta y el pago 2:1 no compensa la probabilidad real de blackjack.');
+    if (chosen === 'insurance' || correct === 'no-insurance') lines.push('El seguro tiene esperanza negativa: cuesta media apuesta y el pago 2:1 no compensa la probabilidad real de blackjack.');
     else lines.push('La referencia para puntuar es siempre la tabla básica de 6 barajas S17, no el máximo del EV aproximado.');
     return lines;
   }

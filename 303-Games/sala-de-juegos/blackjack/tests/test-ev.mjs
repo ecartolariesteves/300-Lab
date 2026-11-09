@@ -55,6 +55,8 @@ test('diagnóstico exhaustivo: imprime cada celda donde EV y tabla discrepan', (
   }
   console.log('Diferencias tabla (autoridad) vs EV infinito:', JSON.stringify(mismatches, null, 2));
   assert.equal(checked, 210, 'se revisan todas las celdas duras y blandas sin doblar');
+  // Baraja infinita frente a 6 barajas solo puede discrepar en casillas casi empatadas
+  for (const m of mismatches) assert.ok(m.delta < 0.02, 'discrepancia grande en ' + m.hand + ' vs ' + m.dealer);
 });
 
 test('las figuras se valoran como diez en las manos del jugador', () => {

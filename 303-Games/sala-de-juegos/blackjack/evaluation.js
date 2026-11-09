@@ -4,7 +4,7 @@
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.BlackjackEvaluation = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
-  const LABEL = { hit: 'Pedir', stand: 'Plantarse', double: 'Doblar', split: 'Separar', insurance: 'Seguro' };
+  const LABEL = { hit: 'Pedir', stand: 'Plantarse', double: 'Doblar', split: 'Separar', insurance: 'Seguro', 'no-insurance': 'Sin seguro' };
   function score({ chosen, correct, evs = {}, doubtful = false }) {
     if (chosen === 'insurance') return { score: 0, loss: null, doubtful: false, correct };
     if (chosen === correct) return { score: 100, loss: 0, doubtful, correct };
