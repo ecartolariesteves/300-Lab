@@ -312,10 +312,13 @@
   }
   function renderStrategyTable(spot) {
     const col = S.DEALER.indexOf(S.dealerKey(spot.dealer));
+    const ranks = spot.ranks;
+    const rowName = ranks.length === 2 && ranks[0] === ranks[1]
+      ? S.dealerKey(ranks[0]) + '+' + S.dealerKey(ranks[1])
+      : S.handTotal(ranks).soft ? 'A+' + S.dealerKey(ranks.find((r) => r !== 'A')) : String(S.handTotal(ranks).total);
     const rows = [];
     for (const [name, values] of Object.entries({ ...S.HARD, ...Object.fromEntries(Object.entries(S.SOFT).map(([k,v]) => ['A+' + (Number(k)-11),v])), ...Object.fromEntries(Object.entries(S.PAIRS).map(([k,v]) => [k+'+'+k,v])) })) {
-      const selected = values[col];
-      rows.push('<tr class="' + (String(name) === String(spot.ranks[0]) ? 'highlight' : '') + '"><th>' + name + '</th>' +
+      rows.push('<tr class="' + (String(name) === rowName ? 'highlight' : '') + '"><th>' + name + '</th>' +
         values.map((v, i) => '<td class="' + (i === col ? 'spot-cell' : '') + '" aria-label="' + v + '">' + v + '</td>').join('') + '</tr>');
     }
     return '<div class="table-scroll"><table class="strategy-grid"><thead><tr><th>Mano</th>' + S.DEALER.map((d) => '<th>' + d + '</th>').join('') + '</tr></thead><tbody>' + rows.join('') + '</tbody></table></div><p>H pedir · S plantarse · D doblar · Ds doblar/plantarse · P separar. Celda resaltada: carta visible ' + spot.dealer + '.</p>';
