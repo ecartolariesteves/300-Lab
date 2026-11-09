@@ -10,7 +10,9 @@ test('la distribución final del crupier suma uno y reproduce bust sin peek', ()
   for (const up of S.DEALER) {
     const dist = EV.dealerDistribution(up, false);
     const sum = Object.values(dist).reduce((a,b)=>a+b,0);
-    assert.ok(Math.abs(sum - 1) < 1e-10, 'distribución ' + up);
+    const peekSum = Object.values(EV.dealerDistribution(up, true)).reduce((a,b)=>a+b,0);
+    assert.ok(Math.abs(sum - 1) < 1e-10, 'distribución sin peek ' + up);
+    assert.ok(Math.abs(peekSum - 1) < 1e-10, 'distribución con peek ' + up);
     close(dist.bust, targets[up], 'bust ' + up);
   }
 });
@@ -28,8 +30,10 @@ test('los EV se calculan para cada acción legal y el orden es finito', () => {
 
 test('diagnóstico exhaustivo: imprime cada celda donde EV y tabla discrepan', () => {
   const mismatches = [];
+  let checked = 0;
   for (let total = 8; total <= 20; total++) {
     for (const up of S.DEALER) {
+      checked++;
       const hardRanks = total <= 10 ? ['2', String(total - 2)] : total === 11 ? ['5', '6'] : ['10', String(total - 10)];
       const hard = hardRanks.map((r)=>r==='10'?'10':r);
       if (hard.some((r)=>!Number.isFinite(S.value(r)))) continue;
@@ -39,6 +43,7 @@ test('diagnóstico exhaustivo: imprime cada celda donde EV y tabla discrepan', (
       const hardBest = EV.best(hard, up, hardLegal);
       if ((hardBest === 'hit' ? 'H' : 'S') !== hardCode) mismatches.push({ hand: 'hard '+total, dealer: up, table: hardCode, ev: hardBest, delta: Math.abs(hardEV.hit-hardEV.stand) });
       if (total >= 13 && total <= 20) {
+        checked++;
         const softRanks = ['A', String(total - 11)];
         const softLegal = ['hit','stand'];
         const softCode = S.bestAction(softRanks, up, { canDouble:false, canSplit:false });
@@ -49,7 +54,7 @@ test('diagnóstico exhaustivo: imprime cada celda donde EV y tabla discrepan', (
     }
   }
   console.log('Diferencias tabla (autoridad) vs EV infinito:', JSON.stringify(mismatches, null, 2));
-  assert.ok(mismatches.length >= 0);
+  assert.equal(checked, 210, 'se revisan todas las celdas duras y blandas sin doblar');
 });
 
 test('el EV de una mano blanda y una dura queda dentro de límites razonables', () => {
