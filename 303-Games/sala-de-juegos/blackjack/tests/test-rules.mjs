@@ -59,6 +59,14 @@ test('se permiten como máximo tres separaciones y cuatro manos', () => {
   assert.throws(() => R.splitHand(pair, [c('8'), c('8','♦')], 3), /separar/);
 });
 
+test('el seguro solo es legal con As visible y una sola oferta', () => {
+  const hand = { cards: [c('10'), c('6')], stood: false, wager: 10 };
+  assert.equal(R.canInsurance('A'), true);
+  assert.equal(R.canInsurance('10'), false);
+  assert.equal(R.canInsurance('A', true), false);
+  assert.ok(R.legalActions(hand, 0, 10, { dealerUp: 'A' }).includes('insurance'));
+});
+
 test('el corte se activa al quedar 78 cartas, no antes', () => {
   const shoe = R.createShoe(() => 0.5);
   shoe.cards.length = 79;
