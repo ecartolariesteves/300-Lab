@@ -36,6 +36,7 @@ test('los Ases separados reciben una carta y quedan plantados', () => {
   assert.deepEqual(hands.map((h) => h.cards.length), [2, 2]);
   assert.ok(hands.every((h) => h.stood && h.splitAces));
   assert.ok(hands.every((h) => !R.canHit(h)));
+  assert.ok(hands.every((h) => !R.canSplit(h, 1, 10)));
 });
 
 test('un 21 de dos cartas tras separar no es blackjack natural', () => {
