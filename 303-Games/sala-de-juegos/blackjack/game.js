@@ -18,7 +18,7 @@
   let settings = Object.assign({ feedback: 'immediate', count: false, dealSpeed: 250, countSpeed: 650 }, saved && saved.settings);
   let shoe = R.createShoe(), game = null, handNumber = stats.hands.length + 1;
   let tab = 'mesa', training = null, trainingStreak = { current: 0, best: 0, recent: [] };
-  let countRunning = 0, countShown = false, confirmMode = '';
+  let countRunning = 0, countShown = false, confirmMode = '', shoeCount = 0;
   const allCards = () => shoe.cards.slice();
   const visibleCards = () => game ? game.dealer.slice(0, game.revealed ? game.dealer.length : 1) : [];
   const active = () => game && game.hands[game.active];
@@ -88,16 +88,17 @@
     }
   }
   function dealCard() {
-    if (R.shouldReshuffle(shoe)) shoe = R.createShoe();
+    if (R.shouldReshuffle(shoe)) { shoe = R.createShoe(); shoeCount = 0; }
     const c = R.draw(shoe);
-    if (game) game.runningCount += COUNT.tag(c.rank);
+    shoeCount += COUNT.tag(c.rank);
+    if (game) game.runningCount = shoeCount;
     return c;
   }
   function startHand() {
     if (game && !game.done) return;
     const wager = Math.min(Number($('bet-input').value) || 10, balance);
     if (wager <= 0) return;
-    if (R.remaining(shoe) < 52 || R.shouldReshuffle(shoe)) shoe = R.createShoe();
+    if (R.remaining(shoe) < 52 || R.shouldReshuffle(shoe)) { shoe = R.createShoe(); shoeCount = 0; }
     balance -= wager;
     game = { wager, dealer: [], hands: [{ cards: [], wager, stood: false, splitAces: false, doubled: false, decisions: [], profit: 0 }],
       active: 0, splitCount: 0, phase: 'deal', done: false, revealed: false, insuranceOffered: false,
@@ -188,9 +189,9 @@
     if (!game.hands.every((h) => R.isBust(h.cards)) && !R.isBlackjack(game.dealer)) R.playDealer(game.dealer, shoe);
     let totalProfit = 0;
     for (const h of game.hands) {
-      const result = R.settle(h.cards, game.dealer, h.wager, { blackjackEligible: !h.splitAces && game.hands.length === 1, doubled: h.doubled });
+      const result = R.settle(h.cards, game.dealer, h.wager, { blackjackEligible: !h.splitAces && game.hands.length === 1 });
       // La apuesta inicial ya salió del saldo; el beneficio neto se añade y la devolución de apuesta ganadora también.
-      const returned = result.profit > 0 ? h.wager * (h.doubled ? 2 : 1) + result.profit : result.profit === 0 ? h.wager * (h.doubled ? 2 : 1) : 0;
+      const returned = result.profit > 0 ? h.wager + result.profit : result.profit === 0 ? h.wager : 0;
       balance += returned;
       h.profit = result.profit; h.result = result.outcome;
       totalProfit += result.profit;
