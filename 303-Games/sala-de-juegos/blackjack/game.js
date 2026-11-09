@@ -61,7 +61,6 @@
         (h.result ? '<span class="hand-outcome">' + h.result + '</span>' : '') + '</div>';
     }).join('');
     $('table-status').textContent = game.done ? game.summary : game.phase === 'deal' ? 'Preparando reparto…' : 'Tu decisión · mano ' + (game.active + 1);
-    $('new-hand').hidden = !game.done;
     $('deal-controls').hidden = !game.done;
     $('actions').replaceChildren();
     if (!game.done && game.phase === 'player') renderActions();
@@ -87,12 +86,18 @@
       game.insuranceOffered = true;
     }
   }
-  function dealCard() {
-    if (R.shouldReshuffle(shoe)) { shoe = R.createShoe(); shoeCount = 0; }
+  function dealCard(countCard = true) {
     const c = R.draw(shoe);
-    shoeCount += COUNT.tag(c.rank);
+    if (c && countCard) shoeCount += COUNT.tag(c.rank);
     if (game) game.runningCount = shoeCount;
     return c;
+  }
+  function revealHole() {
+    if (game && !game.holeCounted) {
+      shoeCount += COUNT.tag(game.dealer[1].rank);
+      game.holeCounted = true;
+      game.runningCount = shoeCount;
+    }
   }
   function startHand() {
     if (game && !game.done) return;
@@ -102,8 +107,8 @@
     balance -= wager;
     game = { wager, dealer: [], hands: [{ cards: [], wager, stood: false, splitAces: false, doubled: false, decisions: [], profit: 0 }],
       active: 0, splitCount: 0, phase: 'deal', done: false, revealed: false, insuranceOffered: false,
-      runningCount: 0, decisions: [], startedBalance: balance, summary: '' };
-    game.dealer.push(dealCard());
+      runningCount: shoeCount, holeCounted: false, decisions: [], startedBalance: balance, summary: '' };
+    game.dealer.push(dealCard(false));
     game.hands[0].cards.push(dealCard());
     game.dealer.push(dealCard());
     game.hands[0].cards.push(dealCard());
@@ -186,6 +191,7 @@
   }
   function finishHand() {
     game.phase = 'dealer'; game.revealed = true;
+    revealHole();
     if (!game.hands.every((h) => R.isBust(h.cards)) && !R.isBlackjack(game.dealer)) R.playDealer(game.dealer, shoe);
     let totalProfit = 0;
     for (const h of game.hands) {
@@ -372,9 +378,9 @@
     const map={h:'hit',p:'hit',s:'stand',d:'double',x:'split',n:'new'};
     const action=map[event.key.toLowerCase()];
     if(action && tab==='mesa'){event.preventDefault();if(action==='new'){if(game&&game.done)startHand();}else act(action);}
-    if(event.key==='Enter'&&tab==='mesa'){if(game&&game.done)startHand();else if(!game)startHand();}
+    if(event.key==='Enter'&&tab==='mesa'){if(!game || game.done)startHand();}
   });
+  $('balance').textContent = fmt(balance);
   renderTable(); renderStats();
-  $('new-hand').hidden = true;
   $('deal-controls').hidden = false;
 })();
