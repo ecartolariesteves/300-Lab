@@ -560,3 +560,34 @@
 .score-panel .readout label {
   color: #d4e6da;
 }
+
+/* Feedback de la Mesa: explicación visible sin tocar nada */
+.why-title {
+  margin: 8px 0 2px;
+  font-weight: 700;
+}
+.why-content ul {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 4px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+#feedback {
+  margin-bottom: 10px;
+}
+#feedback .table-toggle {
+  margin-top: 8px;
+}
+/* Ficha elegida */
+.chips button.selected {
+  background: var(--signal);
+  border-color: var(--signal);
+  color: #17241d;
+}
+@media (max-width: 620px) {
+  .deal-button kbd {
+    display: none;
+  }
+}

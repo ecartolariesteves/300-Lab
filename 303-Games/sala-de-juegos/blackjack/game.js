@@ -100,7 +100,7 @@
   function renderTable() {
     if (!game) return;
     $('balance').textContent = fmt(balance);
-    $('wager-label').textContent = fmt(game.wager);
+    $('wager-label').textContent = fmt(game.done ? Number($('bet-input').value) || game.wager : game.wager);
     $('last-result').textContent = stats.hands.length ? fmt(stats.hands[stats.hands.length - 1].profit) : '—';
     $('dealer-cards').innerHTML = game.dealer.map((c, i) => cardHTML(c, i === 1 && !game.revealed)).join('');
     $('dealer-total').textContent = game.revealed ? handTotalText(game.dealer) : '—';
@@ -309,27 +309,27 @@
       (item.action === item.correct ? '✓ Correcto' : '✗ ' + labels[item.correct] + ' era la referencia') +
       ' · ' +
       item.score +
-      '/100</strong><button type="button" class="why-toggle">Por qué</button><div class="why-content" hidden></div>';
-    host.querySelector('.why-toggle').addEventListener('click', () => {
-      const content = host.querySelector('.why-content');
-      content.hidden = !content.hidden;
-      if (!content.dataset.ready) {
-        content.innerHTML =
-          '<ul>' +
-          C.why({
-            ranks: item.ranks,
-            dealerUp: item.dealer,
-            legal: [],
-            chosen: item.action,
-            correct: item.correct,
-            evs: item.evs,
-          })
-            .map((line) => '<li>' + line + '</li>')
-            .join('') +
-          '</ul>';
-        content.dataset.ready = '1';
-      }
-    });
+      '/100</strong>' +
+      '<div class="why-content"><p class="why-title">Por qué</p><ul>' +
+      C.why({ ranks: item.ranks, dealerUp: item.dealer, chosen: item.action, correct: item.correct, evs: item.evs })
+        .map((line) => '<li>' + line + '</li>')
+        .join('') +
+      '</ul></div>' +
+      (item.action === 'insurance' || item.action === 'no-insurance'
+        ? ''
+        : '<button type="button" class="why-toggle table-toggle">Ver tabla</button><div class="strategy-table" hidden></div>');
+    const toggle = host.querySelector('.table-toggle');
+    if (toggle) {
+      const table = host.querySelector('.strategy-table');
+      toggle.addEventListener('click', () => {
+        table.hidden = !table.hidden;
+        toggle.textContent = table.hidden ? 'Ver tabla' : 'Ocultar tabla';
+        if (!table.dataset.ready) {
+          table.innerHTML = renderStrategyTable(item);
+          table.dataset.ready = '1';
+        }
+      });
+    }
   }
   function act(action) {
     if (!game || game.done || game.phase !== 'player') return;
@@ -675,6 +675,7 @@
           table.dataset.ready = '1';
         }
       });
+    $('training-feedback').querySelector('.why-toggle').click();
     $('training-next').hidden = false;
     safeSave();
   }
@@ -894,14 +895,16 @@
     .querySelectorAll('.tab')
     .forEach((b) => b.addEventListener('click', () => switchTab(b.dataset.tab)));
   $('deal-button').addEventListener('click', startHand);
-  $('bet-input').addEventListener('change', () => {
-    $('bet-input').value = Math.max(1, Number($('bet-input').value) || 10);
-  });
-  document.querySelectorAll('[data-bet]').forEach((b) =>
-    b.addEventListener('click', () => {
-      $('bet-input').value = b.dataset.bet;
-    }),
-  );
+  function setBet(value) {
+    const bet = Math.max(1, Math.round(Number(value) || 10));
+    $('bet-input').value = bet;
+    $('deal-amount').textContent = fmt(bet);
+    document.querySelectorAll('[data-bet]').forEach((b) => b.classList.toggle('selected', Number(b.dataset.bet) === bet));
+    // Mientras no hay mano en juego, el marcador muestra la apuesta que vas a hacer
+    if (!game || game.done) $('wager-label').textContent = fmt(bet);
+  }
+  $('bet-input').addEventListener('input', () => setBet($('bet-input').value));
+  document.querySelectorAll('[data-bet]').forEach((b) => b.addEventListener('click', () => setBet(b.dataset.bet)));
   document.documentElement.style.setProperty('--deal-speed', settings.dealSpeed + 'ms');
   $('feedback-mode').value = settings.feedback;
   $('feedback-mode').addEventListener('change', (e) => {

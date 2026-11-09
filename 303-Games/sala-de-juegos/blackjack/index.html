@@ -70,20 +70,20 @@
           </div>
         </div>
         <div class="count-readout" id="count-readout" hidden></div>
+        <div class="feedback" id="feedback" hidden aria-live="polite"></div>
+        <div class="hand-summary" id="hand-summary" hidden></div>
         <div class="action-area" id="action-area">
           <div class="bet-controls" id="deal-controls">
             <label for="bet-input">Apuesta</label>
             <div class="chips">
-              <button data-bet="5">5</button><button data-bet="10">10</button><button data-bet="25">25</button
+              <button data-bet="5">5</button><button data-bet="10" class="selected">10</button><button data-bet="25">25</button
               ><button data-bet="50">50</button><button data-bet="100">100</button
               ><input id="bet-input" type="number" min="1" value="10" aria-label="Apuesta en fichas" />
             </div>
-            <button class="action-btn primary deal-button" id="deal-button">Repartir <kbd>Enter</kbd></button>
+            <button class="action-btn primary deal-button" id="deal-button">Repartir <span id="deal-amount">10</span> <kbd>Enter</kbd></button>
           </div>
           <div class="actions" id="actions"></div>
         </div>
-        <div class="feedback" id="feedback" hidden aria-live="polite"></div>
-        <div class="hand-summary" id="hand-summary" hidden></div>
       </section>
       <section class="view" id="view-entrenamiento" role="tabpanel" hidden>
         <div class="training-controls">
