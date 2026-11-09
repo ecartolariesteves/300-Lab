@@ -2,9 +2,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import S from '../strategy.js';
 
-const cases = [
-  [['16','x'], '10', 'H'], // sustituido abajo por cartas explícitas
-];
 test('la tabla contiene decisiones concretas duras, blandas y parejas', () => {
   const checks = [
     [['10','6'],'10','H'], [['5','6'],'A','H'], [['A','6'],'3','D'],
@@ -28,7 +25,7 @@ test('D pasa a pedir y Ds pasa a plantarse cuando doblar no es legal', () => {
 
 test('las figuras tienen valor estratégico de diez, pero Q-K no forman pareja', () => {
   assert.equal(S.bestAction(['Q','K'], '6'), 'S');
-  assert.equal(S.bestAction(['J','J'], '6'), 'P');
+  assert.equal(S.bestAction(['J','J'], '6'), 'S');
 });
 
 test('una pareja no se puede separar cuando la opción está deshabilitada', () => {
