@@ -91,8 +91,8 @@
     return !handState.stood && handState.cards.length === 2 && !isBust(handState.cards);
   }
   function canSplit(handState, splitCount, bankroll = Infinity) {
-    return handState.cards.length === 2 && handState.cards[0].rank === handState.cards[1].rank &&
-      splitCount < 3 && bankroll >= handState.wager;
+    return !handState.stood && !handState.splitAces && handState.cards.length === 2 &&
+      handState.cards[0].rank === handState.cards[1].rank && splitCount < 3 && bankroll >= handState.wager;
   }
   function legalActions(handState, splitCount, bankroll = Infinity, options = {}) {
     const actions = [];
