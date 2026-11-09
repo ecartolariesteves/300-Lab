@@ -105,6 +105,7 @@
     if (wager <= 0) return;
     if (R.remaining(shoe) < 52 || R.shouldReshuffle(shoe)) { shoe = R.createShoe(); shoeCount = 0; }
     balance -= wager;
+    $('feedback').hidden = true; $('hand-summary').hidden = true;
     game = { wager, dealer: [], hands: [{ cards: [], wager, stood: false, splitAces: false, doubled: false, decisions: [], profit: 0 }],
       active: 0, splitCount: 0, phase: 'deal', done: false, revealed: false, insuranceOffered: false,
       runningCount: shoeCount, holeCounted: false, decisions: [], startedBalance: balance, summary: '' };
@@ -329,8 +330,14 @@
       const list = ds.filter((d) => d.action === a);
       return '<p>' + labels[a] + ': ' + (list.length ? fmt(list.reduce((s,d)=>s+d.score,0)/list.length) + '/100 (' + list.length + ')' : '—') + '</p>';
     }).join('');
-    const leaks = [...ds].filter((d)=>d.loss>0).sort((a,b)=>b.loss-a.loss).slice(0,10);
-    $('stats-leaks').innerHTML = leaks.length ? leaks.map((d)=>'<p>' + d.ranks.join('+') + ' vs ' + d.dealer + ': ' + labels[d.action] + ' → ' + labels[d.correct] + ' · EV perdido ' + fmt(d.loss) + '</p>').join('') : '<p>Aún no hay fugas registradas.</p>';
+    const leakMap = new Map();
+    for (const d of ds) if (d.loss > 0) {
+      const key = d.ranks.join('+') + '|' + d.dealer;
+      const item = leakMap.get(key) || { ranks: d.ranks, dealer: d.dealer, loss: 0, action: d.action, correct: d.correct, count: 0 };
+      item.loss += d.loss; item.count++; item.action = d.action; item.correct = d.correct; leakMap.set(key, item);
+    }
+    const leaks = [...leakMap.values()].sort((a,b)=>b.loss-a.loss).slice(0,10);
+    $('stats-leaks').innerHTML = leaks.length ? leaks.map((d)=>'<p>' + d.ranks.join('+') + ' vs ' + d.dealer + ': ' + labels[d.action] + ' → ' + labels[d.correct] + ' · EV perdido ' + fmt(d.loss) + ' (' + d.count + ' veces)</p>').join('') : '<p>Aún no hay fugas registradas.</p>';
     $('stats-history').innerHTML = stats.hands.slice().reverse().map((h)=>'<details><summary>Mano ' + h.number + ' · ' + fmt(h.profit) + ' fichas · ' + fmt(h.score) + '/100</summary><p>Crupier: ' + h.dealer.join(' ') + '</p>' + h.hands.map((hand,i)=>'<p>Mano ' +(i+1)+': '+hand.join(' ')+'</p>').join('')+'</details>').join('');
   }
   function exportSummary() {
@@ -363,7 +370,6 @@
     $('count-cards').dataset.expected = String(count);
   }
   document.querySelectorAll('.tab').forEach((b) => b.addEventListener('click', () => switchTab(b.dataset.tab)));
-  $('new-hand').addEventListener('click', startHand);
   $('deal-button').addEventListener('click', startHand);
   $('bet-input').addEventListener('change', () => { $('bet-input').value = Math.max(1, Number($('bet-input').value) || 10); });
   document.querySelectorAll('[data-bet]').forEach((b)=>b.addEventListener('click',()=>{$('bet-input').value=b.dataset.bet;}));
