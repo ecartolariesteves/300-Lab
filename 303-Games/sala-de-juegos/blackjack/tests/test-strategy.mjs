@@ -30,6 +30,7 @@ test('las figuras tienen valor estratégico de diez, pero Q-K no forman pareja',
 
 test('una pareja no se puede separar cuando la opción está deshabilitada', () => {
   assert.equal(S.bestAction(['8','8'], 'A', { canSplit: false }), 'H');
+  assert.equal(S.bestAction(['A','A'], '6', { canSplit: false }), 'H');
 });
 
 test('la categoría distingue parejas, manos blandas y duras', () => {
