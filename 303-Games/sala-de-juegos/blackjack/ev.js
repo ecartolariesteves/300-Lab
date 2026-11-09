@@ -89,6 +89,7 @@
       }
       return ev;
     }
+    if (action === 'insurance') return key(up) === 'A' ? -1 / 26 : -Infinity;
     if (action === 'split') {
       // Aproximación documentada: dos manos independientes, sin re-separar y con una carta inicial.
       const rank = ranks[0];
@@ -96,7 +97,8 @@
       for (const r of RANKS) {
         const next = [rank, r];
         const t = total(next);
-        one += PROB[r] * (t.value > 21 ? -1 : Math.max(standEV(next, up, peek), hitEV(next, up, peek)));
+        const continuation = rank === 'A' ? standEV(next, up, peek) : Math.max(standEV(next, up, peek), hitEV(next, up, peek));
+        one += PROB[r] * (t.value > 21 ? -1 : continuation);
       }
       return 2 * one;
     }
