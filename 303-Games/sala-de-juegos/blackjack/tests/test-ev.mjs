@@ -57,6 +57,11 @@ test('diagnóstico exhaustivo: imprime cada celda donde EV y tabla discrepan', (
   assert.equal(checked, 210, 'se revisan todas las celdas duras y blandas sin doblar');
 });
 
+test('las figuras se valoran como diez en las manos del jugador', () => {
+  assert.equal(EV.total(['J','6']).value, 16);
+  assert.equal(EV.total(['Q','K']).value, 20);
+});
+
 test('el EV de una mano blanda y una dura queda dentro de límites razonables', () => {
   const soft = EV.evaluate(['A','7'], '6', ['hit','stand']);
   const hard = EV.evaluate(['10','6'], '10', ['hit','stand']);
