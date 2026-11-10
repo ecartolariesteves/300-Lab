@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';import Profiles from '../profiles.js';
+const seeded=(seed)=>()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
+const a=Profiles.assign('mixto',seeded(7)),b=Profiles.assign('mixto',seeded(7));
+assert.deepEqual(a,b);assert.deepEqual(a.slice().sort(),['gto','gto','roca','station','maniaco'].sort());
+assert.equal(Profiles.choose('roca',{street:'postflop',equity:.30,potOdds:.33,due:1}),'fold');
+assert.equal(Profiles.choose('station',{street:'postflop',equity:.30,potOdds:.33,due:1}),'call');
+const m=Profiles.choose.toString();assert.ok(!m.includes('heroCards'));
+let rng=seeded(9),bluffs=0;for(let i=0;i<1000;i++)if(Profiles.choose('maniaco',{street:'postflop',equity:.1,random:rng})==='bet')bluffs++;
+assert.ok(bluffs>0);assert.equal(Profiles.choose('roca',{street:'postflop',equity:.1,random:rng}),'check');
+console.log('✔ perfiles');
