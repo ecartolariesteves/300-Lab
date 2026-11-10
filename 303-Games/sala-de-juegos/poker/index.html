@@ -53,6 +53,8 @@
       <div class="readout"><label>Ciegas</label><output>0,5/1 bb</output></div>
       <div class="readout"><label>Última mano</label><output id="hand-result">0,0 bb</output></div>
     </div>
+    <!-- Bloque de juego compartido: game.js lo mueve a la pestaña Torneo cuando se juega allí -->
+    <div id="table-block">
     <div class="table-wrap">
       <div class="poker-table" id="poker-table">
         <div class="seat seat-0" id="seat-0"></div><div class="seat seat-1" id="seat-1"></div>
@@ -79,19 +81,35 @@
       <p class="range-legend"><span class="legend-call">Call</span><span class="legend-raise">Subida</span><span class="legend-fold">Fold</span><span class="legend-hero">Tu mano</span></p>
     </div>
     <div class="hand-summary" id="hand-summary" hidden></div>
+    </div>
   </section>
 
   <section id="view-torneo" class="view" role="tabpanel" hidden>
-    <div class="settings-card">
+    <!-- Marcador del torneo: una fila, como el de la Mesa -->
+    <div class="panel poker-panel tour-panel" id="tour-panel" hidden>
+      <div class="readout"><label>Nivel</label><output id="tour-level">1</output></div>
+      <div class="readout"><label>Ciegas</label><output id="tour-blinds">10/20</output></div>
+      <div class="readout"><label>Jugadores</label><output id="tour-players">6</output></div>
+      <div class="readout"><label>Tu stack</label><output id="tour-stack">1.500</output></div>
+    </div>
+    <div id="tour-slot"></div>
+    <button type="button" class="reset tour-quit" id="tour-quit" hidden>Abandonar torneo</button>
+    <div class="settings-card tour-lobby" id="tour-lobby">
       <h2>Sit &amp; Go · 6 jugadores</h2>
-      <p class="muted">Torneo de práctica sin dinero real. 1.500 fichas iniciales por jugador; premios simulados 65 % / 35 %.</p>
+      <p class="muted">Torneo de práctica sin dinero real: 1.500 fichas cada uno, ciegas que suben y antes desde el nivel 4. Premios simulados: 1.º 65 %, 2.º 35 %.</p>
+      <p class="muted">Con 4-15 bb se puntúa con tablas de push/fold (equilibrio aproximado, en fichas, sin ICM); con 60 bb o más, con las tablas de cash. Entre medias, sin evaluar.</p>
       <div class="tournament-controls">
-        <label>Subir nivel cada <select id="tournament-level-speed"><option value="6">6 manos</option><option value="10" selected>10 manos</option><option value="15">15 manos</option></select></label>
+        <label>Subir de nivel cada
+          <select id="tournament-level-speed">
+            <option value="6">6 manos</option>
+            <option value="10" selected>10 manos</option>
+            <option value="15">15 manos</option>
+          </select>
+        </label>
         <button type="button" class="reset primary" id="tournament-new">Nuevo torneo</button>
       </div>
-      <div id="tournament-status" class="tournament-status" aria-live="polite">Pulsa «Nuevo torneo» para empezar.</div>
-      <div id="tournament-players" class="tournament-players"></div>
-      <p class="muted">El motor de torneo y las tablas push/fold están disponibles para el desarrollo del flujo completo.</p>
+      <div class="tour-result" id="tour-result" hidden></div>
+      <div class="tournament-players" id="tournament-players"></div>
     </div>
   </section>
   <section id="view-entrenamiento" class="view" role="tabpanel" hidden>
@@ -102,12 +120,13 @@
           <option value="3bet" selected>3-bet: decisión y tamaño</option>
           <option value="def">Defensa contra 3-bet</option>
           <option value="leaks">Repasar mis fugas</option>
+          <option value="pushfold">Push/fold (torneo)</option>
         </select>
       </label>
       <label>Tu posición
         <select id="training-position"><option value="random">Aleatoria</option></select>
       </label>
-      <label>Rival
+      <label><span id="training-rival-label">Rival</span>
         <select id="training-rival"><option value="random">Aleatorio</option></select>
       </label>
       <label class="check"><input type="checkbox" id="training-doubtful"> Solo manos dudosas</label>
@@ -139,6 +158,9 @@
       <section><h2>Por posición</h2><div id="stats-position"></div></section>
       <section><h2>Por tipo de spot</h2><div id="stats-spot"></div></section>
       <section><h2>Tamaños por subida</h2><div id="stats-sizing"></div></section>
+      <section><h2>Contra cada perfil</h2><div id="stats-profiles"></div></section>
+      <section><h2>Push/fold</h2><div id="stats-pushfold"></div></section>
+      <section><h2>Torneos</h2><div id="stats-tournaments"></div></section>
     </div>
     <section class="leaks"><h2>Tus fugas</h2><p class="muted">Los cinco spots con peor puntuación media (mínimo 5 decisiones).</p><div id="stats-leaks"></div></section>
     <section class="history"><h2>Últimas 50 manos</h2><p class="muted">Abre una mano para ver la acción calle a calle, las cartas del showdown, las tablas de los bots y tus notas.</p><div id="stats-history"></div></section>
@@ -171,8 +193,17 @@
     </div>
     <div class="settings-card">
       <h2>Rivales</h2>
-      <label for="rival-mode">Rivales</label><select id="rival-mode"><option value="mixto" selected>Mixto (recomendado)</option><option value="gto">Todos GTO aprox.</option><option value="roca">Todos Roca</option><option value="station">Todos Station</option><option value="maniaco">Todos Maníaco</option></select>
+      <label for="rival-mode">Tipo de rivales</label>
+      <select id="rival-mode">
+        <option value="mixto" selected>Mixto (recomendado)</option>
+        <option value="gto">Todos GTO aprox.</option>
+        <option value="roca">Todos Roca</option>
+        <option value="station">Todos Station</option>
+        <option value="maniaco">Todos Maníaco</option>
+      </select>
+      <p class="muted">Mixto: 2 GTO aprox., 1 Roca (juega pocas manos y casi no farolea), 1 Station (paga demasiado) y 1 Maníaco (abre mucho y farolea). Se aplica desde la próxima mano; en el torneo, desde el próximo torneo.</p>
       <label class="check"><input type="checkbox" id="show-rival-profiles" checked> Mostrar el perfil de cada rival</label>
+      <p class="settings-message" id="rival-message" aria-live="polite"></p>
       <h2>Feedback</h2>
       <label for="feedback-mode">Cuándo mostrar la evaluación</label>
       <select id="feedback-mode"><option value="immediate">Inmediato</option><option value="end">Al final de la mano</option></select>
@@ -187,6 +218,8 @@
   <section class="notes">
     <div><h2>Cómo estudiar</h2><ul>
       <li>En Mesa juegas manos completas y el botón avanza una posición después de cada mano.</li>
+      <li>En Torneo juegas un Sit &amp; Go de 6: las ciegas suben y con 15 bb o menos se puntúa el push/fold (all-in o fold) con tablas de equilibrio aproximado, sin ICM.</li>
+      <li>Los rivales tienen perfil: por defecto, mixto (2 GTO aprox., 1 Roca, 1 Station y 1 Maníaco). Tu nota sigue midiéndose contra la referencia, y el «Por qué» te dice cómo aprovechar a cada uno.</li>
       <li>En Entrenamiento recibes decisiones del spot elegido, sin jugar toda la mano.</li>
       <li>La puntuación preflop compara tu acción con frecuencias de referencia aproximadas, no con un solver exacto.</li>
       <li>Postflop se estima equity por Monte Carlo y se compara con las pot odds; este cálculo no es GTO.</li>
@@ -197,7 +230,7 @@
     <div><h2>Privacidad y dinero</h2><ul>
       <li>Es una herramienta de estudio sin apuestas ni dinero real.</li>
       <li>Estadísticas y rangos importados se guardan localmente en este dispositivo.</li>
-      <li>Los stacks se reponen a 100 bb al comenzar cada mano; no hay rake.</li>
+      <li>En la Mesa, los stacks se reponen a 100 bb al comenzar cada mano; no hay rake</li>
     </ul></div>
   </section>
 </main>
