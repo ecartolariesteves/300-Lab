@@ -184,3 +184,5 @@ select,textarea{font:500 .92rem var(--f-body);color:var(--ink);background:var(--
 @media(max-width:700px){.board{min-height:44px}.center-table .playing-card{width:30px;height:42px}}
 /* Pestaña activa: texto claro fijo, porque --bg es oscuro en modo oscuro y no se leía sobre el verde */
 .tab.active{color:#F3EFE2}
+
+.seat-profile{font-size:.62rem;line-height:1.2;padding:2px 5px;border-radius:5px;background:#F3EFE2;color:#1C2A22}.tournament-controls{display:flex;align-items:end;gap:10px;flex-wrap:wrap}.tournament-status{font:600 .88rem var(--f-mono);padding:10px;background:var(--bg);border-radius:8px}.tournament-players{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px}.tournament-players p{margin:0;padding:8px;border:1px solid var(--line);border-radius:8px;font-size:.8rem}
