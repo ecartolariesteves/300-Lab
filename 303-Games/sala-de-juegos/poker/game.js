@@ -13,6 +13,13 @@
   const EVAL = window.PokerEvaluation;
   const ENGINE = window.PokerEngine;
   const COACH = window.PokerCoach;
+  const PROFILES = window.PokerProfiles;
+  const TOURNAMENT = window.PokerTournament;
+  const PUSHFOLD = window.PokerPushFold;
+  let rivalMode = 'mixto';
+  let showRivalProfiles = true;
+  let sessionProfiles = null;
+  let tournament = null;
 
   // Orden de actuación preflop. El héroe siempre ocupa el asiento 0 y el botón va rotando.
   const POS = ['UTG', 'HJ', 'CO', 'BTN', 'SB', 'BB'];
@@ -490,6 +497,24 @@
 
   function botPreflop(p) {
     const hand = handKey(p.cards);
+    if (p.profile && p.profile !== 'gto') {
+      const dueNow = game.currentBet - p.bet;
+      if (p.profile === 'roca') {
+        if (dueNow > 0) return { action: ['QQ','KK','AA','AKs','AKo'].includes(hand) ? 'call' : 'fold' };
+        const tight = ranges.charts.RFI_UTG;
+        return tight && tight[hand] ? { action: 'raise' } : { action: 'fold' };
+      }
+      if (p.profile === 'station') {
+        if (dueNow > 0) return { action: 'call' };
+        const chart = ranges.charts.RFI_BTN;
+        return chart && chart[hand] && Math.random() < 0.5 ? { action: 'call' } : chart && chart[hand] ? { action: 'raise' } : { action: 'fold' };
+      }
+      if (p.profile === 'maniaco') {
+        const chart = ranges.charts.RFI_BTN;
+        if (dueNow > 0 && chart && chart[hand] && Math.random() < 0.6) return { action: 'raise' };
+        return chart && chart[hand] ? { action: 'raise' } : { action: dueNow > 0 ? 'fold' : 'check' };
+      }
+    }
     const premium = ['AA', 'KK', 'QQ', 'AKs'].includes(hand);
     const due = game.currentBet - p.bet;
     // Fuera de las tablas: botes con limp, multibote o 5-bet. Regla simple con manos premium.
@@ -525,6 +550,13 @@
     if (!heroRange.length) heroRange = ENGINE.expandChart(FULL_RANGE, dead);
     const eq = ENGINE.equity(p.cards, heroRange, game.board, 240, game.handNo * 71 + p.id + game.board.length);
     const due = Math.max(0, game.currentBet - p.bet);
+    if (p.profile && PROFILES) {
+      const a = PROFILES.choose(p.profile,{street:'postflop',equity:eq,potOdds:EVAL.potOdds(due,game.pot),due,random:Math.random});
+      if (a === 'call' || a === 'fold' || a === 'check') return {action:a};
+      if (a === 'raise') return {action:'bet',share:0.75};
+      if (a === 'bluff') return {action:'bet',share:0.33};
+      if (a === 'bet') return {action:'bet',share:p.profile==='maniaco'?0.75:0.33};
+    }
     if (due > 0) return { action: eq > EVAL.potOdds(due, game.pot) + 0.04 ? 'call' : 'fold' };
     if (eq > 0.78) return { action: 'bet', share: 0.75 };
     if (eq > 0.62) return { action: 'bet', share: 0.33 };
@@ -555,9 +587,10 @@
     let cards = '';
     if (p.id === 0 || (game.finished && game.showdown && !p.folded)) cards = '<span class="seat-cards">' + miniCards(p.cards) + '</span>';
     else if (!p.folded) cards = '<span class="seat-cards back"><span class="card-back"></span><span class="card-back"></span></span>';
+    const profile = p.id !== 0 && showRivalProfiles && p.profile ? '<span class="seat-profile">' + PROFILES.LABELS[p.profile] + '</span>' : '';
     const chart = game.finished && game.showdown && p.id !== 0 && !p.folded && p.chartLabel ? '<span class="seat-chart">' + p.chartLabel + '</span>' : '';
     const last = p.lastAction ? '<span class="seat-action">' + p.lastAction + '</span>' : '';
-    el.innerHTML = dealer + '<strong>' + (p.id === 0 ? 'TÚ' : 'Rival ' + p.id) + ' · ' + p.pos + '</strong>' +
+    el.innerHTML = dealer + '<strong>' + (p.id === 0 ? 'TÚ' : 'Rival ' + p.id) + ' · ' + p.pos + '</strong>' + profile +
       '<span>' + (p.allin ? 'All-in' : fmt(p.stack) + ' bb') + '</span>' +
       (p.bet > 0 && !game.finished ? '<span class="seat-bet">' + fmt(p.bet) + ' bb</span>' : '') + last + cards + chart;
   }
@@ -760,6 +793,8 @@
 
   function startHand() {
     const prev = game;
+    if (!sessionProfiles || !prev) sessionProfiles = PROFILES.assign(rivalMode);
+    if (prev && prev.finished && !prev.sessionProfiles) sessionProfiles = PROFILES.assign(rivalMode);
     game = {
       button: prev ? (prev.button + 1) % 6 : 0, handNo: prev ? prev.handNo + 1 : 1, lastResult: 0, finished: false, showdown: false, busy: false,
       street: 'preflop', pot: 0, currentBet: 1, lastRaiseSize: 1, raiseCount: 0, calls: 0, raises: [], acted: new Set(),
@@ -768,7 +803,7 @@
     const deal = ENGINE.deal();
     game.players = Array.from({ length: 6 }, (_, id) => ({
       id, pos: FROM_BUTTON[(id - game.button + 6) % 6], cards: deal.hands[id], stack: 100, bet: 0, contribution: 0,
-      folded: false, allin: false, rangeChart: null, chartLabel: null, lastAction: ''
+      folded: false, allin: false, rangeChart: null, chartLabel: null, lastAction: '', profile: id === 0 ? null : sessionProfiles[id - 1]
     }));
     game.runout = deal.board;
     pay(seatForPosition('SB'), 0.5);
@@ -1226,6 +1261,18 @@
     $('range-message').textContent = 'Rangos de referencia restaurados.';
   }
 
+  function startTournamentPreview() {
+    tournament = TOURNAMENT.create(PROFILES.assign(rivalMode));
+    tournament.perLevel = Number($('tournament-level-speed').value) || 10;
+    renderTournamentPreview();
+  }
+  function renderTournamentPreview() {
+    if (!tournament) return;
+    const level = TOURNAMENT.levelAt(tournament.hand,tournament.perLevel);
+    $('tournament-status').textContent = 'Nivel ' + level.level + ' · ' + level.sb + '/' + level.bb + (level.ante ? ' · ante ' + level.ante : '') + ' · Mano ' + tournament.hand + ' · Jugadores ' + tournament.players.filter(p=>p.alive).length + ' · Stack inicial: 1.500 fichas (75 bb)';
+    $('tournament-players').innerHTML = tournament.players.map(p=>'<p>'+(p.id===0?'TÚ':'Rival '+p.id)+' · '+(p.id===0?'Tú':PROFILES.LABELS[p.profile])+' · '+p.stack.toLocaleString('es-ES')+' fichas</p>').join('');
+  }
+
   function bind() {
     document.querySelectorAll('.tab').forEach((b) => b.addEventListener('click', () => setTab(b.dataset.tab)));
     $('new-hand').addEventListener('click', startHand);
@@ -1237,6 +1284,12 @@
     $('restore-ranges').addEventListener('click', restoreRanges);
     $('range-file').addEventListener('change', async (e) => { const f = e.target.files[0]; if (f) $('range-json').value = await f.text(); });
     $('feedback-mode').addEventListener('change', (e) => { feedbackMode = e.target.value; });
+    $('rival-mode').value = rivalMode;
+    $('rival-mode').addEventListener('change', (e) => { rivalMode = e.target.value; sessionProfiles = PROFILES.assign(rivalMode); });
+    $('show-rival-profiles').checked = showRivalProfiles;
+    $('show-rival-profiles').addEventListener('change', (e) => { showRivalProfiles = e.target.checked; if (game) renderTable(); });
+    $('tournament-level-speed').addEventListener('change', (e) => { if (tournament) tournament.perLevel = Number(e.target.value); });
+    $('tournament-new').addEventListener('click', startTournamentPreview);
     $('show-hints').checked = showHints;
     $('show-hints').addEventListener('change', (e) => { showHints = e.target.checked; safeSet(STORAGE_HINTS, showHints ? 'on' : 'off'); if (bars.mesa && game && !game.finished) renderHeroActions(); });
     $('export-json').addEventListener('click', exportJson);
