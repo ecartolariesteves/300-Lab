@@ -1050,6 +1050,7 @@
     $('hand-summary').hidden = true;
     $('table-status').textContent = 'Estás en ' + game.players[0].pos;
     $('new-hand').hidden = true;
+    $('tour-see').hidden = true;
     renderTable();
     advance();
   }
@@ -1133,7 +1134,6 @@
     $('table-status').textContent = message;
     $('hand-summary').hidden = false;
     $('hand-summary').textContent = message + ' Resultado: ' + (net >= 0 ? '+' : '') + fmt(net) + ' bb · Pulsa «Nueva mano» (o N) para seguir.';
-    if (game.mode === 'torneo') afterTournamentHand(net);
     $('actions').replaceChildren();
     bars.mesa = null;
     $('action-prompt').textContent = 'Mano terminada.';
@@ -1146,6 +1146,8 @@
       box.innerHTML = '<p><strong>Resumen de decisiones</strong></p>' + game.decisions.map((d) => '<p>' + escapeHtml(d.note || d.verdict) + '</p>').join('');
       if (game.lastPreflop) { $('range-panel').hidden = false; $('range-label').textContent = game.lastPreflop.label; renderRangeGrid($('range-grid'), game.lastPreflop.chart, game.lastPreflop.cards); }
     }
+    // El torneo va al final: puede ocultar «Nueva mano» si te han eliminado
+    if (game.mode === 'torneo') afterTournamentHand(net);
     renderTable();
   }
 
@@ -1727,13 +1729,20 @@
       tour.heroOut = true;
       tour.finished = true;
       recordTournament(hero.place);
-      $('new-hand').hidden = true;
+      showTournamentEnd(hero.place);
     }
     const chips = hero.chips.toLocaleString('es-ES');
     $('hand-summary').textContent = $('table-status').textContent + ' Tus fichas: ' + chips + ' (' + (net >= 0 ? '+' : '') + fmt(net) + ' bb).' +
       (names.length ? ' Eliminados: ' + names.join(', ') + '.' : '') + (tour.finished ? '' : ' Pulsa «Nueva mano» (o N) para seguir.');
     saveTour();
     renderTournament();
+  }
+
+  // Fin del torneo: en lugar de «Nueva mano», el resultado y un botón para ir a él
+  function showTournamentEnd(place) {
+    $('new-hand').hidden = true;
+    $('action-prompt').innerHTML = '<strong>' + (place === 1 ? '¡Has ganado el torneo!' : 'Torneo terminado: ' + place + '.º puesto') + '</strong>';
+    $('tour-see').hidden = false;
   }
 
   function recordTournament(place) {
@@ -1800,7 +1809,13 @@
     }
     if (!game) return;
     renderTable(game.finished ? null : 0);
-    if (game.finished) { $('actions').replaceChildren(); $('new-hand').hidden = game.mode === 'torneo' && tour && tour.finished; $('action-prompt').textContent = 'Mano terminada.'; }
+    $('tour-see').hidden = true;
+    if (game.finished) {
+      $('actions').replaceChildren();
+      $('action-prompt').textContent = 'Mano terminada.';
+      $('new-hand').hidden = false;
+      if (game.mode === 'torneo' && tour && tour.finished && tour.summary) showTournamentEnd(tour.summary.place);
+    }
     else if (!game.busy) { const pending = getPending(); if (pending.length && pending[0].id === 0) renderHeroActions(); }
   }
 
@@ -1840,6 +1855,7 @@
     });
     $('tournament-level-speed').addEventListener('change', (e) => { if (tour && !tour.finished) { tour.perLevel = Number(e.target.value); saveTour(); renderTournament(); } });
     $('tournament-new').addEventListener('click', newTournament);
+    $('tour-see').addEventListener('click', () => $('tour-lobby').scrollIntoView({ behavior: 'smooth', block: 'start' }));
     // Abandonar pide un segundo toque en el propio botón (sin confirm())
     $('tour-quit').addEventListener('click', (e) => {
       const b = e.currentTarget;
@@ -1851,6 +1867,7 @@
       game = null;
       saveTour();
       $('table-block').hidden = true;
+      $('tour-see').hidden = true;
       renderTournament();
     });
     $('show-hints').checked = showHints;

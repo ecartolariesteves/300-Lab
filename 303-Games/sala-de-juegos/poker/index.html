@@ -73,6 +73,7 @@
       <p id="action-prompt">Tu turno aparecerá aquí.</p>
       <div class="actions" id="actions"></div>
       <button type="button" class="reset primary new-hand" id="new-hand">Nueva mano <kbd>N</kbd></button>
+      <button type="button" class="reset primary new-hand" id="tour-see" hidden>Ver resultado y empezar otro torneo</button>
     </div>
     <div class="feedback" id="feedback" aria-live="polite" hidden></div>
     <div class="range-panel" id="range-panel" hidden>
@@ -92,8 +93,6 @@
       <div class="readout"><label>Jugadores</label><output id="tour-players">6</output></div>
       <div class="readout"><label>Tu stack</label><output id="tour-stack">1.500</output></div>
     </div>
-    <div id="tour-slot"></div>
-    <button type="button" class="reset tour-quit" id="tour-quit" hidden>Abandonar torneo</button>
     <div class="settings-card tour-lobby" id="tour-lobby">
       <h2>Sit &amp; Go · 6 jugadores</h2>
       <p class="muted">Torneo de práctica sin dinero real: 1.500 fichas cada uno, ciegas que suben y antes desde el nivel 4. Premios simulados: 1.º 65 %, 2.º 35 %.</p>
@@ -111,6 +110,8 @@
       <div class="tour-result" id="tour-result" hidden></div>
       <div class="tournament-players" id="tournament-players"></div>
     </div>
+    <div id="tour-slot"></div>
+    <button type="button" class="reset tour-quit" id="tour-quit" hidden>Abandonar torneo</button>
   </section>
   <section id="view-entrenamiento" class="view" role="tabpanel" hidden>
     <div class="training-controls">
