@@ -3,7 +3,7 @@
    Guarda las páginas y recursos propios para poder jugar sin conexión.
    ========================================================= */
 
-const CACHE_VERSION = 'v11';
+const CACHE_VERSION = 'v12';
 const APP_CACHE = `sala-juegos-${CACHE_VERSION}`;
 const FONT_CACHE = `sala-juegos-fonts-${CACHE_VERSION}`;
 const SITE_ROOT = new URL('./', self.location.href);
@@ -46,8 +46,12 @@ const PRECACHE_FILES = [
   'poker/betting.js',
   'poker/evaluation.js',
   'poker/coach.js',
+  'poker/profiles.js',
+  'poker/tournament.js',
+  'poker/pushfold.js',
   'poker/game.js',
   'poker/ranges.json',
+  'poker/pushfold.json',
   'blackjack/index.html','blackjack/style.css','blackjack/rules.js','blackjack/strategy.js',
   'blackjack/ev.js','blackjack/evaluation.js','blackjack/coach.js','blackjack/count.js','blackjack/game.js',
   'spider/index.html','spider/style.css','spider/rules.js','spider/game.js',
