@@ -15,6 +15,9 @@
 <script src="betting.js" defer></script>
 <script src="evaluation.js" defer></script>
 <script src="coach.js" defer></script>
+<script src="profiles.js" defer></script>
+<script src="tournament.js" defer></script>
+<script src="pushfold.js" defer></script>
 <script src="game.js" defer></script>
 <link rel="manifest" href="../manifest.webmanifest">
 <meta name="theme-color" content="#1F5C45">
@@ -37,6 +40,7 @@
   </header>
   <nav class="tabs" role="tablist" aria-label="Secciones">
     <button type="button" class="tab active" data-tab="mesa" role="tab" aria-selected="true">Mesa</button>
+    <button type="button" class="tab" data-tab="torneo" role="tab" aria-selected="false">Torneo</button>
     <button type="button" class="tab" data-tab="entrenamiento" role="tab" aria-selected="false">Entrenamiento</button>
     <button type="button" class="tab" data-tab="estadisticas" role="tab" aria-selected="false">Estadísticas</button>
     <button type="button" class="tab" data-tab="ajustes" role="tab" aria-selected="false">Ajustes</button>
@@ -77,6 +81,19 @@
     <div class="hand-summary" id="hand-summary" hidden></div>
   </section>
 
+  <section id="view-torneo" class="view" role="tabpanel" hidden>
+    <div class="settings-card">
+      <h2>Sit &amp; Go · 6 jugadores</h2>
+      <p class="muted">Torneo de práctica sin dinero real. 1.500 fichas iniciales por jugador; premios simulados 65 % / 35 %.</p>
+      <div class="tournament-controls">
+        <label>Subir nivel cada <select id="tournament-level-speed"><option value="6">6 manos</option><option value="10" selected>10 manos</option><option value="15">15 manos</option></select></label>
+        <button type="button" class="reset primary" id="tournament-new">Nuevo torneo</button>
+      </div>
+      <div id="tournament-status" class="tournament-status" aria-live="polite">Pulsa «Nuevo torneo» para empezar.</div>
+      <div id="tournament-players" class="tournament-players"></div>
+      <p class="muted">El motor de torneo y las tablas push/fold están disponibles para el desarrollo del flujo completo.</p>
+    </div>
+  </section>
   <section id="view-entrenamiento" class="view" role="tabpanel" hidden>
     <div class="training-controls">
       <label>Tipo de spot
@@ -153,6 +170,9 @@
       <p id="range-message" class="settings-message" aria-live="polite"></p>
     </div>
     <div class="settings-card">
+      <h2>Rivales</h2>
+      <label for="rival-mode">Rivales</label><select id="rival-mode"><option value="mixto" selected>Mixto (recomendado)</option><option value="gto">Todos GTO aprox.</option><option value="roca">Todos Roca</option><option value="station">Todos Station</option><option value="maniaco">Todos Maníaco</option></select>
+      <label class="check"><input type="checkbox" id="show-rival-profiles" checked> Mostrar el perfil de cada rival</label>
       <h2>Feedback</h2>
       <label for="feedback-mode">Cuándo mostrar la evaluación</label>
       <select id="feedback-mode"><option value="immediate">Inmediato</option><option value="end">Al final de la mano</option></select>
