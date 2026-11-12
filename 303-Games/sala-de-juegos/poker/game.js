@@ -22,6 +22,7 @@
   let showRivalProfiles = true;
   let cashProfiles = null; // perfiles de los 5 bots de la Mesa; se sortean de nuevo al cambiar el tipo de rivales
   let pushfold = null; // tablas de push/fold (pushfold.json)
+  let reshove = null; // tablas de resubida all-in con 16-25 bb (reshove.json)
   let tour = null; // torneo en curso (ver tournament.js)
   let cashGame = null; // mano de la pestaña Mesa
   let tourGame = null; // mano de la pestaña Torneo
@@ -137,6 +138,12 @@
       if (response.ok) pushfold = await response.json();
     } catch (_) {
       pushfold = null; // sin tablas, el torneo juega igual pero sin evaluar el push/fold
+    }
+    try {
+      const response = await fetch('reshove.json');
+      if (response.ok) reshove = await response.json();
+    } catch (_) {
+      reshove = null;
     }
   }
 
@@ -550,6 +557,50 @@
     return { kind: 'other', eff };
   }
 
+  /* Torneo con 16-25 bb efectivos: te enfrentas a una única apertura (resubir all-in o foldear)
+     o abriste y te han resubido all-in (pagar o foldear). Devuelve null si no es ese spot. */
+  function reshoveSpot(p) {
+    if (game.mode !== 'torneo' || game.street !== 'preflop' || !reshove || game.calls > 0) return null;
+    const inBand = (eff) => eff >= 15.5 && eff < 25.5;
+    if (game.raiseCount === 1) {
+      const opener = seatForPosition(game.raises[0].pos);
+      if (!opener || opener === p || opener.allin) return null;
+      const eff = Math.min(p.startStack, opener.startStack);
+      return inBand(eff) ? { kind: 'reshove', eff, opener } : null;
+    }
+    if (game.raiseCount === 2 && game.raises[0].pos === p.pos) {
+      const shover = seatForPosition(game.raises[1].pos);
+      if (!shover || !shover.allin) return null;
+      const eff = Math.min(p.startStack, shover.startStack);
+      return inBand(eff) ? { kind: 'callshove', eff, shover } : null;
+    }
+    return null;
+  }
+
+  // Bots con 16-25 bb: resubida all-in y call según las tablas, ajustadas a su perfil
+  function botReshove(p, hand) {
+    const spot = reshoveSpot(p);
+    if (!spot) return null;
+    const profile = p.profile || 'gto';
+    const st = PROFILES.reshoveStacks(profile, Math.round(spot.eff));
+    if (spot.kind === 'reshove') {
+      const table = p.pos + '_vs_' + spot.opener.pos + '_' + st.shove;
+      const list = reshove.reshove[table];
+      if (!list) return null;
+      p.chartLabel = 'Resubida ' + table.replace(/_/g, ' ') + ' bb · ' + PROFILES.LABELS[profile];
+      p.rangeChart = PUSHFOLD.toChart(list, 'raise');
+      if (list.includes(hand)) return { action: 'allin' };
+      // Sin resubida, paga solo con las manos que la tabla de cash paga contra esa apertura
+      const freq = spotOf(p.pos).chart && spotOf(p.pos).chart[hand];
+      return { action: freq && freq.call > 0 && Math.random() < freq.call ? 'call' : 'fold' };
+    }
+    const table = p.pos + '_vs_' + spot.shover.pos + '_' + st.call;
+    const list = reshove.call[table];
+    if (!list) return null;
+    p.chartLabel = 'Paga resubida ' + table.replace(/_/g, ' ') + ' bb · ' + PROFILES.LABELS[profile];
+    return { action: list.includes(hand) ? 'call' : 'fold' };
+  }
+
   // Manos con las que un bot va all-in con menos de 4 bb: un As, un Rey, una pareja o dos cartas de 9 o más
   function desperateHand(hand) {
     const high = '9TJQKA';
@@ -596,6 +647,8 @@
     const due = game.currentBet - p.bet;
     const short = botPushFold(p, hand);
     if (short) return short;
+    const re = botReshove(p, hand);
+    if (re) return re;
     // Fuera de las tablas: botes con limp, multibote o 5-bet. Regla simple con manos premium.
     if (game.calls > 0 || game.raiseCount >= 3 || (game.raiseCount === 2 && game.raises[0].pos !== p.pos)) {
       if (game.raiseCount === 0) {
@@ -609,6 +662,8 @@
       }
       if (['AA', 'KK'].includes(hand)) return { action: game.raiseCount >= 3 ? 'allin' : 'raise' };
       if (premium) return { action: due > 0 ? 'call' : 'check' };
+      // Subida sobre limpers (aislamiento): ya no se foldea casi todo
+      if (game.raiseCount === 1 && game.calls > 0) return limpedPotDefense(p, hand, due);
       return { action: due > 0 ? 'fold' : 'check' };
     }
     const spot = spotOf(p.pos);
@@ -634,17 +689,74 @@
     return { action: 'raise', spot };
   }
 
-  // Postflop los bots no ven tus cartas: calculan su equity contra el rango con el que has llegado
+  /* Alguien sube sobre uno o varios limps. Quien limpeó paga con un rango de apertura
+     (de CO; el Station con el de BTN, la Roca solo con el de UTG) y resube con QQ+ y AK.
+     Quien no había entrado aún paga con manos fuertes (rango de UTG; de CO para Station y Maníaco). */
+  function limpedPotDefense(p, hand, due) {
+    if (due <= 0) return { action: 'check' };
+    if (['QQ', 'AKs', 'AKo'].includes(hand)) return { action: 'raise' };
+    const profile = p.profile || 'gto';
+    const limped = p.lastAction.startsWith('Limp') || (p.pos === 'BB' && p.bet >= 1 - EPS);
+    const chart = limped
+      ? { roca: 'RFI_UTG', station: 'RFI_BTN' }[profile] || 'RFI_CO'
+      : { station: 'RFI_CO', maniaco: 'RFI_CO' }[profile] || 'RFI_UTG';
+    if (profile === 'maniaco' && inChart('RFI_CO', hand) && Math.random() < 0.2) return { action: 'raise' };
+    return { action: inChart(chart, hand) ? 'call' : 'fold' };
+  }
+
+  /* ---------- Rango del héroe postflop ----------
+     Empieza con el rango preflop de su acción y se estrecha con cada acción postflop:
+     si apuestas fuerte, los bots descartan la parte débil de tu rango (ver PROFILES.narrowRange). */
+  function heroCombos() {
+    const dead = new Set(game.board);
+    if (!game.heroCombos) game.heroCombos = ENGINE.expandChart(game.heroRange || FULL_RANGE, game.board);
+    game.heroCombos = game.heroCombos.filter((c) => !dead.has(c.cards[0]) && !dead.has(c.cards[1]));
+    if (!game.heroCombos.length) game.heroCombos = ENGINE.expandChart(FULL_RANGE, game.board);
+    return game.heroCombos;
+  }
+
+  // Fuerza de una mano en este board: equity contra una mano al azar, con pocas simulaciones
+  function strengthVsRandom(cards, board, trials, random) {
+    const used = new Set([...cards, ...board]);
+    const deck = ENGINE.makeDeck().filter((c) => !used.has(c));
+    let score = 0;
+    for (let t = 0; t < trials; t++) {
+      // Barajado parcial: las 2 del rival y las que faltan del board
+      const need = 2 + (5 - board.length);
+      for (let i = 0; i < need; i++) {
+        const j = i + Math.floor(random() * (deck.length - i));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+      }
+      const rest = deck.slice(2, need);
+      const mine = ENGINE.evaluate7([...cards, ...board, ...rest]);
+      const theirs = ENGINE.evaluate7([deck[0], deck[1], ...board, ...rest]);
+      const cmp = ENGINE.compare(mine, theirs);
+      score += cmp > 0 ? 1 : cmp === 0 ? 0.5 : 0;
+    }
+    return score / trials;
+  }
+
+  function narrowHeroRange(action, ratio) {
+    const combos = heroCombos();
+    const random = ENGINE.rng(game.handNo * 131 + game.board.length);
+    const strength = combos.map((c) => strengthVsRandom(c.cards, game.board, 20, random));
+    game.heroCombos = PROFILES.narrowRange(combos, strength, action, ratio);
+  }
+
+  // Postflop los bots no ven tus cartas: calculan su equity contra tu rango, estrechado por tus acciones
   function botPostflop(p) {
     const hero = game.players[0];
     if (hero.folded) return { action: game.currentBet > p.bet ? 'call' : 'check' };
-    const dead = [...p.cards, ...game.board];
-    let heroRange = ENGINE.expandChart(game.heroRange || FULL_RANGE, dead);
-    if (!heroRange.length) heroRange = ENGINE.expandChart(FULL_RANGE, dead);
-    const eq = ENGINE.equity(p.cards, heroRange, game.board, 240, game.handNo * 71 + p.id + game.board.length);
+    const mine = new Set(p.cards);
+    let range = heroCombos().filter((c) => !mine.has(c.cards[0]) && !mine.has(c.cards[1]));
+    if (!range.length) range = ENGINE.expandChart(FULL_RANGE, [...p.cards, ...game.board]);
+    const eq = ENGINE.equity(p.cards, range, game.board, 600, game.handNo * 71 + p.id + game.board.length);
     const due = Math.max(0, game.currentBet - p.bet);
     const potOdds = due > 0 ? EVAL.potOdds(Math.min(due, p.stack), game.pot) : 0;
-    return PROFILES.decidePostflop(p.profile || 'gto', { equity: eq, potOdds, due });
+    const draw = game.street !== 'river' && COACH.readHand(p.cards, game.board).outs >= 8;
+    return PROFILES.decidePostflop(p.profile || 'gto', {
+      equity: eq, potOdds, due, draw, street: game.street, aggressor: game.prevAggressor === p.pos
+    });
   }
 
   function botAction(p) {
@@ -869,7 +981,14 @@
     $('actions').replaceChildren();
     bars.mesa = null;
     $('action-prompt').textContent = 'Los rivales continúan…';
+    const potBefore = game.pot, betBefore = game.currentBet;
     applyAction(hero, action, target);
+    if (game.street !== 'preflop' && action !== 'fold') {
+      // Tamaño de tu apuesta o subida respecto al bote que había: cuanto mayor, más se estrecha tu rango
+      const added = Math.max(0, hero.bet - betBefore);
+      const kind = action === 'allin' ? (betBefore > 0 ? 'raise' : 'bet') : action;
+      narrowHeroRange(kind, potBefore > 0 ? added / potBefore : 1);
+    }
     renderTable();
     advance();
   }
@@ -896,6 +1015,8 @@
     if (game.mode !== 'torneo') return null;
     const hand = handKey(hero.cards);
     const spot = shortStackSpot(hero);
+    const rs = !spot ? reshoveSpot(hero) : null;
+    if (rs) return heroReshoveSpot(hero, rs, hand);
     if (!spot) {
       const behind = playersBehind(hero).map((x) => x.startStack);
       const eff = TOURNAMENT.effectiveStack(hero.startStack, behind);
@@ -913,6 +1034,26 @@
     return res.unevaluated ? res : { ...res, eff: spot.eff, pusherBehind: spot.pusherBehind, pusherPlayer: spot.pusher, shortTable };
   }
 
+  function heroReshoveSpot(hero, rs, hand) {
+    const S = Math.round(rs.eff);
+    const shortTable = TOURNAMENT.alive(tour).length < 6;
+    const share = PUSHFOLD.share;
+    if (rs.kind === 'reshove') {
+      const table = hero.pos + '_vs_' + rs.opener.pos + '_' + S;
+      const list = reshove.reshove[table];
+      if (!list) return { unevaluated: 'No hay tabla de resubida para esta posición.' };
+      const inRange = list.includes(hand);
+      return { kind: 'reshove', table, pos: hero.pos, opener: rs.opener.pos, stack: S, list, inRange, correct: inRange ? 'allin' : 'fold', share: share(list), eff: rs.eff, shortTable };
+    }
+    const table = hero.pos + '_vs_' + rs.shover.pos + '_' + S;
+    const list = reshove.call[table];
+    if (!list) return { unevaluated: 'No hay tabla de call para esta posición.' };
+    const inRange = list.includes(hand);
+    return { kind: 'callshove', table, pos: hero.pos, shover: rs.shover.pos, stack: S, list, inRange, correct: inRange ? 'call' : 'fold', share: share(list), eff: rs.eff, shortTable };
+  }
+
+  const pushLike = (t) => t.kind === 'push' || t.kind === 'reshove';
+
   async function heroTournamentDecision(t, action, hand, exploit) {
     const hero = game.players[0];
     const box = $('feedback');
@@ -923,11 +1064,14 @@
       if (show) { box.hidden = false; box.className = 'feedback warn'; box.innerHTML = '<p><strong>Sin evaluar</strong></p><p>' + escapeHtml(t.unevaluated) + '</p>' + exploit; $('range-panel').hidden = true; }
     } else {
       // Contra un all-in, ir all-in con más fichas equivale a pagar
-      const chosen = t.kind === 'call' && action === 'allin' ? 'call' : action;
-      const valid = t.kind === 'push' ? ['allin', 'fold'] : ['call', 'fold'];
+      const chosen = !pushLike(t) && action === 'allin' ? 'call' : action;
+      const valid = pushLike(t) ? ['allin', 'fold'] : ['call', 'fold'];
       if (!valid.includes(chosen)) {
         d = { type: 'preflop', source: 'torneo', pos: hero.pos, spot: 'Torneo', hand, category: categoryOf(hand), action, score: null, note: (ACTION_LABEL[action] || action) + ' · sin evaluar' };
-        if (show) { box.hidden = false; box.className = 'feedback warn'; box.innerHTML = '<p><strong>Sin evaluar</strong> · con 15 bb o menos, la referencia es all-in o fold.</p><p>Según la tabla ' + t.table + ', con ' + hand + ' lo correcto sería ' + (t.correct === 'allin' ? 'all-in' : 'fold') + '.</p>' + exploit; }
+        const why = t.kind === 'reshove'
+          ? 'con 16-25 bb esta referencia solo cubre resubir all-in o foldear; pagar la apertura o resubir sin ir all-in no se evalúa.'
+          : 'con 15 bb o menos, la referencia es all-in o fold.';
+        if (show) { box.hidden = false; box.className = 'feedback warn'; box.innerHTML = '<p><strong>Sin evaluar</strong> · ' + why + '</p><p>Según la tabla ' + t.table + ', con ' + hand + ' resubir all-in ' + (t.correct === 'allin' ? 'sería correcto' : 'no entra en la referencia') + '.</p>' + exploit; }
       } else {
         const score = chosen === t.correct ? 100 : 0;
         d = pushfoldRecord('torneo', t, hand, chosen, score);
@@ -950,28 +1094,34 @@
   /* ---------- Push/fold: textos comunes a la mesa del torneo y al entrenamiento ---------- */
 
   function pushfoldRecord(source, t, hand, action, score) {
-    const band = t.stack <= 7 ? '4-7 bb' : t.stack <= 11 ? '8-11 bb' : '12-15 bb';
+    const band = t.stack <= 7 ? '4-7 bb' : t.stack <= 11 ? '8-11 bb' : t.stack <= 15 ? '12-15 bb' : '16-25 bb';
+    const spot = { push: 'Push', call: 'Call', reshove: 'Resubida', callshove: 'Call resubida' }[t.kind];
     return {
-      type: 'pushfold', source, pos: t.pos, spot: t.kind === 'push' ? 'Push' : 'Call', stack: t.stack, band, table: t.table,
+      type: 'pushfold', source, pos: t.pos, spot, stack: t.stack, band, table: t.table,
       hand, category: categoryOf(hand), action, correct: t.correct, score,
       note: (action === 'allin' ? 'All-in' : ACTION_LABEL[action] || action) + ' con ' + t.stack + ' bb (' + t.table + ') → ' + score + '/100'
     };
   }
 
   function pushfoldFeedbackHtml(t, hand, action, score) {
-    const what = t.kind === 'push'
-      ? 'Con ' + t.stack + ' bb desde ' + t.pos + ', el equilibrio empuja el ' + pct1(t.share) + ' de las manos.'
-      : 'Con ' + t.stack + ' bb en ' + t.pos + ' contra un all-in de ' + t.pusher + ', el equilibrio paga con el ' + pct1(t.share) + ' de las manos.';
+    const what = {
+      push: 'Con ' + t.stack + ' bb desde ' + t.pos + ', el equilibrio empuja el ' + pct1(t.share) + ' de las manos.',
+      call: 'Con ' + t.stack + ' bb en ' + t.pos + ' contra un all-in de ' + t.pusher + ', el equilibrio paga con el ' + pct1(t.share) + ' de las manos.',
+      reshove: 'Con ' + t.stack + ' bb en ' + t.pos + ' contra una apertura de ' + t.opener + ', se resube all-in con el ' + pct1(t.share) + ' de las manos.',
+      callshove: 'Abriste desde ' + t.pos + ' y ' + t.shover + ' resube all-in con ' + t.stack + ' bb: se paga con el ' + pct1(t.share) + ' de las manos.'
+    }[t.kind];
     const label = (a) => (a === 'allin' ? 'All-in' : a === 'call' ? 'Call' : 'Fold');
     return '<p><strong>' + (score === 100 ? '✓ Correcto' : '✗ Error') + ' · ' + score + '/100</strong> · ' + hand + ' · tabla ' + t.table +
       '</p><p>Referencia: <strong>' + label(t.correct) + '</strong> · Tu acción: ' + label(action) + '</p><p>' + what + '</p>' +
-      '<p class="source">Push/fold: equilibrio aproximado en fichas, sin ICM.' + (t.shortTable ? ' Aproximación: con menos de 6 jugadores se usa la tabla 6-max con el mismo número de jugadores detrás.' : '') + '</p>';
+      '<p class="source">' + (t.kind === 'reshove' || t.kind === 'callshove'
+        ? 'Resubida: equilibrio aproximado en fichas, sin ICM, contra los rangos de apertura de referencia (de 100 bb).'
+        : 'Push/fold: equilibrio aproximado en fichas, sin ICM.') + (t.shortTable ? ' Aproximación: con menos de 6 jugadores se usa la tabla 6-max con el mismo número de jugadores detrás.' : '') + '</p>';
   }
 
   function showPushfoldChart(panel, labelEl, grid, t, cards) {
     panel.hidden = false;
-    labelEl.textContent = (t.kind === 'push' ? 'All-in · ' : 'Call · ') + t.table.replace(/_/g, ' ') + ' bb';
-    renderRangeGrid(grid, PUSHFOLD.toChart(t.list, t.kind === 'push' ? 'raise' : 'call'), cards);
+    labelEl.textContent = (pushLike(t) ? 'All-in · ' : 'Call · ') + t.table.replace(/_/g, ' ') + ' bb';
+    renderRangeGrid(grid, PUSHFOLD.toChart(t.list, pushLike(t) ? 'raise' : 'call'), cards);
   }
 
   // El porqué del push/fold: dinero muerto, fold equity y tu equity cuando te pagan
@@ -987,6 +1137,25 @@
       const eq = range.length ? await equityAsync(cards, range, [], 1500, t.stack * 31 + t.behind) : null;
       if (eq != null) lines.push('Si la ' + caller.pos + ' paga (con el ' + pct1(PUSHFOLD.share(caller.list)) + ' de sus manos), tu equity es de un ' + pct(eq) + '.');
       lines.push('Regla práctica: cuanto menos stack y más tarde la posición, más ancho se empuja.');
+    } else if (t.kind === 'reshove') {
+      const openChart = ranges.charts['RFI_' + t.opener] || {};
+      const openShare = Object.entries(openChart).reduce((sum, [h, f]) => sum + PUSHFOLD.combos(h) * (f.raise || 0), 0) / 1326;
+      const callList = reshove.call[t.opener + '_vs_' + t.pos + '_' + t.stack] || [];
+      const foldPct = openShare > 0 ? Math.max(0, 1 - PUSHFOLD.share(callList) / openShare) : 0;
+      lines.push('Hay ' + fmt(pot) + ' bb en el bote con la apertura: un ' + pct(pot / t.stack) + ' de tu stack, y lo ganas sin ver el flop cada vez que ' + t.opener + ' foldea.');
+      lines.push(t.opener + ' abre con el ' + pct1(openShare) + ' de las manos y solo paga tu all-in con el ' + pct1(PUSHFOLD.share(callList)) + ': foldea aproximadamente el ' + pct(foldPct) + ' de las veces.');
+      const range = ENGINE.expandChart(PUSHFOLD.toChart(callList, 'call'), cards);
+      const eq = range.length ? await equityAsync(cards, range, [], 1500, t.stack * 41 + 3) : null;
+      if (eq != null) lines.push('Cuando te paga, tu equity es de un ' + pct(eq) + '.');
+      lines.push('Con 16-25 bb, pagar una apertura deja poco stack para jugar después: resubir all-in aprovecha tu fold equity.');
+    } else if (t.kind === 'callshove') {
+      const need = EVAL.potOdds(due, pot);
+      lines.push('Pagas ' + fmt(due) + ' bb para ganar un bote de ' + fmt(pot) + ' bb: necesitas un ' + pct(need) + ' de equity.');
+      const shoveList = reshove.reshove[t.shover + '_vs_' + t.pos + '_' + t.stack] || [];
+      const range = ENGINE.expandChart(PUSHFOLD.toChart(shoveList, 'raise'), cards);
+      const eq = range.length ? await equityAsync(cards, range, [], 1500, t.stack * 43 + 5) : null;
+      if (eq != null) lines.push('Contra el rango de resubida de ' + t.shover + ' (el ' + pct1(PUSHFOLD.share(shoveList)) + ' de las manos), tu equity es de un ' + pct(eq) + (eq > need ? ': paga.' : ': no llega.'));
+      lines.push('Ya has puesto la apertura en el bote: por eso se paga con más manos de lo que parecería.');
     } else {
       const need = EVAL.potOdds(due, pot);
       lines.push('Pagas ' + fmt(due) + ' bb para ganar un bote de ' + fmt(pot) + ' bb: necesitas un ' + pct(need) + ' de equity.');
@@ -1156,6 +1325,8 @@
     if (game.street === 'preflop') { game.street = 'flop'; game.board = game.runout.slice(0, 3); }
     else if (game.street === 'flop') { game.street = 'turn'; game.board = game.runout.slice(0, 4); }
     else { game.street = 'river'; game.board = game.runout.slice(0, 5); }
+    // Quien subió o apostó el último en la calle anterior (para la apuesta de continuación)
+    game.prevAggressor = game.raises.length ? game.raises[game.raises.length - 1].pos : null;
     game.players.forEach((p) => { p.bet = 0; p.lastAction = ''; });
     game.currentBet = 0; game.lastRaiseSize = 0; game.raiseCount = 0; game.raises = []; game.acted = new Set();
     let status = STREET[game.street] + ' · bote ' + fmt(game.pot) + ' bb';
@@ -1509,7 +1680,7 @@
     // Push/fold por tramo de stack y posición, con las fugas (media < 70 y al menos 5 decisiones)
     const pf = stats.decisions.filter((d) => d.type === 'pushfold');
     const pfRows = [];
-    for (const band of ['4-7 bb', '8-11 bb', '12-15 bb']) {
+    for (const band of ['4-7 bb', '8-11 bb', '12-15 bb', '16-25 bb']) {
       for (const pos of PF_HEROES) {
         const g = pf.filter((d) => d.band === band && d.pos === pos);
         if (!g.length) continue;
