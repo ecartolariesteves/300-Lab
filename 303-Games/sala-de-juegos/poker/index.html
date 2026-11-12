@@ -96,7 +96,7 @@
     <div class="settings-card tour-lobby" id="tour-lobby">
       <h2>Sit &amp; Go · 6 jugadores</h2>
       <p class="muted">Torneo de práctica sin dinero real: 1.500 fichas cada uno, ciegas que suben y antes desde el nivel 4. Premios simulados: 1.º 65 %, 2.º 35 %.</p>
-      <p class="muted">Con 4-15 bb se puntúa con tablas de push/fold (equilibrio aproximado, en fichas, sin ICM); con 60 bb o más, con las tablas de cash. Entre medias, sin evaluar.</p>
+      <p class="muted">Con 4-15 bb se puntúa con tablas de push/fold; con 16-25 bb, la resubida all-in contra una apertura (y el call cuando te resuben); con 60 bb o más, con las tablas de cash. Todo en fichas y sin ICM. El resto, sin evaluar.</p>
       <div class="tournament-controls">
         <label>Subir de nivel cada
           <select id="tournament-level-speed">
@@ -197,12 +197,19 @@
       <label for="rival-mode">Tipo de rivales</label>
       <select id="rival-mode">
         <option value="mixto" selected>Mixto (recomendado)</option>
-        <option value="gto">Todos GTO aprox.</option>
+        <option value="gto">Todos GTO aprox. (preflop)</option>
         <option value="roca">Todos Roca</option>
         <option value="station">Todos Station</option>
         <option value="maniaco">Todos Maníaco</option>
       </select>
-      <p class="muted">Mixto: 2 GTO aprox., 1 Roca (juega pocas manos y casi no farolea), 1 Station (paga demasiado) y 1 Maníaco (abre mucho y farolea). Se aplica desde la próxima mano; en el torneo, desde el próximo torneo.</p>
+      <p class="muted">Mixto: 2 GTO aprox., 1 Roca, 1 Station y 1 Maníaco. Se aplica desde la próxima mano; en el torneo, desde el próximo torneo.</p>
+      <ul class="muted profile-help">
+        <li><strong>GTO aprox.:</strong> preflop sigue las tablas de referencia. Postflop es una aproximación equilibrada, no un solver: el mismo tamaño para valor y farol, semifaroles con proyectos y apuesta de continuación.</li>
+        <li><strong>Roca:</strong> juega pocas manos, paga en vez de resubir y casi nunca farolea.</li>
+        <li><strong>Station:</strong> juega muchas manos, limpea y paga demasiado. No farolea.</li>
+        <li><strong>Maníaco:</strong> abre muchas manos, resube mucho y farolea a menudo.</li>
+        <li>Todos estrechan tu rango con tus acciones: si apuestas fuerte, cuentan con que llevas algo.</li>
+      </ul>
       <label class="check"><input type="checkbox" id="show-rival-profiles" checked> Mostrar el perfil de cada rival</label>
       <p class="settings-message" id="rival-message" aria-live="polite"></p>
       <h2>Feedback</h2>

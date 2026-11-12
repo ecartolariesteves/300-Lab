@@ -268,3 +268,11 @@ select,textarea{font:500 .92rem var(--f-body);color:var(--ink);background:var(--
     font-size: 0.56rem;
   }
 }
+
+.profile-help {
+  margin: 4px 0 10px;
+  padding-left: 18px;
+  font-size: 0.85rem;
+  display: grid;
+  gap: 4px;
+}
