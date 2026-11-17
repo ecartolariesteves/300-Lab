@@ -47,4 +47,20 @@ assert.ok(!dudosas.some((h) => h.endsWith('o') && '5432'.includes(h[0])), 'Ningu
 assert.ok(Math.abs(E.bluffBreakeven(7.5, 10) - 7.5 / 17.5) < 1e-12, 'Farol de 75 % del bote: el rival debe foldear 42,9 %');
 assert.equal(E.spr(90, 6), 15);
 assert.ok(Math.abs(E.potOdds(5, 15) - 0.25) < 1e-12);
-console.log('✔ Evaluación: acción × tamaño, mixtas, nombres de acciones, limp, manos dudosas y ayudas postflop');
+// Recalcular decisiones guardadas con tablas nuevas (se conserva la nota de tamaño)
+const charts = { VS_OPEN_SB_vs_HJ: { '77': { '3bet': 0.4, call: 0.6 } }, RFI_UTG: { AA: { raise: 1 } } };
+const saved = [
+  { type: 'preflop', pos: 'SB', rival: 'HJ', spot: 'Contra apertura', hand: '77', action: '3bet', score: 0, actionScore: 0, sizingScore: 100, verdict: 'Error', note: '3-bet a 10 bb → 0/100' },
+  { type: 'preflop', pos: 'SB', rival: 'HJ', spot: 'Contra apertura', hand: '77', action: '3bet', score: 0, actionScore: 0, sizingScore: 80, verdict: 'Error' },
+  { type: 'preflop', pos: 'UTG', rival: null, spot: 'Apertura', hand: 'AA', action: 'raise', score: 100, actionScore: 100, sizingScore: null },
+  { type: 'preflop', pos: 'SB', spot: 'Contra apertura', hand: '77', action: 'call', score: 50 },           // sin rival: no se toca
+  { type: 'preflop', pos: 'BTN', spot: 'Apertura', hand: '72o', action: 'limp', score: 0 },                  // limp: siempre 0
+  { type: 'postflop', pos: 'BTN', spot: 'flop', hand: 'AA', action: 'bet', score: 70 },
+];
+const r = E.rescoreDecisions(saved, charts);
+assert.deepEqual(r, { changed: 2, skipped: 1 });
+assert.equal(saved[0].score, 67); assert.equal(saved[0].verdict, 'Aceptable (estrategia mixta)'); assert.equal(saved[0].note, '3-bet a 10 bb → 67/100');
+assert.equal(saved[1].score, 54, 'La nota de tamaño (80 %) se mantiene: 67 × 0,8');
+assert.equal(saved[2].score, 100); assert.equal(saved[3].score, 50); assert.equal(saved[4].score, 0); assert.equal(saved[5].score, 70);
+assert.equal(E.chartNameOf({ spot: 'Contra 3-bet', pos: 'CO', rival: 'BB' }), 'VS_3BET_CO_vs_BB');
+console.log('✔ Evaluación: acción × tamaño, mixtas, nombres de acciones, limp, manos dudosas, recálculo con tablas nuevas y ayudas postflop');

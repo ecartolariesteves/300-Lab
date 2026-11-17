@@ -181,8 +181,8 @@
   <section id="view-ajustes" class="view" role="tabpanel" hidden>
     <div class="settings-card">
       <h2>Rangos activos</h2>
-      <p id="range-source">Referencia aproximada 6-max · 100 bb</p>
-      <p class="muted">Preflop: rangos de referencia aproximados (6-max, 100 bb). No son la salida exacta de un solver.</p>
+      <p id="range-source">Referencia 6-max · 100 bb (calibrada, NL500)</p>
+      <p class="muted">Preflop: rangos 6-max a 100 bb calibrados con las frecuencias publicadas por BeyondGTO (NL500, con rake): el % total de 3-bet, call y 4-bet de cada spot coincide con la referencia; el reparto mano a mano es aproximado. No son la salida exacta de un solver.</p>
       <label for="range-json">Importar rangos propios (JSON)</label>
       <textarea id="range-json" rows="7" placeholder='{"version":1,"name":"Mis rangos","charts":{...}}'></textarea>
       <div class="settings-actions">
@@ -229,7 +229,7 @@
       <li>En Torneo juegas un Sit &amp; Go de 6: las ciegas suben y con 15 bb o menos se puntúa el push/fold (all-in o fold) con tablas de equilibrio aproximado, sin ICM.</li>
       <li>Los rivales tienen perfil: por defecto, mixto (2 GTO aprox., 1 Roca, 1 Station y 1 Maníaco). Tu nota sigue midiéndose contra la referencia, y el «Por qué» te dice cómo aprovechar a cada uno.</li>
       <li>En Entrenamiento recibes decisiones del spot elegido, sin jugar toda la mano.</li>
-      <li>La puntuación preflop compara tu acción con frecuencias de referencia aproximadas, no con un solver exacto.</li>
+      <li>La puntuación preflop compara tu acción con tablas calibradas con una referencia de solver (las frecuencias globales coinciden; mano a mano es aproximado). En manos frontera, con estrategia mixta, las dos opciones puntúan.</li>
       <li>Postflop se estima equity por Monte Carlo y se compara con las pot odds; este cálculo no es GTO.</li>
       <li>Cada subida preflop se puntúa por la acción y por el tamaño: nota = acción × factor del tamaño.</li>
       <li>Los bots usan las mismas tablas preflop, continúan con menos manos contra subidas grandes y postflop juegan contra tu rango, nunca contra tus cartas.</li>

@@ -56,7 +56,7 @@
 
   let referenceRanges = null;
   let ranges = null;
-  let rangeSource = 'Referencia aproximada 6-max · 100 bb';
+  let rangeSource = 'Referencia 6-max · 100 bb (calibrada, NL500)';
   let stats = loadStats();
   let game = null;
   let training = null;
@@ -133,6 +133,13 @@
       if (custom) { validateRanges(custom); ranges = custom; rangeSource = 'Rangos propios · ' + (custom.name || 'sin nombre'); }
     } catch (_) { safeSet(STORAGE_RANGES, ''); }
     $('range-source').textContent = rangeSource;
+    // Tablas de referencia nuevas: las notas preflop guardadas se recalculan una vez con ellas
+    if (ranges === referenceRanges && stats.rangesEdition !== referenceRanges.edition) {
+      const r = EVAL.rescoreDecisions(stats.decisions, referenceRanges.charts);
+      stats.rangesEdition = referenceRanges.edition;
+      saveStats();
+      if (r.changed) $('range-message').textContent = 'Tablas de referencia actualizadas (edición ' + referenceRanges.edition + '): ' + r.changed + ' decisiones preflop guardadas se han recalculado con ellas.';
+    }
     try {
       const response = await fetch('pushfold.json');
       if (response.ok) pushfold = await response.json();
@@ -257,7 +264,7 @@
       if (s.factor < 1) html += '<p class="source">Las tablas de referencia están calculadas para ' + (s.unit === 'x' ? fmt(s.mult) + '×' : 'aperturas de ' + fmt(s.ref) + ' bb') + '; con otro tamaño la acción se evalúa con la misma tabla.</p>';
     }
     html += '<p class="score-line">→ <strong>' + result.score + '/100</strong>' + (s ? ' (acción ' + result.actionScore + ' × tamaño ' + fmt(s.factor) + ')' : '') + '</p>';
-    html += '<p class="source">Rangos de referencia aproximados (6-max, 100 bb). No son la salida exacta de un solver.</p>';
+    html += '<p class="source">Referencia 6-max, 100 bb, calibrada con las frecuencias de BeyondGTO (NL500). Mano a mano es aproximada: no es la salida exacta de un solver.</p>';
     return html;
   }
 
@@ -1829,7 +1836,7 @@
   function restoreRanges() {
     safeSet(STORAGE_RANGES, '');
     ranges = referenceRanges;
-    rangeSource = 'Referencia aproximada 6-max · 100 bb';
+    rangeSource = 'Referencia 6-max · 100 bb (calibrada, NL500)';
     $('range-source').textContent = rangeSource;
     $('range-message').textContent = 'Rangos de referencia restaurados.';
   }
@@ -2057,7 +2064,7 @@
       }
       clearTimeout(clearArmed); clearArmed = null;
       b.textContent = b.dataset.label;
-      stats = { decisions: [], hands: [], result: 0 };
+      stats = { decisions: [], hands: [], result: 0, rangesEdition: referenceRanges ? referenceRanges.edition : undefined };
       saveStats();
       renderStats();
     });

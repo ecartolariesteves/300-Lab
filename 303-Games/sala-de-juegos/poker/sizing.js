@@ -1,4 +1,4 @@
-/* Tamaños de referencia preflop (6-max, 100 bb, sin rake) y su evaluación.
+/* Tamaños de referencia preflop (6-max, 100 bb) y su evaluación.
    Son las convenciones habituales de las estrategias de solver para este formato;
    las tablas de ranges.json están pensadas para estos tamaños.
    - Apertura: 2,5 bb desde UTG, HJ, CO y BTN; 3 bb desde la SB.
