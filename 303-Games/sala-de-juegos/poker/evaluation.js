@@ -87,5 +87,32 @@
   // Equity mínima para pagar: lo que pagas / (bote después de pagar)
   const potOdds = (due, pot) => due / (pot + due);
 
-  return { RANKS, SPOT_ACTIONS, frequencies, chartAction, actionScore, verdictOf, evaluatePreflop, isDoubtful, handAt, bluffBreakeven, spr, potOdds };
+  /* Recalcula la nota de las decisiones preflop guardadas con unas tablas nuevas.
+     Conserva la nota de tamaño que ya tenía (sizingScore) y solo cambia la parte de la acción.
+     Devuelve { changed, skipped }: skipped = decisiones sin tabla (p. ej. guardadas sin rival). */
+  function chartNameOf(d) {
+    if (d.spot === 'Apertura') return 'RFI_' + d.pos;
+    if (!d.rival) return null;
+    if (d.spot === 'Contra apertura') return 'VS_OPEN_' + d.pos + '_vs_' + d.rival;
+    if (d.spot === 'Contra 3-bet') return 'VS_3BET_' + d.pos + '_vs_' + d.rival;
+    return null;
+  }
+  function rescoreDecisions(decisions, charts) {
+    let changed = 0, skipped = 0;
+    for (const d of decisions || []) {
+      if (d.type !== 'preflop' || d.score == null || d.action === 'limp') continue;
+      const chart = charts[chartNameOf(d)];
+      if (!chart) { skipped++; continue; }
+      const a = actionScore(d.action, frequencies(chart, d.hand, d.spot));
+      const factor = d.sizingScore != null ? d.sizingScore / 100 : 1;
+      const score = Math.round(a.score * factor);
+      if (score === d.score && a.score === d.actionScore) continue;
+      d.score = score; d.actionScore = a.score; d.verdict = verdictOf(score);
+      if (typeof d.note === 'string') d.note = d.note.replace(/→ \d+\/100$/, '→ ' + score + '/100');
+      changed++;
+    }
+    return { changed, skipped };
+  }
+
+  return { RANKS, SPOT_ACTIONS, frequencies, chartAction, actionScore, verdictOf, evaluatePreflop, isDoubtful, handAt, bluffBreakeven, spr, potOdds, chartNameOf, rescoreDecisions };
 });

@@ -13,10 +13,10 @@ assert.ok(Math.abs(C.rangeStats(all, 'Apertura').raise - 1) < 1e-9, 'Todas las m
 const utg = C.rangeStats(ranges.charts.RFI_UTG, 'Apertura').raise, btn = C.rangeStats(ranges.charts.RFI_BTN, 'Apertura').raise;
 assert.ok(utg > 0.1 && utg < 0.22 && btn > 0.35 && btn < 0.6, `UTG abre ${utg}, BTN abre ${btn}`);
 
-// Por qué: BTN contra apertura de CO con 99 (call 70\u00a0%, 3-bet 0\u00a0%)
+// Por qué: BTN contra apertura de CO con 77 (call puro en la referencia)
 const chart = ranges.charts.VS_OPEN_BTN_vs_CO;
-const freq = E.frequencies(chart, '99', 'Contra apertura');
-const why = C.whyPreflop({ spot: 'Contra apertura', hand: '99', heroPos: 'BTN', villainPos: 'CO', chart, freq, chosen: 'fold', due: 2.5, pot: 4, equity: 0.55, villainRange: 0.27 });
+const freq = E.frequencies(chart, '77', 'Contra apertura');
+const why = C.whyPreflop({ spot: 'Contra apertura', hand: '77', heroPos: 'BTN', villainPos: 'CO', chart, freq, chosen: 'fold', due: 2.5, pot: 4, equity: 0.55, villainRange: 0.27 });
 const text = why.join('\n');
 assert.match(text, /Pagar cuesta 2,5 bb para un bote final de 6,5 bb: necesitas al menos 38\u00a0%/);
 assert.match(text, /posición contra CO/);
@@ -45,10 +45,10 @@ assert.match(read('Ac Qd', 'Kh Jc Ts').label, /Escalera al As/);
 assert.equal(read('Ac 3c', 'Kc 8c 4c').strength, 'monstruo');
 assert.equal(read('2h 3d', 'Kh Kc 8s').strength, 'aire', 'La pareja de la mesa no es tuya');
 assert.equal(read('As 2d', '3h 4c 9s Kd').draws[0].outs, 4, 'Rueda: A2 con 3 4 → gutshot al 5');
-// AJo en el BTN contra CO: la equity bruta supera el precio, pero se foldea (explicación coherente)
-const ajo = C.whyPreflop({ spot: 'Contra apertura', hand: 'AJo', heroPos: 'BTN', villainPos: 'CO', chart, freq: E.frequencies(chart, 'AJo', 'Contra apertura'), chosen: 'fold', due: 2.5, pot: 4, equity: 0.57, villainRange: 0.3 }).join(' ');
+// ATo en el BTN contra CO: la equity bruta supera el precio, pero se foldea (explicación coherente)
+const ajo = C.whyPreflop({ spot: 'Contra apertura', hand: 'ATo', heroPos: 'BTN', villainPos: 'CO', chart, freq: E.frequencies(chart, 'ATo', 'Contra apertura'), chosen: 'fold', due: 2.5, pot: 4, equity: 0.57, villainRange: 0.3 }).join(' ');
 assert.match(ajo, /equity bruta \(57\u00a0%\) supera el precio/); assert.match(ajo, /squeeze/); assert.doesNotMatch(ajo, /se acerca/);
 // Call con equity por debajo del precio: se explica con las pot odds implícitas
-const imp = C.whyPreflop({ spot: 'Contra apertura', hand: '65s', heroPos: 'BB', villainPos: 'BTN', chart: ranges.charts.VS_OPEN_BB_vs_BTN, freq: E.frequencies(ranges.charts.VS_OPEN_BB_vs_BTN, '65s', 'Contra apertura'), chosen: 'call', due: 1.5, pot: 4, equity: 0.25 }).join(' ');
+const imp = C.whyPreflop({ spot: 'Contra apertura', hand: '75s', heroPos: 'BB', villainPos: 'BTN', chart: ranges.charts.VS_OPEN_BB_vs_BTN, freq: E.frequencies(ranges.charts.VS_OPEN_BB_vs_BTN, '75s', 'Contra apertura'), chosen: 'call', due: 1.5, pot: 4, equity: 0.25 }).join(' ');
 assert.match(imp, /implícitas/); assert.doesNotMatch(imp, /tienes precio \(/);
 console.log('✔ Entrenador: rangos, explicación preflop (precio, equity, posición, valor/farol, vecinas) y lectura postflop (manos, proyectos, outs)');

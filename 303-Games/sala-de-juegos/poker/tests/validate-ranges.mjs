@@ -65,7 +65,8 @@ for (let a = 0; a < 5; a++) for (let b = a + 1; b < 6; b++) {
   const name = `VS_OPEN_${POS[b]}_vs_${POS[a]}`, c = charts[name];
   const total = pct(c, cont);
   const [lo, hi] = POS[b] === 'BB'
-    ? (POS[a] === 'BTN' ? [50, 80] : POS[a] === 'SB' ? [55, 85] : POS[a] === 'CO' ? [38, 65] : [25, 50])
+    // Con rake (referencia NL500) la BB paga bastante menos que en las tablas sin rake
+    ? (POS[a] === 'BTN' ? [36, 60] : POS[a] === 'SB' ? [44, 70] : POS[a] === 'CO' ? [30, 50] : [24, 42])
     : (POS[a] === 'UTG' ? [4, 16] : POS[a] === 'HJ' ? [5, 18] : POS[a] === 'CO' ? [7, 24] : [9, 30]);
   band(name, total, lo, hi);
   const rfi = charts[`RFI_${POS[a]}`];
@@ -126,8 +127,10 @@ for (const [name, c] of Object.entries(charts)) {
     if (sum > 0.001) { entries++; if (pos > 1 || sum < 0.999) mixed++; }
   }
 }
-report.push(`Manos con estrategia mixta: ${(mixed / entries * 100).toFixed(0)} % (máximo 50 %)`);
-if (mixed / entries > 0.5) err(`Demasiadas manos mixtas (${(mixed / entries * 100).toFixed(0)} %): las estrategias reales tienen muchas acciones puras`);
+// Las soluciones reales mezclan casi todas las manos frontera (sobre todo en la BB); el límite detecta
+// tablas «todo al 50 %», no penaliza las mezclas normales.
+report.push(`Manos con estrategia mixta: ${(mixed / entries * 100).toFixed(0)} % (máximo 70 %)`);
+if (mixed / entries > 0.7) err(`Demasiadas manos mixtas (${(mixed / entries * 100).toFixed(0)} %): las estrategias reales tienen muchas acciones puras`);
 
 for (let a = 0; a < 5; a++) {
   const heroes = POS.slice(a + 1);
@@ -140,10 +143,11 @@ for (let a = 0; a < 5; a++) {
     const x = charts[`VS_3BET_${POS[a]}_vs_${heroes[i]}`], y = charts[`VS_3BET_${POS[a]}_vs_${heroes[j]}`];
     if (JSON.stringify(x) === JSON.stringify(y)) err(`VS_3BET_${POS[a]}_vs_${heroes[i]} y VS_3BET_${POS[a]}_vs_${heroes[j]} son idénticas`);
   }
-  // La SB juega casi siempre 3-bet o fold; la BB defiende sobre todo pagando
+  // La SB resube más de lo que paga (referencia: paga el 46 % contra UTG y el 28 % contra BTN);
+  // la BB defiende sobre todo pagando
   const sb = charts[`VS_OPEN_SB_vs_${POS[a]}`];
-  if (sb && contPct(sb) > 0 && callPct(sb) / contPct(sb) > 0.35)
-    err(`VS_OPEN_SB_vs_${POS[a]}: paga el ${(callPct(sb) / contPct(sb) * 100).toFixed(0)} % de lo que continúa (máximo 35 %: la SB juega 3-bet o fold)`);
+  if (sb && contPct(sb) > 0 && callPct(sb) / contPct(sb) > 0.5)
+    err(`VS_OPEN_SB_vs_${POS[a]}: paga el ${(callPct(sb) / contPct(sb) * 100).toFixed(0)} % de lo que continúa (máximo 50 %: la SB resube más de lo que paga)`);
   const bb = charts[`VS_OPEN_BB_vs_${POS[a]}`];
   if (callPct(bb) / contPct(bb) < 0.55)
     err(`VS_OPEN_BB_vs_${POS[a]}: solo paga el ${(callPct(bb) / contPct(bb) * 100).toFixed(0)} % de lo que defiende (mínimo 55 %)`);
